@@ -1,0 +1,139 @@
+---
+title: 00_ETL
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: load packages
+
+library(tidyverse)
+library(pointblank)
+```
+
+
+Import data
+```{r}
+#| label: load data
+#| cache: true
+
+data_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv")
+
+```
+
+Inspect the data
+```{r}
+#| label: Data scan
+
+scan <- pointblank::scan_data(data_raw, sections = "OVMS")
+scan
+# Note the sections argument. We omit "Correlations" and "Interactions" because these aren't relevant for this dataset and take a long time to run on this large of a dataset.
+```
+
+Explore the data scan.
+
+1. What is the most common value for `dba_name` and `AKA Name` (hint: Toggle details)
+1. Explore the `facility_type`. What values should we consider filtering out or preserving?
+1. Are there columns that we should cross reference for validation?
+
+Validate the data
+```{r}
+#| label: agent definition
+
+# validate column definitions
+
+```
+
+
+Informant table / Data Dictionary 
+```{r}
+#| label: data dictionary
+
+create_informant(
+  tbl = data_raw,
+  tbl_name = "Data Dictionary - Chicago Food Inspection Dataset",
+  label = "Data Dictionary - Chicago Food Inspection Dataset") |> 
+  info_tabular(
+    description = "This table defines the columns in the City of Chicago Food Inspection dataset"
+  ) |> 
+  info_section(
+    section_name = "further information",
+    `source` = "Data from City of Chicago, <http://www.cityofchicago.org>",
+    `🔄 updates` = "Original data source updated daily. This table last updated {Sys.Date()}.",
+    `ℹ️ note` = "This example material using data that has been modified for use from its original source, <www.cityofchicago.org>, the official website of the City of Chicago.  The City of Chicago makes no claims as to the content, accuracy, timeliness, or completeness of any of the data provided at this site.  The data provided at this site is subject to change at any time.  It is understood that the data provided at this site is being used at one's own risk."
+  ) |> 
+  info_columns(
+    columns = "Inspection ID",
+    `ℹ️` = "A unique record number."
+  ) |> 
+  info_columns(
+    columns = "DBA Name",
+    `ℹ️` = "'Doing Business As.' This is legal name of the establishment."
+  ) |> 
+  info_columns(
+    columns = "AKA Name",
+      `ℹ️` = "'Also Known As.' This is the name the public would know the establishment as."
+  ) |> 
+  info_columns(
+    columns = "License #",
+      `ℹ️` = "This is a unique number assigned to the establishment for the 
+purposes of licensing by the Department of Business Affairs and Consumer Protection."
+  ) |>  
+  info_columns(
+    columns = "Facility Type",
+      `ℹ️` =
+      "Each establishment is described by one of the following: \n - bakery","banquet hall \n - candy store \n - caterer \n - coffee shop \n - day care center (for ages less than 2) \n - day care center (for ages 2 – 6) \n - day care center (combo, for ages less than 2 and 2 – 6  \n - combinedd) \n - gas station \n - Golden Diner \n - grocery store \n - hospital \n - long term care center(nursing home) \n - liquor store \n - mobile food dispenser \n - restaurant \n - paleteria \n - school \n - shelter \n - tavern \n - social club \n - wholesaler \n - Wrigley Field Rooftop"
+  )  |>
+  info_columns(
+    columns = "Risk",
+      `ℹ️` = "Risk category of facility: Each establishment is categorized as to its risk of adversely affecting the public's health, with 1 being the highest and 3 the lowest. The frequency of inspection is tied to this risk, with risk 1 establishments inspected most frequently and risk 3 least frequently."
+  ) |>  
+  info_columns(
+    columns = "Address",
+      `ℹ️` = "Street address, city, state and zip code of facility: This is the complete address where the facility is located."
+  ) |>  
+  info_columns(
+    columns = "City",
+      `ℹ️` = "City of the facility."
+  ) |>  
+  info_columns(
+    columns = "State",
+      `ℹ️` = "State of the facility."
+  ) |>  
+  info_columns(
+    columns = "Zip",
+      `ℹ️` = "Zip Code of the facility."
+  ) |>  
+  info_columns(
+    columns = "Inspection Date",
+      `ℹ️` = "This is the date the inspection occurred. A particular establishment is likely to have multiple inspections which are denoted by different inspection dates."
+  ) |>  
+  info_columns(
+    columns = "Inspection Type",
+      `ℹ️` = "An inspection can be one of the following types: canvass, the most common type of inspection performed at a frequency relative to the risk of the establishment; consultation, when the inspection is done at the request of the owner prior to the opening of the establishment; complaint, when  the inspection is done in response to a complaint against the establishment; license, when the inspection is done as a requirement for the establishment to receive its license to operate; suspect food poisoning, when the inspection is done in response to one or more persons claiming to have gotten ill as a result of eating at the establishment (a specific type of complaint-based inspection); task-force inspection, when an inspection of a bar or tavern is done. Re-inspections can occur for most types of these inspections and are indicated as such."
+  ) |>  
+  info_columns(
+    columns = "Results",
+      `ℹ️` = "An inspection can pass, pass with conditions or fail. Establishments receiving a 'pass' were found to have no critical or serious violations (violation number 1-14 and 15-29, respectively). Establishments receiving a 'pass with conditions' were found to have critical or serious violations, but these were corrected during the inspection. Establishments receiving a 'fail' were found to have critical or serious violations that were not correctable during the inspection. An establishment receiving a 'fail' does not necessarily mean the establishment's licensed is suspended. Establishments found to be out of business or not located are indicated as such."
+  ) |>  
+  info_columns(
+    columns = "Violations",
+      `ℹ️` = "An establishment can receive one or more of 45 distinct violations (violation numbers 1-44 and 70). For each violation number listed for a given establishment, the requirement the establishment must meet in order for it to NOT receive a violation is noted, followed by a specific description of the findings that caused the violation to be issued."
+  ) |>  
+  info_columns(
+    columns = "Latitude",
+      `ℹ️` = "The Latitude of the facility."
+  ) |>
+  info_columns(
+    columns = "Longitude",
+      `ℹ️` = "The Longitude of the facility."
+  ) |>
+  info_columns(
+    columns = "Location",
+      `ℹ️` = "The Latitude and Longitude of the facility."
+  ) |>
+  incorporate()
+
+
+```
+
