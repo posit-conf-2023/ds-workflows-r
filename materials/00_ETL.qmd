@@ -17,7 +17,8 @@ Import data
 #| label: load data
 #| cache: true
 
-data_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv")
+inspections_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv")
+bus_data_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/r5kz-chrr/rows.csv")
 
 ```
 
@@ -25,7 +26,7 @@ Inspect the data
 ```{r}
 #| label: Data scan
 
-scan <- pointblank::scan_data(data_raw, sections = "OVMS")
+scan <- pointblank::scan_data(inspections_raw, sections = "OVMS")
 scan
 # Note the sections argument. We omit "Correlations" and "Interactions" because these aren't relevant for this dataset and take a long time to run on this large of a dataset.
 ```
@@ -36,13 +37,46 @@ Explore the data scan.
 1. Explore the `facility_type`. What values should we consider filtering out or preserving?
 1. Are there columns that we should cross reference for validation?
 
-Validate the data
+First pass thin out the data
 ```{r}
-#| label: agent definition
+#| label: thin out data
 
-# validate column definitions
+# When we inspect the Facility Type, we see there is a lot of variation in how the inspector recorded this data. It certainly doesn't align with the stated possible values in the data dictionary. For example: 
+inspections_raw |> filter(grepl("rest", `Facility Type`, ignore.case = TRUE)) |> group_by(`Facility Type`) |> tally() |> arrange(desc(n))
+inspections_raw |> filter(grepl("bakery", `Facility Type`, ignore.case = TRUE)) |> group_by(`Facility Type`) |> tally() |> arrange(desc(n))
+inspections_raw |> filter(grepl("coffee", `Facility Type`, ignore.case = TRUE)) |> group_by(`Facility Type`) |> tally() |> arrange(desc(n))
+
+# We'd like the following types: Restaurant, Bakery, Coffee Shop. And The Wrigley Field Rooftop sounds like a blast.  We'll filter the Facility Type based on regex to account for abbreviations, mis-spellings, and extra information. This is a coarse filter on the raw data before validation to thin out the dataset.
+inspections <- inspections_raw |> 
+  filter(
+    # Filter for "restaurants" and variations including "rest", "rstrnt", etc.
+    grepl("re?sta?u?r?a?n?t?", `Facility Type`, ignore.case = TRUE) | 
+    # OR Filter for "bakery" and variations to account for typos or shortenings
+    grepl("ba?ke?r?y?", `Facility Type`, ignore.case = TRUE) | 
+    # OR Filter for "coffee shop" and variations, but consciously including "shop" to avoid carts, roasters, vending machines
+    grepl("coffee *shop", `Facility Type`, ignore.case = TRUE) | 
+    # OR Filter for "wrigley"
+    grepl("wrigley", `Facility Type`, ignore.case = TRUE)
+    )
+
 
 ```
+
+Perform data validation
+```{r}
+#| label: data validation
+
+# column schema
+
+# invalid data entry 
+
+# value ranges
+
+
+
+
+```
+
 
 
 Informant table / Data Dictionary 
@@ -50,7 +84,7 @@ Informant table / Data Dictionary
 #| label: data dictionary
 
 create_informant(
-  tbl = data_raw,
+  tbl = inspections_raw,
   tbl_name = "Data Dictionary - Chicago Food Inspection Dataset",
   label = "Data Dictionary - Chicago Food Inspection Dataset") |> 
   info_tabular(
@@ -82,7 +116,7 @@ purposes of licensing by the Department of Business Affairs and Consumer Protect
   info_columns(
     columns = "Facility Type",
       `ℹ️` =
-      "Each establishment is described by one of the following: \n - bakery","banquet hall \n - candy store \n - caterer \n - coffee shop \n - day care center (for ages less than 2) \n - day care center (for ages 2 – 6) \n - day care center (combo, for ages less than 2 and 2 – 6  \n - combinedd) \n - gas station \n - Golden Diner \n - grocery store \n - hospital \n - long term care center(nursing home) \n - liquor store \n - mobile food dispenser \n - restaurant \n - paleteria \n - school \n - shelter \n - tavern \n - social club \n - wholesaler \n - Wrigley Field Rooftop"
+      "Each establishment is described by one of the following: \n - bakery","banquet hall \n - candy store \n - caterer \n - coffee shop \n - day care center (for ages less than 2) \n - day care center (for ages 2 – 6) \n - day care center (combo, for ages less than 2 and 2 – 6 combined) \n - gas station \n - Golden Diner \n - grocery store \n - hospital \n - long term care center(nursing home) \n - liquor store \n - mobile food dispenser \n - restaurant \n - paleteria \n - school \n - shelter \n - tavern \n - social club \n - wholesaler \n - Wrigley Field Rooftop"
   )  |>
   info_columns(
     columns = "Risk",
@@ -133,6 +167,48 @@ purposes of licensing by the Department of Business Affairs and Consumer Protect
       `ℹ️` = "The Latitude and Longitude of the facility."
   ) |>
   incorporate()
+
+
+```
+
+
+
+```{r}
+#| label: unused code
+#| include: false
+#| eval: false
+
+# This function removes text in parentheses. When in the Facility Type, this only obfuscates the Type
+strip_parens <- function(x) {
+  x |> str_remove_all("(?=\\().*?(?<=\\))") |> 
+    str_squish()
+}
+
+# the expected facility types
+ref_types <- tibble(`Facility Type` = c("bakery","banquet hall", "candy store", "caterer", "coffee shop", "day care center", "gas station", "Golden Diner", "grocery store", "hospital", "long term care center", "nursing home", "liquor store", "mobile food dispenser", "restaurant", "paleteria", "school", "shelter", "tavern", "social club", "wholesaler", "Wrigley Field Rooftop") )
+
+facilities <- 
+  inspections_raw |> 
+  select(`Facility Type`) |> 
+  # bind_rows(ref_types) |>
+  mutate(`Facility Type` = str_to_lower(`Facility Type`)) |> 
+  mutate(`Facility Type` = strip_parens(`Facility Type`)) |> 
+  filter(!is.na(`Facility Type`)) |>
+  distinct() 
+
+compare <- tidy_comb_all(facilities,`Facility Type`)
+
+comparisons <- tidy_stringdist(compare) %>% 
+  mutate(sim = 1-jaccard) %>% 
+  select(V1, V2, sim)
+
+recommendation <- comparisons %>% 
+  group_by(V1) %>% 
+  summarise(max_sim = max(sim)) %>% 
+  ungroup()
+
+comparisons %>% 
+  inner_join(recommendation, by = c("V1" = "V1", "sim" = "max_sim"))
 
 
 ```
