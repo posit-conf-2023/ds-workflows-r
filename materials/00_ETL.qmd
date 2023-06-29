@@ -9,6 +9,7 @@ editor_options:
 
 library(tidyverse)
 library(pointblank)
+library(janitor)
 ```
 
 
@@ -17,7 +18,8 @@ Import data
 #| label: load data
 #| cache: true
 
-data_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv")
+inspections_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv")
+bus_data_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/r5kz-chrr/rows.csv")
 
 ```
 
@@ -25,9 +27,10 @@ Inspect the data
 ```{r}
 #| label: Data scan
 
-scan <- pointblank::scan_data(data_raw, sections = "OVMS")
+scan <- pointblank::scan_data(inspections_raw, sections = "OVMS")
 scan
 # Note the sections argument. We omit "Correlations" and "Interactions" because these aren't relevant for this dataset and take a long time to run on this large of a dataset.
+
 ```
 
 Explore the data scan.
@@ -36,13 +39,109 @@ Explore the data scan.
 1. Explore the `facility_type`. What values should we consider filtering out or preserving?
 1. Are there columns that we should cross reference for validation?
 
-Validate the data
+First pass thin out the data
 ```{r}
-#| label: agent definition
+#| label: thin out data
 
-# validate column definitions
+# When we inspect the Facility Type, we see there is a lot of variation in how the inspector recorded this data. It certainly doesn't align with the stated possible values in the data dictionary. For example: 
+inspections_raw |> filter(grepl("rest", `Facility Type`, ignore.case = TRUE)) |> group_by(`Facility Type`) |> tally() |> arrange(desc(n))
+inspections_raw |> filter(grepl("bakery", `Facility Type`, ignore.case = TRUE)) |> group_by(`Facility Type`) |> tally() |> arrange(desc(n))
+inspections_raw |> filter(grepl("coffee", `Facility Type`, ignore.case = TRUE)) |> group_by(`Facility Type`) |> tally() |> arrange(desc(n))
+
+# We'd like the following types: Restaurant, Bakery, Coffee Shop. And The Wrigley Field Rooftop sounds like a blast.  We'll filter the Facility Type based on regex to account for abbreviations, mis-spellings, and extra information. This is a coarse filter on the raw data before validation to thin out the dataset.  Also, let's clean up column names and convert entries to UPPERCASE for consistency
+inspections <- inspections_raw |> 
+  # clean column names with the `janitor` package
+  clean_names() |> 
+  # convert to UPPERCASE
+  mutate(across(where(is.character), toupper)) |> 
+  filter(
+    # Filter for "RESTAURANTS" and variations including "REST", "RSTRNT", etc.
+    grepl("RE?STA?U?R?A?N?T?", `facility_type`) | 
+    # OR Filter for "BAKERY" and variations to account for typos or shortenings
+    grepl("BA?KE?R?Y?", `facility_type`) | 
+    # OR Filter for "COFFEE SHOP" and variations, but consciously including "SHOP" to avoid carts, roasters, vending machines
+    grepl("COFFEE *SHOP", `facility_type`) | 
+    # OR Filter for "WRIGLEY"
+    grepl("WRIGLEY", `facility_type`)
+    )
+
 
 ```
+Question - what should we just filter out vs. identify by data validation?  What do we want to flag for data quality issues?
+
+Perform data validation
+```{r}
+#| label: data validation
+
+# Define a column schema so we can check inputted data is as expected
+# Fun fact, also use .tbl argument in col_schema to compare the dataframe to an ideal table.
+# troubleshooting, if this fails, look at the x_list$col_types and $col_names to see the discrepancy
+schema_inspections <- col_schema(inspection_id = "numeric",
+                               dba_name = "character",
+                               aka_name = "character",
+                               license_number = "numeric",
+                               facility_type = "character",
+                               risk = "character",
+                               address = "character",
+                               city = "character",
+                               state = "character",
+                               zip = "numeric",
+                               inspection_date = "character",
+                               inspection_type = "character",
+                               results = "character",
+                               violations = "character",
+                               latitude = "numeric",
+                               longitude = "numeric",
+                               location = "character")
+
+# 
+
+# can do validations before and after a join between bus_data and inspections to be sure the join was successful.
+
+# warning levels:
+# hard stop on failed join and on not enough rows in inspections. 
+# otherwise sunder the data and move on
+
+agent <- 
+  create_agent(inspections) |> 
+  # verify column schema
+  col_schema_match(schema_inspections) |> 
+  #Add in a check that all column names exist. We make a table in the preconditions using a table transform that is made up of the column names of our inspections table. Then compare those values to the set of schema_inspection names.
+  col_vals_in_set(columns = value,set = names(schema_inspections), preconditions = ~. %>% tt_tbl_colnames ) |> 
+  # verify there are A LOT of rows of data to be sure import didn't mess up
+  
+  # verify values not null for inspection_id, dba_name, address, inspection_date, inspection_type, results -- do this individually so I can see the detailed results
+  
+  # verify values not missing for same columns above
+  
+  # verify lat and long bounds
+  
+  # verify w col_vals_within_spec for postal_code / aka zip
+  
+  # verify threshold between location lat / long is less than a small value
+  
+  # find a reason to use serially()
+
+  # compare DBA name to bus_lic_dba name and see that it isnt too far off. Use license key as the join. and stringdist
+
+  # verify inspection ID is unique
+  # rows_distinct(vars(inspection_id)) |> 
+  # # verify inspection ID is valid
+  # col_vals_between(vars(inspection_id), 1000, 99999999) |> 
+  interrogate() 
+
+agent
+all_passed(agent_schema)
+
+# invalid data entry 
+
+# value ranges
+
+
+
+
+```
+
 
 
 Informant table / Data Dictionary 
@@ -50,7 +149,7 @@ Informant table / Data Dictionary
 #| label: data dictionary
 
 create_informant(
-  tbl = data_raw,
+  tbl = inspections_raw,
   tbl_name = "Data Dictionary - Chicago Food Inspection Dataset",
   label = "Data Dictionary - Chicago Food Inspection Dataset") |> 
   info_tabular(
@@ -59,7 +158,7 @@ create_informant(
   info_section(
     section_name = "further information",
     `source` = "Data from City of Chicago, <http://www.cityofchicago.org>",
-    `🔄 updates` = "Original data source updated daily. This table last updated {Sys.Date()}.",
+    `🔄 updates` = "Original data source updated every Friday. This table last updated {Sys.Date()}.",
     `ℹ️ note` = "This example material using data that has been modified for use from its original source, <www.cityofchicago.org>, the official website of the City of Chicago.  The City of Chicago makes no claims as to the content, accuracy, timeliness, or completeness of any of the data provided at this site.  The data provided at this site is subject to change at any time.  It is understood that the data provided at this site is being used at one's own risk."
   ) |> 
   info_columns(
@@ -82,7 +181,7 @@ purposes of licensing by the Department of Business Affairs and Consumer Protect
   info_columns(
     columns = "Facility Type",
       `ℹ️` =
-      "Each establishment is described by one of the following: \n - bakery","banquet hall \n - candy store \n - caterer \n - coffee shop \n - day care center (for ages less than 2) \n - day care center (for ages 2 – 6) \n - day care center (combo, for ages less than 2 and 2 – 6  \n - combinedd) \n - gas station \n - Golden Diner \n - grocery store \n - hospital \n - long term care center(nursing home) \n - liquor store \n - mobile food dispenser \n - restaurant \n - paleteria \n - school \n - shelter \n - tavern \n - social club \n - wholesaler \n - Wrigley Field Rooftop"
+      "Each establishment is described by one of the following: \n - bakery","banquet hall \n - candy store \n - caterer \n - coffee shop \n - day care center (for ages less than 2) \n - day care center (for ages 2 – 6) \n - day care center (combo, for ages less than 2 and 2 – 6 combined) \n - gas station \n - Golden Diner \n - grocery store \n - hospital \n - long term care center(nursing home) \n - liquor store \n - mobile food dispenser \n - restaurant \n - paleteria \n - school \n - shelter \n - tavern \n - social club \n - wholesaler \n - Wrigley Field Rooftop"
   )  |>
   info_columns(
     columns = "Risk",
@@ -133,6 +232,48 @@ purposes of licensing by the Department of Business Affairs and Consumer Protect
       `ℹ️` = "The Latitude and Longitude of the facility."
   ) |>
   incorporate()
+
+
+```
+
+Use email_create() to make a blastula object 
+
+```{r}
+#| label: unused code
+#| include: false
+#| eval: false
+
+# This function removes text in parentheses. When in the Facility Type, this only obfuscates the Type
+strip_parens <- function(x) {
+  x |> str_remove_all("(?=\\().*?(?<=\\))") |> 
+    str_squish()
+}
+
+# the expected facility types
+ref_types <- tibble(`Facility Type` = c("bakery","banquet hall", "candy store", "caterer", "coffee shop", "day care center", "gas station", "Golden Diner", "grocery store", "hospital", "long term care center", "nursing home", "liquor store", "mobile food dispenser", "restaurant", "paleteria", "school", "shelter", "tavern", "social club", "wholesaler", "Wrigley Field Rooftop") )
+
+facilities <- 
+  inspections_raw |> 
+  select(`Facility Type`) |> 
+  # bind_rows(ref_types) |>
+  mutate(`Facility Type` = str_to_lower(`Facility Type`)) |> 
+  mutate(`Facility Type` = strip_parens(`Facility Type`)) |> 
+  filter(!is.na(`Facility Type`)) |>
+  distinct() 
+
+compare <- tidy_comb_all(facilities,`Facility Type`)
+
+comparisons <- tidy_stringdist(compare) |> 
+  mutate(sim = 1-jaccard) |> 
+  select(V1, V2, sim)
+
+recommendation <- comparisons |> 
+  group_by(V1) |> 
+  summarise(max_sim = max(sim)) |> 
+  ungroup()
+
+comparisons |> 
+  inner_join(recommendation, by = c("V1" = "V1", "sim" = "max_sim"))
 
 
 ```
