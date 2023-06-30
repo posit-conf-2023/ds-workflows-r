@@ -1,0 +1,67 @@
+---
+title: 02_model_creation
+---
+
+## Set up Environment
+
+```{r}
+#| label: load-packages
+#| output: false
+
+library(tidymodels)
+library(tidyverse)
+```
+
+## Read in Data
+
+```{r}
+#| label: read-data
+
+# For testing purposes, I'll only read in 10,000 rows
+inspections_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv", n_max = 10000, show_col_types = FALSE)
+
+```
+
+## Clean Data
+
+```{r}
+inspections_clean <- inspections_raw |> 
+  # Filter for only Pass, Fail, Pass with conditions
+  filter(Results %in% c("Pass", "Fail", "Pass w/ Conditions")) |>
+  
+  # Convert "Pass w/ Conditions" to Fail (since it is a failure, but was corrected
+  #  before the food inspector left)
+  mutate(Results = if_else(Results == "Pass w/ Conditions", "Fail", Results)) |> 
+  
+  # Filter for Chicago IL
+  filter(State == "IL") |> 
+  filter(City %in% c("CHICAGO")) |> 
+  
+  # Remove non-relevant columns
+  select(-`AKA Name`, -Location, -Address) |> 
+  
+  # Extract violations (v_list) and total violation numbers (v_num)
+  rowwise() |> 
+  mutate(v_list = case_when(
+    is.na(Violations) ~ NA,
+    !is.na(Violations) ~ str_extract_all(Violations, 
+                                         "(^\\d{1,2}|\\|\\s*\\d{1,2})"))) |> 
+  mutate(v_list = case_when(
+    is.null(v_list) ~ NA,
+    !is.null(v_list) ~ list(str_replace_all(v_list, "\\|\\s*", "")))) |> 
+  mutate(v_num = length(v_list)) |> 
+
+  # Detect number of critical/serious violations (#'s 1 to 29)
+  mutate(v_num_cs = sum(1:29 %in% unlist(v_list))) |> 
+
+  # Calculate cumsum violation number
+  group_by(`License #`) |> 
+  arrange(`Inspection Date`) |> 
+  mutate(v_total = sum(v_num)) |> 
+  mutate(v_cumsum = cumsum(v_num)) |> 
+  mutate(v_cumsum_cs = cumsum(v_num_cs)) |> 
+  ungroup(`License #`) |> 
+  
+  # Filter for just (potential) predictors
+  select(Results, `DBA Name`, `Facility Type`, `Risk`, `Zip`, v_cumsum, v_cumsum_cs)
+```
