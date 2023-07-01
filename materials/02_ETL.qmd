@@ -1,5 +1,6 @@
 ---
-title: 00_ETL
+title: "02_ETL"
+description: "Pull raw data from database; transform, validate, filter, and write" 
 editor_options: 
   chunk_output_type: console
 ---
@@ -9,64 +10,34 @@ editor_options:
 
 library(tidyverse)
 library(pointblank)
-library(janitor)
-```
+library(DBI)
+library(odbc)
+library(RPostgres)
+library(tidystringdist)
 
+```
 
 Import data
 ```{r}
 #| label: load data
 #| cache: true
 
-inspections_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv")
-bus_data_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/r5kz-chrr/rows.csv")
+con <- dbConnect(RPostgres::Postgres(), 
+                 host = Sys.getenv("DB_HOST"), 
+                 port = "5432", 
+                 dbname = "r_workshop", 
+                 user = Sys.getenv("DB_USER"), 
+                 password = Sys.getenv("DB_PASSWORD"))
+
+inspections_processed <- tbl(con, "inspections_processed") |> collect()
+
+bus_data_ref <- tbl(con, "bus_data_ref")
+
+
 
 ```
 
-Inspect the data
-```{r}
-#| label: Data scan
 
-scan <- pointblank::scan_data(inspections_raw, sections = "OVMS")
-scan
-# Note the sections argument. We omit "Correlations" and "Interactions" because these aren't relevant for this dataset and take a long time to run on this large of a dataset.
-
-```
-
-Explore the data scan.
-
-1. What is the most common value for `dba_name` and `AKA Name` (hint: Toggle details)
-1. Explore the `facility_type`. What values should we consider filtering out or preserving?
-1. Are there columns that we should cross reference for validation?
-
-First pass thin out the data
-```{r}
-#| label: thin out data
-
-# When we inspect the Facility Type, we see there is a lot of variation in how the inspector recorded this data. It certainly doesn't align with the stated possible values in the data dictionary. For example: 
-inspections_raw |> filter(grepl("rest", `Facility Type`, ignore.case = TRUE)) |> group_by(`Facility Type`) |> tally() |> arrange(desc(n))
-inspections_raw |> filter(grepl("bakery", `Facility Type`, ignore.case = TRUE)) |> group_by(`Facility Type`) |> tally() |> arrange(desc(n))
-inspections_raw |> filter(grepl("coffee", `Facility Type`, ignore.case = TRUE)) |> group_by(`Facility Type`) |> tally() |> arrange(desc(n))
-
-# We'd like the following types: Restaurant, Bakery, Coffee Shop. And The Wrigley Field Rooftop sounds like a blast.  We'll filter the Facility Type based on regex to account for abbreviations, mis-spellings, and extra information. This is a coarse filter on the raw data before validation to thin out the dataset.  Also, let's clean up column names and convert entries to UPPERCASE for consistency
-inspections <- inspections_raw |> 
-  # clean column names with the `janitor` package
-  clean_names() |> 
-  # convert to UPPERCASE
-  mutate(across(where(is.character), toupper)) |> 
-  filter(
-    # Filter for "RESTAURANTS" and variations including "REST", "RSTRNT", etc.
-    grepl("RE?STA?U?R?A?N?T?", `facility_type`) | 
-    # OR Filter for "BAKERY" and variations to account for typos or shortenings
-    grepl("BA?KE?R?Y?", `facility_type`) | 
-    # OR Filter for "COFFEE SHOP" and variations, but consciously including "SHOP" to avoid carts, roasters, vending machines
-    grepl("COFFEE *SHOP", `facility_type`) | 
-    # OR Filter for "WRIGLEY"
-    grepl("WRIGLEY", `facility_type`)
-    )
-
-
-```
 Question - what should we just filter out vs. identify by data validation?  What do we want to flag for data quality issues?
 
 Perform data validation
@@ -92,53 +63,75 @@ schema_inspections <- col_schema(inspection_id = "numeric",
                                violations = "character",
                                latitude = "numeric",
                                longitude = "numeric",
-                               location = "character")
+                               location = "character",
+                               ref_dba_name = "character",
+                               jw = "numeric")
 
-# 
 
-# can do validations before and after a join between bus_data and inspections to be sure the join was successful.
-
-# warning levels:
-# hard stop on failed join and on not enough rows in inspections. 
-# otherwise sunder the data and move on
 
 agent <- 
-  create_agent(inspections) |> 
+  create_agent(inspections_processed) |> 
+  #### Data set integrity validations. All of these trigger a warning under fail conditions.
   # verify column schema
-  col_schema_match(schema_inspections) |> 
-  #Add in a check that all column names exist. We make a table in the preconditions using a table transform that is made up of the column names of our inspections table. Then compare those values to the set of schema_inspection names.
-  col_vals_in_set(columns = value,set = names(schema_inspections), preconditions = ~. %>% tt_tbl_colnames ) |> 
-  # verify there are A LOT of rows of data to be sure import didn't mess up
-  
-  # verify values not null for inspection_id, dba_name, address, inspection_date, inspection_type, results -- do this individually so I can see the detailed results
-  
-  # verify values not missing for same columns above
-  
-  # verify lat and long bounds
-  
+  col_schema_match(schema_inspections, 
+                   label = "Is the column schema as expected?", 
+                   actions = action_levels(warn_at = 1)) |> 
+  #Check that expected columns exist. We make a table in the preconditions using a table transform that is made up of the column names of our inspections table. Then compare those values to the set of schema_inspection names.
+  col_vals_in_set(columns = value, 
+                  set = names(schema_inspections), 
+                  preconditions = ~. %>% tt_tbl_colnames, 
+                  label = "Are the expected columns in the data set?", 
+                  actions = action_levels(warn_at = 0.01) ) |> 
+  # verify there are A LOT of rows of data to be sure import didn't mess up. 
+  col_vals_gte(columns = n, 
+               value = 100000L, # an arbitrary high-ish number
+               preconditions = ~. %>% tally,
+               label = "Are there more than 100k rows in the data?", 
+               actions = action_levels(warn_at = 1)) |> 
+  #### Data integrity validations.
+  # No null values
+  col_vals_not_null(columns = inspection_id) |> 
+  col_vals_not_null(columns = dba_name) |> 
+  col_vals_not_null(columns = address) |> 
+  col_vals_not_null(columns = inspection_date) |> 
+  col_vals_not_null(columns = inspection_type) |> 
+  col_vals_not_null(columns = results) |> 
+  # verify Inspection ID is unique
+  rows_distinct(columns = vars(inspection_id), 
+                label = "Is the Inspection ID unique?", 
+                actions = action_levels(warn_at = 0.001)) |> 
+  # verify inspection ID is valid
+  col_vals_between(columns = inspection_id, 1000, 99999999, 
+                   label = "Is the Inspection ID a valid entry?") |>
+  # verify lat and long bounds (set na_pass = TRUE to ignore NAs)
+  col_vals_between(columns = latitude, left = 41.5001, right = 42.3772, na_pass = TRUE) |> 
+  col_vals_between(columns = longitude, left = -88.2959, right = -87.316, na_pass = TRUE) |> 
   # verify w col_vals_within_spec for postal_code / aka zip
-  
-  # verify threshold between location lat / long is less than a small value
-  
+  col_vals_within_spec(columns = zip, spec = "postal[USA]", na_pass = TRUE) |> 
+
   # find a reason to use serially()
 
-  # compare DBA name to bus_lic_dba name and see that it isnt too far off. Use license key as the join. and stringdist
-
-  # verify inspection ID is unique
-  # rows_distinct(vars(inspection_id)) |> 
-  # # verify inspection ID is valid
-  # col_vals_between(vars(inspection_id), 1000, 99999999) |> 
+  # Is the DBA inconsistent with that listed on the Business License?
+  col_vals_lte(columns = jw, 
+               value = 0.34, 
+               label = "Dissimilarity measure between reported DBA Name and licensed DBA Name") |> 
   interrogate() 
 
 agent
-all_passed(agent_schema)
-
-# invalid data entry 
-
-# value ranges
 
 
 
+
+
+```
+Inspect the agent report.
+
+Pointblank will filter out rows that did not pass validation. 
+```{r}
+#| label: sunder data (def: sunder | verb | split apart)
+
+# get passing data
+inspections_validated <- agent |> get_sundered_data(type = c("pass"))
 
 ```
 
@@ -250,18 +243,18 @@ strip_parens <- function(x) {
 }
 
 # the expected facility types
-ref_types <- tibble(`Facility Type` = c("bakery","banquet hall", "candy store", "caterer", "coffee shop", "day care center", "gas station", "Golden Diner", "grocery store", "hospital", "long term care center", "nursing home", "liquor store", "mobile food dispenser", "restaurant", "paleteria", "school", "shelter", "tavern", "social club", "wholesaler", "Wrigley Field Rooftop") )
+ref_types <- tibble(facility_type = c("bakery","banquet hall", "candy store", "caterer", "coffee shop", "day care center", "gas station", "Golden Diner", "grocery store", "hospital", "long term care center", "nursing home", "liquor store", "mobile food dispenser", "restaurant", "paleteria", "school", "shelter", "tavern", "social club", "wholesaler", "Wrigley Field Rooftop") )
 
 facilities <- 
   inspections_raw |> 
-  select(`Facility Type`) |> 
+  select(facility_type) |> 
   # bind_rows(ref_types) |>
-  mutate(`Facility Type` = str_to_lower(`Facility Type`)) |> 
-  mutate(`Facility Type` = strip_parens(`Facility Type`)) |> 
-  filter(!is.na(`Facility Type`)) |>
+  mutate(facility_type = str_to_lower(facility_type)) |> 
+  mutate(facility_type = strip_parens(facility_type)) |> 
+  filter(!is.na(facility_type)) |>
   distinct() 
 
-compare <- tidy_comb_all(facilities,`Facility Type`)
+compare <- tidy_comb_all(facilities,facility_type)
 
 comparisons <- tidy_stringdist(compare) |> 
   mutate(sim = 1-jaccard) |> 
