@@ -7,25 +7,34 @@ title: 02_model_creation
 ```{r}
 #| label: load-packages
 #| output: false
+#| warning: false
+#| message: false
 
 library(tidymodels)
 library(tidyverse)
+library(embed)
+
+tidymodels_prefer()
 ```
 
 ## Read in Data
 
 ```{r}
 #| label: read-data
+#| cache: true
 
-# For testing purposes, I'll only read in 10,000 rows
-inspections_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv", n_max = 10000, show_col_types = FALSE)
-
+# For testing purposes, I'll only read in 20,000 rows
+inspections_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv", n_max = 20000, show_col_types = FALSE) |> 
+  mutate(Zip = as.character(Zip))
 ```
 
 ## Clean Data
 
 ```{r}
 inspections_clean <- inspections_raw |> 
+  # Filter for only certain facility types
+  filter(`Facility Type` %in% c("Restaurant", "Grocery Store", "School", "Bakery")) |> 
+  
   # Filter for only Pass, Fail, Pass with conditions
   filter(Results %in% c("Pass", "Fail", "Pass w/ Conditions")) |>
   
@@ -62,6 +71,120 @@ inspections_clean <- inspections_raw |>
   mutate(v_cumsum_cs = cumsum(v_num_cs)) |> 
   ungroup(`License #`) |> 
   
+  # Refactor risk
+  mutate(Risk = case_when(
+    Risk == "Risk 1 (High)" ~ 1,
+    Risk == "Risk 2 (Medium)" ~ 2,
+    Risk == "Risk 3 (Low)" ~ 3
+  )) |> 
+  
   # Filter for just (potential) predictors
-  select(Results, `DBA Name`, `Facility Type`, `Risk`, `Zip`, v_cumsum, v_cumsum_cs)
+  select(Results, `DBA Name`, `License #`, `Facility Type`, `Risk`, `Zip`, v_cumsum, v_cumsum_cs)
+```
+
+## Split Data
+
+```{r}
+#| label: split-data
+
+set.seed(1234)
+
+# Define split
+inspections_split <- initial_split(inspections_clean, prop = 0.75)
+inspections_split
+
+# Create taining and testing datasets
+inspections_train <- training(inspections_split)
+inspections_test <- testing(inspections_split)
+```
+
+## Create Model Recipe
+
+```{r}
+#| label: create-recipe
+
+rec <- recipe(Results ~ `Facility Type` + Risk + Zip + v_cumsum + v_cumsum_cs, 
+              data = inspections_train) |> 
+  # Convert facility type to binary columns
+  step_dummy(`Facility Type`) |> 
+  # Convert zip (which has many levels) to a set of scores
+  #  derived from a glm model that estimates the effect
+  #  of each Zip code on the outcome. Likelihood encoding.
+  step_lencode_glm(Zip, outcome = vars(Results))
+
+rec
+```
+
+## Build xgboost model
+
+We first need to define some specifications for the xgboost model. There are lots of them, and we'll insert the `tune()` placeholder for now.
+
+```{r}
+#| label: model-specs
+
+# xgboost model specifications
+xgb_spec <- parsnip::boost_tree(
+  mode = "classification",
+  trees = 1000,
+  tree_depth = tune(),
+  min_n = tune(),
+  loss_reduction = tune(),
+  sample_size = tune(),
+  mtry = tune(),
+  learn_rate = tune()
+) |> 
+  set_engine("xgboost")
+
+xgb_spec
+```
+
+We now can use the `dials` package to create parameter grids:
+
+```{r}
+xgb_grid <- grid_latin_hypercube(
+  tree_depth(),
+  min_n(),
+  loss_reduction(),
+  sample_size = sample_prop(),
+  finalize(mtry(), inspections_train),
+  learn_rate(),
+  size = 30
+)
+
+xgb_grid
+```
+
+Now we can create a workflow with these specifications and our recipe:
+
+```{r}
+xgb_wf <- workflow() |> 
+  add_recipe(rec) |> 
+  add_model(xgb_spec)
+
+xgb_wf
+```
+
+Create cross-validation resamples for tuning our model:
+
+```{r}
+set.seed(1234)
+inspections_folds <- vfold_cv(inspections_train, strata = Results)
+
+inspections_folds
+```
+
+Tune the model:
+
+```{r}
+doParallel::registerDoParallel()
+
+set.seed(1234)
+xgb_res <- tune_grid(
+  xgb_wf,
+  resamples = inspections_folds,
+  grid = xgb_grid,
+  control = control_grid(save_pred = TRUE)
+)
+
+xgb_res
 ```
