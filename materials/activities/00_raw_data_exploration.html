@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Conduct ad hoc exploration of the data, first exposure to pointblank">
+
+<title>00_Raw Data Exploration</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="00_raw_data_exploration_files/libs/clipboard/clipboard.min.js"></script>
+<script src="00_raw_data_exploration_files/libs/quarto-html/quarto.js"></script>
+<script src="00_raw_data_exploration_files/libs/quarto-html/popper.min.js"></script>
+<script src="00_raw_data_exploration_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="00_raw_data_exploration_files/libs/quarto-html/anchor.min.js"></script>
+<link href="00_raw_data_exploration_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="00_raw_data_exploration_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="00_raw_data_exploration_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="00_raw_data_exploration_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="00_raw_data_exploration_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup">Setup</a></li>
+  <li><a href="#activity-1---read-data" id="toc-activity-1---read-data" class="nav-link" data-scroll-target="#activity-1---read-data">Activity 1 - Read data</a>
+  <ul>
+  <li><a href="#download-data-from-city-of-chicago" id="toc-download-data-from-city-of-chicago" class="nav-link" data-scroll-target="#download-data-from-city-of-chicago">Download data from City of Chicago</a>
+  <ul class="collapse">
+  <li><a href="#dataset-1-food-inspections-data" id="toc-dataset-1-food-inspections-data" class="nav-link" data-scroll-target="#dataset-1-food-inspections-data">DATASET 1: Food inspections data</a></li>
+  <li><a href="#dataset-2-business-data" id="toc-dataset-2-business-data" class="nav-link" data-scroll-target="#dataset-2-business-data">DATASET 2: Business data</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#activity-2---scan-the-data" id="toc-activity-2---scan-the-data" class="nav-link" data-scroll-target="#activity-2---scan-the-data">Activity 2 - Scan the data</a></li>
+  <li><a href="#activity-3---explore-the-data-scan" id="toc-activity-3---explore-the-data-scan" class="nav-link" data-scroll-target="#activity-3---explore-the-data-scan">Activity 3 - Explore the data scan</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">00_Raw Data Exploration</h1>
+</div>
+
+<div>
+  <div class="description">
+    Conduct ad hoc exploration of the data, first exposure to <code>pointblank</code>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>This workshop will use data from the City of Chicago Open Data Portal: <a href="https://data.cityofchicago.org" class="uri">https://data.cityofchicago.org</a>. The following datasets will be used:</p>
+<ol type="1">
+<li>🍕Food inspections: <a href="https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5" class="uri">https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5</a></li>
+<li>📒Business license data: <a href="https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses/r5kz-chrr" class="uri">https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses/r5kz-chrr</a></li>
+</ol>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>Load required packages for importing and exploring the data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pointblank)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="activity-1---read-data" class="level2">
+<h2 class="anchored" data-anchor-id="activity-1---read-data">Activity 1 - Read data</h2>
+<p>🔄 Task</p>
+<ul>
+<li>Explore the two data sources</li>
+<li>Load the data into tibbles</li>
+</ul>
+<p>✅ Solution</p>
+<p>The City of Chicago data portal provides access to their datasets via the Socrata Open Data (SODA) API:</p>
+<blockquote class="blockquote">
+<p>The Socrata Open Data API (SODA) provides programmatic access to this dataset including the ability to filter, query, and aggregate data. =~ Consulting the documentation provides us with some examples of how to use SODA: <a href="https://dev.socrata.com/foundry/data.cityofchicago.org/4ijn-s7e5" class="uri">https://dev.socrata.com/foundry/data.cityofchicago.org/4ijn-s7e5</a>.</p>
+</blockquote>
+<p>There is a R package called <code>RSocrata</code> to interact with SODA, however we can also query the SODA API directly and download the full dataset as a <code>.csv</code> using <code>readr::read_csv()</code>. In our initial testing, the column schemas were better preserved using the latter method as opposed to using the <code>RSocrata</code> package.</p>
+<section id="download-data-from-city-of-chicago" class="level3">
+<h3 class="anchored" data-anchor-id="download-data-from-city-of-chicago">Download data from City of Chicago</h3>
+<section id="dataset-1-food-inspections-data" class="level4">
+<h4 class="anchored" data-anchor-id="dataset-1-food-inspections-data">DATASET 1: Food inspections data</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>inspections_raw <span class="ot">&lt;-</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="dataset-2-business-data" class="level4">
+<h4 class="anchored" data-anchor-id="dataset-2-business-data">DATASET 2: Business data</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>bus_data_raw <span class="ot">&lt;-</span> </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"https://data.cityofchicago.org/api/views/r5kz-chrr/rows.csv"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="activity-2---scan-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="activity-2---scan-the-data">Activity 2 - Scan the data</h2>
+<p>🔄 Task</p>
+<p>Use the <code>pointblank</code> package to gather basic information about the Food Inspections data so we can</p>
+<ul>
+<li>Understand what the data is</li>
+<li>Get a sense for how much cleaning is required</li>
+<li>Plan our approach for data validation</li>
+</ul>
+<p>✅ Solution</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+The <code>pointblank</code> package
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<div class="columns">
+<div class="column" style="width:20%;">
+<p><img src="https://rich-iannone.github.io/pointblank/logo.svg" class="img-fluid" style="padding-right: 15px;"></p>
+</div><div class="column" style="width:75%;">
+<p><br> <code>pointblank</code> provides data quality assessment and metadata reporting for data frames and database tables. Use the same functions to validate and report on a local data frame or table in a database! 🤯</p>
+<p><strong>Reference</strong>: <a href="https://github.com/rich-iannone/pointblank" class="uri">https://github.com/rich-iannone/pointblank</a></p>
+</div>
+</div>
+</div>
+</div>
+<p>The <code>pointblank::scan_data()</code> function provides a HTML report of the input data to help you understand your data. It contains 6 sections:</p>
+<ul>
+<li><strong>Overview (O)</strong>: Table dimensions, duplicate row counts, column types, and reproducibility information</li>
+<li><strong>Variables (V)</strong>: A summary for each table variable and further statistics and summaries depending on the variable type</li>
+<li><strong>Interactions (I)</strong>: A matrix plot that shows interactions between variables</li>
+<li><strong>Correlations (C)</strong>: A set of correlation matrix plots for numerical variables</li>
+<li><strong>Missing Values (M)</strong>: A summary figure that shows the degree of missingness across variables</li>
+<li><strong>Sample (S)</strong>: A table that provides the head and tail rows of the dataset</li>
+</ul>
+<p>The scan can take a little while to run on a large dataset, but you can also omit sections that are not needed.</p>
+<p>First try it out on a small data frame, such as <code>mtcars</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pointblank<span class="sc">::</span><span class="fu">scan_data</span>(mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Our Food Inspection data is much larger than mtcars so to save time, and because these sections aren’t relevant for this data, we omit “Correlations” and “Interactions.”</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>scan <span class="ot">&lt;-</span> pointblank<span class="sc">::</span><span class="fu">scan_data</span>(inspections_raw, <span class="at">sections =</span> <span class="st">"OVMS"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>scan</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="activity-3---explore-the-data-scan" class="level2">
+<h2 class="anchored" data-anchor-id="activity-3---explore-the-data-scan">Activity 3 - Explore the data scan</h2>
+<p>🔄 Task</p>
+<p>Explore the data scan and share your observations in slido.</p>
+<ol type="1">
+<li>What is the most common value for <code>DBA NAME</code> and <code>AKA Name</code> (hint: Toggle details)</li>
+<li>Explore the <code>Facility Type</code>. Does the number of distinct values surprise you?</li>
+<li>What can we the Missing Values diagram tell us about potential data quality issues?</li>
+</ol>
+<p>How will this inform our data cleaning and validation?</p>
+<p>✅ Solution</p>
+<p>When we inspect the Facility Type, we see there is a lot of variation in how the inspector recorded this data. It certainly doesn’t align with the stated possible values in the data documentation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># What variations are there for "Restaurant" </span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>inspections_raw <span class="sc">|&gt;</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"REST"</span>, <span class="st">`</span><span class="at">Facility Type</span><span class="st">`</span>, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">Facility Type</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="dv">20</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Or Grocery Store?</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>inspections_raw <span class="sc">|&gt;</span> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"GROC"</span>, <span class="st">`</span><span class="at">Facility Type</span><span class="st">`</span>, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">Facility Type</span><span class="st">`</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="dv">20</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Bakery</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>inspections_raw <span class="sc">|&gt;</span> </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"BAKERY"</span>, <span class="st">`</span><span class="at">Facility Type</span><span class="st">`</span>, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">Facility Type</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="dv">20</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Coffee Shop</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>inspections_raw <span class="sc">|&gt;</span> </span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"COFFEE"</span>, <span class="st">`</span><span class="at">Facility Type</span><span class="st">`</span>, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">Facility Type</span><span class="st">`</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tally</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Some conclusions from exploration:</p>
+<ul>
+<li>We’ve got some very messy data, particularly in <code>DBA NAME</code> and <code>FACILITY TYPE</code></li>
+<li>We are going to want the <code>FACILITY TYPE</code> to be as clean as possible so we can filter out the establishments we don’t care about for this analysis (e.g., hotels, caterers, etc.). A grep search seems sufficient for identifying types of interest.</li>
+<li>For our model, we will need the <code>DBA NAME</code> to be as clean and consistent as possible, so we should do some work here too. We will plan to join the Business License data with the Inspections data based on License Number so we can have a “source of truth” DBA Name.</li>
+</ul>
+<!-- Let's to a first pass thin out the data based on facility_type -->
+<!-- ```{r} -->
+<!-- #| label: thin out data -->
+<!-- # When we inspect the Facility Type, we see there is a lot of variation in how the inspector recorded this data. It certainly doesn't align with the stated possible values in the data documentation. For example:  -->
+<!-- inspections_raw |> filter(grepl("REST", facility_type)) |> group_by(facility_type) |> tally() |> arrange(desc(n)) -->
+<!-- inspections_raw |> filter(grepl("BAKERY", facility_type)) |> group_by(facility_type) |> tally() |> arrange(desc(n)) -->
+<!-- inspections_raw |> filter(grepl("COFFEE", facility_type)) |> group_by(facility_type) |> tally() |> arrange(desc(n)) -->
+<!-- # We'd like to work with the following types: Restaurant, Bakery, Coffee Shop. And The Wrigley Field Rooftop sounds like a blast.  We'll filter the Facility Type based on regex to account for abbreviations, mis-spellings, and extra information. This is a coarse filter on the raw data before validation to thin out the dataset.   -->
+<!-- inspections_pass1 <-  -->
+<!--   inspections_raw |>  -->
+<!--   filter( -->
+<!--     # Filter for "RESTAURANTS" and variations including "REST", "RSTRNT", etc. -->
+<!--     grepl("RE?STA?U?R?A?N?T?", `facility_type`) |  -->
+<!--     # OR Filter for "BAKERY" and variations to account for typos or shortenings -->
+<!--     grepl("BA?KE?R?Y?", `facility_type`) |  -->
+<!--     # OR Filter for "COFFEE SHOP" and variations, but consciously including "SHOP" to avoid carts, roasters, vending machines -->
+<!--     grepl("COFFEE *SHOP", `facility_type`) |  -->
+<!--     # OR Filter for "WRIGLEY" -->
+<!--     grepl("WRIGLEY", `facility_type`) -->
+<!--     )  -->
+
+<!-- #Now let's also join in the reference business data table so we have a "source of truth" DBA name to check against. -->
+<!-- inspections_pass2 <-  -->
+<!--   inspections_pass1 |>  -->
+<!--   left_join(select(bus_data_ref, license_number, doing_business_as_name), by=join_by(license_number)) |> -->
+<!--   rename(ref_dba_name = doing_business_as_name)  -->
+<!-- # Finally, add a column with the Jaro ("jw") string distance to help us determine how similar or dissimilar the inspectors' inputted dba name is to the reference. A distance of 0 indicates identical; a 1 indicates completely dissimilar -->
+<!-- inspections <- tidystringdist::tidy_stringdist(inspections_pass2,v1=dba_name, v2=ref_dba_name, method="jw")  -->
+<!-- # inspecting the data, we can select a jw value of 0.34 as a reasonable threshold for identifying dissimilar values. Take a look: -->
+<!-- hist(inspections$jw, breaks = c(seq(0,1,0.05))) -->
+<!-- # these are definitely very different -->
+<!-- inspections |> filter(jw > 0.5) |> select(dba_name, ref_dba_name, jw) |> distinct() |> arrange(jw) -->
+<!-- # these are generally the same -->
+<!-- inspections |> filter(jw < 0.2) |> select(dba_name, ref_dba_name, jw) |> distinct() |> arrange(desc(jw)) -->
+<!-- # goldilocks value of 0.34 seems to be about right. -->
+<!-- inspections |> filter(jw <0.5 & jw > 0.2) |> select(dba_name, ref_dba_name, jw) |> distinct() |> arrange(jw) -->
+<!-- ``` -->
+<p>At this point, we have a good sense of the data and can move on from ad hoc exploration into a repeatable workflow 🎉</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
