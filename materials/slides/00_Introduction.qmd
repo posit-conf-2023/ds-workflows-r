@@ -1,6 +1,6 @@
 ---
-title: "Data Science <br>Workflows — <br> R Focus"
-# subtitle: "Instructors: <br> Ryan Johnson <br>Katie Masiello <br> TA: <br>Julia Silge"
+title: "Data Science Workflows <br> R Focus"
+subtitle: "<br><b>Instructors:</b> <br> Ryan Johnson <br>Katie Masiello <br> <b>TA:</b> <br>Julia Silge"
 title-slide-attributes: 
   data-background-color: white
   data-background-image: _extensions/positslides/assets/backgrounds/toc-light.svg
@@ -25,66 +25,91 @@ execute:
   cache: true
 ---
 
-## {.brackets-light}
+## Hello!
 
-Instructors:
+:::{.columns .center}
 
-TA:
+::: {.column width="33%"}
+![](https://avatars.githubusercontent.com/u/10009758?v=4){.hello-image}
+
+[**Ryan Johnson**]{.darkyellow}
+
+[Data Science Advisor @ Posit]{.smaller}
+:::
+
+::: {.column width="33%"}
+![](https://avatars.githubusercontent.com/u/32964481?v=4){.hello-image}
+
+[**Katie Masiello**]{.darkyellow}
+
+[Solutions Engineer @ Posit]{.smaller}
+:::
+
+::: {.column width="33%"}
+![](https://avatars.githubusercontent.com/u/12505835?v=4){.hello-image}
+
+[**Julia Silge**]{.darkyellow}
+
+[Software Engineer @ Posit]{.smaller}
+:::
+
+
+:::
 
 ## toc-light {.toc-light}
 
-- Some stuff
-- Some more stuff
-  - And yet more!
-  
+-   Some stuff
+-   Some more stuff
+    -   And yet more!
+
 ## toc2-dark {.toc2-dark}
 
-- Some stuff
-- Some more stuff
-  - And yet more!
+-   Some stuff
+-   Some more stuff
+    -   And yet more!
 
 ## toc2-light {.toc2-light}
 
-- Some stuff
-- Some more stuff
-  - And yet more!
+-   Some stuff
+-   Some more stuff
+    -   And yet more!
 
 ## toc-people-dark {.toc-people-dark}
 
-- Some stuff
-- Some more stuff
-  - And yet more!
+-   Some stuff
+-   Some more stuff
+    -   And yet more!
 
 ## toc-people-light {.toc-people-light}
 
-- Some stuff
-- Some more stuff
-  - And yet more!
+-   Some stuff
+-   Some more stuff
+    -   And yet more!
 
 ## 30-70-dark {.30-70-dark}
 
-- Bullet 1
-- Bullet 1
-- Bullet 1
-- Bullet 1
+-   Bullet 1
+-   Bullet 1
+-   Bullet 1
+-   Bullet 1
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
 ## 30-70-light {.30-70-light}
 
-- Bullet 1
-- Bullet 1
-- Bullet 1
-- Bullet 1
+-   Bullet 1
+-   Bullet 1
+-   Bullet 1
+-   Bullet 1
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
 ## 30-70-white {.30-70-white}
 
-- Bullet 1
-- Bullet 1
-- Bullet 1
-- Bullet 1
+-   Bullet 1
+-   Bullet 1
+-   Bullet 1
+-   Bullet 1
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
@@ -92,26 +117,23 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 Here is a test.
 
-- Hello, world.
+-   Hello, world.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-
 
 ## content-light {.content-light}
 
 Here is a test.
 
-- Hello, world.
+-   Hello, world.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
 
 ## content2-light {.content2-light}
 
 Here is a test.
 
-- Hello, world.
+-   Hello, world.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
@@ -119,17 +141,18 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 Here is a test.
 
-- Hello, world.
+-   Hello, world.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-```{.r}
+
+``` r
 #| eval: false
 #| include: true
 
 library(pins)
 ```
 
-```{.python code-line-numbers="6-8"}
+``` {.python code-line-numbers="6-8"}
 import numpy as np
 import matplotlib.pyplot as plt
 
