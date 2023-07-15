@@ -3,6 +3,8 @@ title: "01_Raw and Reference Data Load to Database and Pins"
 description: Scheduled document to write raw and reference data to database and pin
 editor_options: 
   chunk_output_type: console
+execute: 
+  eval: false
 ---
 
 ```{r}
