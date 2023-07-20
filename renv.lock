@@ -1892,9 +1892,9 @@
     },
     "pointblank": {
       "Package": "pointblank",
-      "Version": "0.11.3",
+      "Version": "0.11.4",
       "Source": "Repository",
-      "Repository": "CRAN",
+      "Repository": "RSPM",
       "Requirements": [
         "DBI",
         "R",
@@ -1918,7 +1918,7 @@
         "tidyselect",
         "yaml"
       ],
-      "Hash": "dbcccb3ffa3e628504e71470ec8fd760"
+      "Hash": "370bb252782ec6f7f887bcea0d7d7ac2"
     },
     "praise": {
       "Package": "praise",

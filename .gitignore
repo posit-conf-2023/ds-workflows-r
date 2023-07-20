@@ -5,3 +5,5 @@
 .Renviron
 *.DS_Store
 materials/*.html
+
+/.luarc.json

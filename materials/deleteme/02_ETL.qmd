@@ -14,7 +14,6 @@ library(DBI)
 library(odbc)
 library(RPostgres)
 library(tidystringdist)
-library(pins)
 
 ```
 
@@ -70,7 +69,7 @@ schema_inspections <- col_schema(inspection_id = "numeric",
 
 
 
-agent_df_integrity <- 
+agent <- 
   create_agent(inspections_processed) |> 
   #### Data set integrity validations. All of these trigger a warning under fail conditions.
   # verify column schema
@@ -88,15 +87,9 @@ agent_df_integrity <-
                value = 100000L, # an arbitrary high-ish number
                preconditions = ~. %>% tally,
                label = "Are there more than 100k rows in the data?", 
-               actions = action_levels(warn_at = 1)) |>
-  interrogate()
-agent_df_integrity
-all_passed(agent_df_integrity)
-
-#### Data integrity validations.
+               actions = action_levels(warn_at = 1)) |> 
+  #### Data integrity validations.
   # No null values
-agent_main <-  
-  create_agent(inspections_processed) |> 
   col_vals_not_null(columns = inspection_id) |> 
   col_vals_not_null(columns = dba_name) |> 
   col_vals_not_null(columns = address) |> 
@@ -124,7 +117,7 @@ agent_main <-
                label = "Dissimilarity measure between reported DBA Name and licensed DBA Name") |> 
   interrogate() 
 
-agent_main
+agent
 
 
 
@@ -138,30 +131,10 @@ Pointblank will filter out rows that did not pass validation.
 #| label: sunder data (def: sunder | verb | split apart)
 
 # get passing data
-inspections_validated <- agent_main |> get_sundered_data(type = c("pass"))
-
-inspections_failed <- agent_main |> get_sundered_data(type = "fail")
-
-nrow(inspections_failed)
-nrow(inspections_validated)
-```
-
-Make a multi agent to track data integrity over time
-
-- pin agent
-- pin prune at 30 days
-- call all pin versions, store each as a agent
-- make multi agent
-
-```{r}
-# pin agent
-board <- board_connect()
-
-board |> pin_write(agent_main, name="inspection_agent")
-
-board |> pin_upload("agent_main2")
+inspections_validated <- agent |> get_sundered_data(type = c("pass"))
 
 ```
+
 
 
 Informant table / Data Dictionary 
