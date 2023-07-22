@@ -1,10 +1,8 @@
 ---
 title: "01_Data Clean and Validate"
-description: Scheduled document to clean and validate data
+description: Scheduled document to clean and validate data, then write output to a pin
 editor_options: 
   chunk_output_type: console
-execute: 
-  eval: false
 ---
  
 # Load packages
@@ -20,8 +18,17 @@ library(pins)
 library(pointblank)
 library(blastula)
 library(glue)
+library(arrow) # we might drop this if we decide not to write the pin in arrow format
 
 ```
+
+# Overview
+
+1. Pull data from database (`inspections_raw`)
+1. Filter inspection data to only types we are interested in (`inspections_filtered`)
+1. Validate and pass only passing data (`inspections_validated`)
+1. Run a few transforms, mutations, cleanups and finalize dataset processing (`inspections_processed`)
+1. Write pins
 
 # Pull data from Database
 
@@ -61,6 +68,7 @@ bus_data_raw <- tbl(con, "bus_data_raw") |>
   # Add column to determine if license is still valid
   mutate(license_valid = case_when(license_term_expiration_date > lubridate::today() ~ "TRUE", .default = "FALSE")) 
 
+dbDisconnect(con)
 ```
 
 # Perform inspections data filtering and cleaning.
@@ -68,7 +76,7 @@ bus_data_raw <- tbl(con, "bus_data_raw") |>
 ```{r}
 #| label: Thin out inspection data pre-validation
 
-inspections_step1 <- 
+inspections_filtered <- 
   inspections_raw |> 
   # Clean facility_type
   mutate(facility_type = case_when(
@@ -83,30 +91,18 @@ inspections_step1 <-
   filter(facility_type != "OTHER") |> 
   
    # Filter for only Pass, Fail, Pass with conditions
-  filter(results %in% c("PASS", "FAIL", "PASS W/ CONDITIONS")) |>
-  
-  # Convert "Pass w/ Conditions" to Fail (since it is a failure, but was corrected
-  #  before the food inspector left)
-  mutate(results = if_else(results == "PASS W/ CONDITIONS", "FAIL", results)) |> 
-  
-  # Refactor risk
-  mutate(risk = case_when(
-    risk == "RISK 1 (HIGH)" ~ 1,
-    risk == "RISK 2 (MEDIUM)" ~ 2,
-    risk == "RISK 3 (LOW)" ~ 3
-  ))
+  filter(results %in% c("PASS", "FAIL", "PASS W/ CONDITIONS")) 
 
 
 #Now let's also join in the reference business data table so we have a "source of truth" DBA name to check against.
 # inspections_step2 <- 
-#   inspections_step1 |> 
+#   inspections_filtered |> 
 #   left_join(select(bus_data_ref, license_number, doing_business_as_name), by=join_by(license_number)) |>
 #   rename(ref_dba_name = doing_business_as_name) 
 
 # Finally, add a column with the Jaro ("jw") string distance to help us determine how similar or dissimilar the inspectors' inputted dba name is to the reference. A distance of 0 indicates identical; a 1 indicates completely dissimilar
 # inspections_processed <- tidystringdist::tidy_stringdist(inspections_step2,v1=dba_name, v2=ref_dba_name, method="jw") 
 
-inspections_clean <- inspections_step1
 
 ```
 
@@ -123,7 +119,7 @@ schema_inspections <- col_schema(inspection_id = "numeric",
                                aka_name = "character",
                                license_number = "numeric",
                                facility_type = "character",
-                               risk = "numeric",
+                               risk = "character",
                                address = "character",
                                city = "character",
                                state = "character",
@@ -140,7 +136,7 @@ schema_inspections <- col_schema(inspection_id = "numeric",
 
 #### VALIDATION 1: Data set integrity validations. All of these trigger a warning under fail conditions.
 agent_df_integrity <- 
-  create_agent(inspections_clean, label = "Inital validation of the inspections data set to confirm overall schema and size. If there are issues with this validation, further processing stops and an alert is triggered.") |> 
+  create_agent(inspections_filtered, label = "Inital validation of the inspections data set to confirm overall schema and size. If there are issues with this validation, further processing stops and an alert is triggered.") |> 
   # verify column schema 
   # troubleshooting, if this fails, look at the x_list$col_types and $col_names to see the discrepancy
   col_schema_match(schema_inspections, 
@@ -160,14 +156,29 @@ agent_df_integrity <-
                actions = action_levels(warn_at = 1)) |>
   interrogate()
 agent_df_integrity
+
 alert_me <- !(all_passed(agent_df_integrity))
+```
 
+```{r}
+#| label: Send email alert for validation fail and stop processing this file
+#| eval: !expr (alert_me == TRUE)
+#| results: asis
 
-#Send an email alert if the data frame validation fails
+# note, `results: asis` to make the email html render
 
 if (alert_me == TRUE){
+  # send an email alert
   render_connect_email(input = "email-01_data_integrity_alert.Rmd") |> 
-    attach_connect_email(subject = "⚠️Inspections Project: Validation of Inspections dataset found integrity issue")
+    attach_connect_email(subject = "⚠️Inspections Project: 
+                         Validation of Inspections dataset found integrity issue")
+  
+  # logging
+  glue("Report run {blastula::add_readable_time()}")
+  glue("Validation of inspection data set integrity failed. An email alert was generated, and is shown below. {email_alert$html_html}")
+  
+  # stop processing this file
+  knitr::knit_exit()
 } 
 
 ```
@@ -176,15 +187,16 @@ if (alert_me == TRUE){
 As long as the the validation on Data Frame integrity passes, the following additional validations will run
 ```{r}
 #| label: Data integrity validation
-#| eval: !expr all_passed(agent_df_integrity)
 
 #### VALIDATION 2: Data integrity validations. Failing rows from this validation will be stripped out. We can monitor these over time if we create a multi_agent too.
 agent_main <-  
-  create_agent(inspections_clean, label = "Validation of inspections data") |> 
+  create_agent(inspections_filtered, label = "Validation of inspections data") |> 
   # No null values
   col_vals_not_null(columns = inspection_id) |> 
   col_vals_not_null(columns = dba_name) |> 
   col_vals_not_null(columns = address) |> 
+  col_vals_not_null(columns = latitude) |>
+  col_vals_not_null(columns = longitude) |>
   col_vals_not_null(columns = inspection_date) |> 
   col_vals_not_null(columns = inspection_type) |> 
   col_vals_not_null(columns = results) |> 
@@ -225,46 +237,29 @@ inspections_validated <- get_sundered_data(agent_main, type = "pass")
 
 
 
-# Data transformations
+# Final data transformation and processing
 
-Make and pin a reference table of DBA Names using the most current business license number to act as the list of possible choices to input into the model.  These DBA Names can also act as the "source of truth" for what the correct DBA Name should be for a given license number.
 ```{r}
-#| label: Reference table - Restaurant choices to submit to model 
+#| label: transform data to processed form
 
-
-
-restaurants_ref <- 
-  bus_data_raw |> 
-  # Filter out if license is expired
-  filter(license_valid == TRUE) |> 
-  group_by(license_number) |> 
-  arrange(desc(license_term_expiration_date)) |> 
-  # Keep only the most recent entry for a particular license number
-  slice(1) |> 
-  select(-business_activity) |> 
-  ungroup()
-
-board <- board_connect()
-board |> pin_write(restaurants_ref, 
-                   description = "Reference df with the list of restaurants that 
-                   can be submitted to the model. 
-                   From business data only, filtered by license_description to be 
-                   a retail food establishment or wrigley field ⚾, thinned to only 
-                   keep facilities with an active license, 
-                   and only the most recent license")
-
-
-```
+inspections_processed <- 
+  inspections_validated |>
   
-
-
-
-
-```{r}
-#| label: transform data
-
-inspections_transform <- 
-  inspections_validated |> 
+  # round the lat / long to 6 decimal places 
+  mutate(latitude = round(latitude, 6)) |> 
+  mutate(longitude = round(longitude, 6)) |> 
+  mutate(location = paste0("(", latitude, ", ",longitude,")")) |> 
+  
+  # Convert "Pass w/ Conditions" to Fail (since it is a failure, but was corrected
+  #  before the food inspector left)
+  mutate(results = if_else(results == "PASS W/ CONDITIONS", "FAIL", results)) |> 
+  
+  # Refactor risk
+  mutate(risk = case_when(
+    risk == "RISK 1 (HIGH)" ~ 1,
+    risk == "RISK 2 (MEDIUM)" ~ 2,
+    risk == "RISK 3 (LOW)" ~ 3
+  )) |> 
   # Extract violations (v_list) and total violation numbers (v_num)
   rowwise() |> 
   mutate(v_list = case_when(
@@ -288,42 +283,50 @@ inspections_transform <-
   ungroup(license_number)  
 ```
 
+# Make table of potential model inputs
 
-Load data into database
+Make and pin a reference table of DBA Names using the most current business license number to act as the list of possible choices to input into the model.  These DBA Names can also act as the "source of truth" for what the correct DBA Name should be for a given license number if needed.
 ```{r}
-#| label: Write processed data to database
-
-# write processed inspections data
-dbWriteTable(con, "inspections_processed", inspections_processed, overwrite = TRUE)
-print("Processed inspection data updated 🎉")
+#| label: Reference table - Restaurant choices to submit to model 
 
 
-# write business name reference table
-dbWriteTable(con, "bus_data_ref", bus_data_ref, overwrite = TRUE)
-print("Reference business name data updated 🎉")
+restaurants_ref <- 
+  bus_data_raw |> 
+  # Filter out if license is expired
+  filter(license_valid == TRUE) |> 
+  group_by(license_number) |> 
+  arrange(desc(license_term_expiration_date)) |> 
+  # Keep only the most recent entry for a particular license number
+  slice(1) |> 
+  select(-business_activity) |> 
+  ungroup()
 
 
-# insp_db <- tbl(con, "inspections_raw")
-# insp_db |> tally()
-# 
-# bus_db <- tbl(con, "bus_data_raw")
-# bus_db |>  tally()
-
-
-dbDisconnect(con)
 ```
+  
 
 
-Let's also pin our processed data and reference business data
+# Pin processed data
 ```{r}
-#| label: pin the data
+#| label: Pin processed data and restaurant reference data
 
 board <- board_connect()
 user_name <- "katie.masiello"
-board |> pin_write(inspections_processed,name = paste0(user_name,"/inspections_processed"), type="arrow")
+board |> pin_write(inspections_processed,
+                   name = paste0(user_name,"/inspections_processed"), 
+                   description = "Cleaned, validated, and processed inspection data 
+                   for inputting into model.",
+                   type="arrow")
 
-board |> pin_write(bus_data_ref,name = paste0(user_name,"/bus_data_ref"), type="arrow")
 
+board |> pin_write(restaurants_ref, 
+                   name = paste0(user_name,"/restaurants_ref"),
+                   description = "Reference df with the list of restaurants that 
+                   can be submitted to the model. 
+                   From business data only, filtered by license_description to be 
+                   a retail food establishment or wrigley field ⚾, thinned to only 
+                   keep facilities with an active license, 
+                   and only the most recent license")
 
 ```
 
@@ -334,10 +337,7 @@ board |> pin_write(bus_data_ref,name = paste0(user_name,"/bus_data_ref"), type="
 
 glue("Report run {blastula::add_readable_time()}")
 
-if(alert_me == TRUE){
-  glue("Validation of inspection data set integrity failed. An email alert was generated, and is shown below. {email_alert$html_html}")
-} else {
-  glue("Inspection data was validated and sundered. Rows that failed validation were removed.")
-}
+glue("Inspection data was validated and sundered. Rows that failed validation were removed. Restaurant reference data for model and cleaned, validated and processed inspection data written to pin.")
+
 
 ```

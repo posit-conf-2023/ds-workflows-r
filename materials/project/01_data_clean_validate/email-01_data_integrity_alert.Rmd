@@ -16,3 +16,8 @@ The results of the data frame validation are shown below:
 agent_df_integrity
 ```
 
+```{r}
+ # get_agent_report(agent_df_integrity,display_table = FALSE) |> filter(n_pass < units)
+# glue("the number of failures in address were {xlist$n_failed[[3]]}")
+```
+
