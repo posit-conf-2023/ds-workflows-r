@@ -1,0 +1,18 @@
+---
+title: Email summary of new inspections added to dataset 
+output: blastula::blastula_email
+---
+
+## `r glue("🌭{nrow(new_inspections)} records added to dataset. 🌯")`
+
+
+
+```{r, echo=FALSE}
+
+new_inspections |> gt() |> 
+  tab_header(
+    title = md(glue("**New Inspections Data Added Since {last_inspection_date}**")),
+    subtitle = md("Inspections data for Restaurant, Grocery Store, Coffee Shop, Bakery, or Wrigley Field Rooftop ⚾")) |>
+  tab_source_note(source_note = md(glue("**New records added: {nrow(new_inspections)} <br> Total inspection records: {nrow(inspections_processed)}**"))) 
+  
+```

@@ -1,4 +1,18 @@
 ---
+output: html_document
+format:
+  html:
+    table-of-contents: true
+    anchor-sections: true
+    code-fold: true
+    code-overflow: wrap
+    code-summary: "Show Code"
+    code-tools: true
+    code-link: true
+resource_files:
+- "email-01_data_integrity_alert.Rmd"
+---
+<!-- # --- -->
 title: "01_Data Clean and Validate"
 description: Scheduled document to clean and validate data, then write output to a pin
 editor_options: 
@@ -81,13 +95,14 @@ inspections_filtered <-
   # Clean facility_type
   mutate(facility_type = case_when(
     grepl("RE?STA?U?R?A?N?T?", `facility_type`) ~ "RESTAURANT",
+    grepl("GROCERY", facility_type) ~ "GROCERY STORE", 
     grepl("BA?KE?R?Y?", `facility_type`) ~ "BAKERY",
     grepl("COFFEE *SHOP", `facility_type`) ~ "COFFEE SHOP", 
     grepl("WRIGLEY", `facility_type`) ~ "WRIGLEY FIELD ROOFTOP",
     .default = paste("OTHER")
     )) |> 
   
-  # filter out inspections not at a restaurant, bakery, coffee shop, or Wrigley
+  # filter out inspections not at a restaurant, grocery store, bakery, coffee shop, or Wrigley
   filter(facility_type != "OTHER") |> 
   
    # Filter for only Pass, Fail, Pass with conditions
@@ -200,13 +215,16 @@ agent_main <-
   col_vals_not_null(columns = inspection_date) |> 
   col_vals_not_null(columns = inspection_type) |> 
   col_vals_not_null(columns = results) |> 
+  # verify inspection date is valid
+  col_vals_lte(columns = inspection_date, today(),
+               label = "Is inspection date in the past?") |> 
   # verify Inspection ID is unique
   rows_distinct(columns = vars(inspection_id), 
                 label = "Is the Inspection ID unique?", 
                 actions = action_levels(warn_at = 0.001)) |> 
   # verify inspection ID is valid
   col_vals_between(columns = inspection_id, 1000, 99999999, 
-                   label = "Is the Inspection ID a valid entry?") |>  # verify inspection ID is valid
+                   label = "Is the Inspection ID a valid entry?") |>  
   # verify license number is valid
   col_vals_between(columns = license_number, 1, 99999999, 
                    label = "Is the License Number a valid entry?") |>
@@ -232,6 +250,7 @@ agent_main
 #| label: Sunder data
 
 inspections_validated <- get_sundered_data(agent_main, type = "pass")
+inspections_fail_validation <- get_sundered_data(agent_main, type = "fail")
 
 ```
 
@@ -283,14 +302,55 @@ inspections_processed <-
   ungroup(license_number)  
 ```
 
+
+# Summarize info
+Report on summary info. How many new inspections happened since last update?  How many total inspections?
+```{r}
+#| label: Summary info
+
+board <- board_connect()
+user_name <- "katie.masiello"
+
+last_inspection <- board |> pin_read(paste0(user_name,"/inspections_processed"))
+last_inspection_date <- last_inspection |> 
+  arrange(desc(inspection_date)) |> 
+  slice(1) |> 
+  pull(inspection_date)
+
+
+new_inspections <- inspections_processed |> 
+  filter(!inspection_id %in% last_inspection$inspection_id) |>
+  select(inspection_date, dba_name, facility_type, results, v_num, v_num_cs)
+
+new_inspections |> gt() |> 
+  tab_header(
+    title = md(glue("**New Inspections Data Added Since {last_inspection_date}**")),
+    subtitle = md("Inspections data for Restaurant, Grocery Store, Coffee Shop, Bakery, or Wrigley Field Rooftop ⚾")) |>
+  tab_source_note(source_note = md(glue("**New records added: {nrow(new_inspections)} <br> Total inspection records: {nrow(inspections_processed)}**"))) |> 
+  opt_interactive()
+
+
+summary_email <- render_connect_email(input = "email-01_data_summary.Rmd") 
+
+attach_connect_email(summary_email, subject = glue("ℹ️️Inspections Project: 
+                       🍕{nrow(new_inspections)} records added to dataset"))
+
+## TODO: MAKE DATA DICTIONARY
+
+```
+
+
 # Make table of potential model inputs
 
-Make and pin a reference table of DBA Names using the most current business license number to act as the list of possible choices to input into the model.  These DBA Names can also act as the "source of truth" for what the correct DBA Name should be for a given license number if needed.
+## Restaurants that have an active license, based on business license data
+
+Make and pin a reference table of restaurants that have an active business license. They may not have a corresponding entry in the inspections set. (1 record per license number)
+
 ```{r}
-#| label: Reference table - Restaurant choices to submit to model 
+#| label: Reference table - Restaurants with an active license 
 
 
-restaurants_ref <- 
+restaurants_active_license <- 
   bus_data_raw |> 
   # Filter out if license is expired
   filter(license_valid == TRUE) |> 
@@ -301,17 +361,35 @@ restaurants_ref <-
   select(-business_activity) |> 
   ungroup()
 
+active_license_numbers <- restaurants_active_license |> pull(license_number)
 
 ```
   
+## Restaurants that have inspection history and have a current active license
+
+This data will be our model inputs. (1 record per license number)
+
+```{r}
+#| label: Create model inputs - Active restaurants that have inspection history
+
+model_inputs <- inspections_processed |> 
+  filter(license_number %in% active_license_numbers) |> 
+  select(dba_name, aka_name, license_number, facility_type, risk, address, city, zip, inspection_date, latitude, longitude, v_cumsum, v_cumsum_cs) |> 
+  group_by(license_number) |> 
+  arrange(desc(inspection_date)) |> 
+  slice(1) |> 
+  ungroup() |> 
+  mutate(days_since_last_inspection = today() - inspection_date)
+  
+
+```
+
 
 
 # Pin processed data
 ```{r}
 #| label: Pin processed data and restaurant reference data
 
-board <- board_connect()
-user_name <- "katie.masiello"
 board |> pin_write(inspections_processed,
                    name = paste0(user_name,"/inspections_processed"), 
                    description = "Cleaned, validated, and processed inspection data 
@@ -319,14 +397,18 @@ board |> pin_write(inspections_processed,
                    type="arrow")
 
 
-board |> pin_write(restaurants_ref, 
-                   name = paste0(user_name,"/restaurants_ref"),
+board |> pin_write(model_inputs, 
+                   name = paste0(user_name,"/model_inputs"),
                    description = "Reference df with the list of restaurants that 
                    can be submitted to the model. 
-                   From business data only, filtered by license_description to be 
-                   a retail food establishment or wrigley field ⚾, thinned to only 
-                   keep facilities with an active license, 
-                   and only the most recent license")
+                   From inspection dataset, reduced to facilities that have an 
+                   active license and are either a restaurant, grocery store, 
+                   coffee shop, bakery, or wrigley field rooftop ⚾")
+
+
+# prune saved versions to last 28 days
+pin_versions_prune(board, paste0(user_name,"/inspections_processed"), days = 28)
+pin_versions_prune(board, paste0(user_name,"/model_inputs"), days = 28)
 
 ```
 
@@ -337,7 +419,7 @@ board |> pin_write(restaurants_ref,
 
 glue("Report run {blastula::add_readable_time()}")
 
-glue("Inspection data was validated and sundered. Rows that failed validation were removed. Restaurant reference data for model and cleaned, validated and processed inspection data written to pin.")
+glue("Inspection data was validated and sundered. {nrow(inspections_fail_vaildation} rows that failed validation were removed. Restaurant reference data for model and cleaned, validated and processed inspection data written to pin. An email summary of new records added to dataset was generated, and is shown below. {summary_email$html_html}")
 
 
 ```
