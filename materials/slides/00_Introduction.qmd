@@ -26,6 +26,12 @@ execute:
   cache: true
 ---
 
+## {.brackets-dark }
+
+:::{.section-title-dark}
+Introduction
+:::
+
 ## Logistics {.content2-light}
 
 <!-- TODO: Confirm locations -->
@@ -160,113 +166,48 @@ conf\@posit.co 844-448-1212
 ::::
 
 
-## Course Logistics
+## {.brackets-dark }
 
-## toc-light {.toc-light}
+:::{.section-title-dark}
+Get Your Environment Set Up
 
--   Some stuff
--   Some more stuff
-    -   And yet more!
+:::
 
-## toc2-dark {.toc2-dark}
+## Your Tools — Workbench, Connect, Package Manager
 
--   Some stuff
--   Some more stuff
-    -   And yet more!
+:::{.center}
+![](https://solutions.posit.co/get-started/images/concept_map.jpeg){height="800px"}
+:::
 
-## toc2-light {.toc2-light}
+## Access Your Tools
 
--   Some stuff
--   Some more stuff
-    -   And yet more!
+<!-- TODO: update this -->
+🛜WiFi credentials:
 
-## toc-people-dark {.toc-people-dark}
+- Network: TBD
+- Password: TBD
 
--   Some stuff
--   Some more stuff
-    -   And yet more!
+Visit the following URLs and verify that you are able to login:
 
-## toc-people-light {.toc-people-light}
+- Workbench: <https://workbench.pconf23-workflows.com> 
+- Connect: <https://connect.pconf23-workflows.com> 
+- Package Manager: <https://package-manager.pconf23-workflows.com> 
 
--   Some stuff
--   Some more stuff
-    -   And yet more!
+## Fork and Clone the Class Repo 
 
-## 30-70-dark {.30-70-dark}
+Fork the class repo:  <https://github.com/posit-conf-2023/ds-workflows-r>
 
--   Bullet 1
--   Bullet 1
--   Bullet 1
--   Bullet 1
+In Workbench, clone the repo as a new Project:
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+1. Execute the **New Project** command (from the Project menu)
+1. Choose to create a new project from **Version Control**
+1. Choose **Git**
+1. Provide the repository URL and then click **Create Project**
 
-## 30-70-light {.30-70-light}
 
--   Bullet 1
--   Bullet 1
--   Bullet 1
--   Bullet 1
+## {.brackets-dark }
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+:::{.section-title-dark}
+Let's Get to Work! 
 
-## 30-70-white {.30-70-white}
-
--   Bullet 1
--   Bullet 1
--   Bullet 1
--   Bullet 1
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-
-## content-dark {.content-dark}
-
-Here is a test.
-
--   Hello, world.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-## content-light {.content-light}
-
-Here is a test.
-
--   Hello, world.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-## content2-light {.content2-light}
-
-Here is a test.
-
--   Hello, world.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-## content with no format
-
-Here is a test.
-
--   Hello, world.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-
-``` r
-#| eval: false
-#| include: true
-
-library(pins)
-```
-
-``` {.python code-line-numbers="6-8"}
-import numpy as np
-import matplotlib.pyplot as plt
-
-r = np.arange(0, 2, 0.01)
-theta = 2 * np.pi * r
-fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
-ax.plot(theta, r)
-ax.set_rticks([0.5, 1, 1.5, 2])
-ax.grid(True)
-plt.show()
-```
+:::

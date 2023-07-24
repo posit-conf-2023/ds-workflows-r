@@ -33,6 +33,9 @@ $dark-bg-link-color:	#93bdbf;
 
 /*-- scss:rules --*/
 
+
+
+
 // Title slide
 #title-slide .title {
   font-size: 90px;
@@ -117,6 +120,15 @@ section div.has-dark-background blockquote {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+}
+
+.section-title-dark{
+  vertical-align: middle;
+  text-align: center;
+  margin-top: 350px;
+  font-size: 90px;
+  font-weight: 500;
+  color: $dark-bg-text-color;
 }
 
 
