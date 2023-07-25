@@ -1,27 +1,18 @@
 ---
-output: html_document
-format:
-  html:
-    table-of-contents: true
-    anchor-sections: true
-    code-fold: true
-    code-overflow: wrap
-    code-summary: "Show Code"
-    code-tools: true
-    code-link: true
+title: "01_Data Clean and Validate"
+description: "Scheduled document to clean and validate data, then write output to a pin"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    code_folding: hide
 resource_files:
 - "email-01_data_integrity_alert.Rmd"
----
-<!-- # --- -->
-title: "01_Data Clean and Validate"
-description: Scheduled document to clean and validate data, then write output to a pin
-editor_options: 
-  chunk_output_type: console
+- "email-01_data_summary.Rmd"
 ---
  
 # Load packages
-```{r}
-#| label: Load packages
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 
 library(tidyverse)
 library(janitor)
@@ -32,9 +23,13 @@ library(pins)
 library(pointblank)
 library(blastula)
 library(glue)
+library(gt)
 library(arrow) # we might drop this if we decide not to write the pin in arrow format
 
+
+
 ```
+
 
 # Overview
 
@@ -46,8 +41,8 @@ library(arrow) # we might drop this if we decide not to write the pin in arrow f
 
 # Pull data from Database
 
-```{r}
-#| label: DB Connection
+```{r DB-connection}
+
 
 con <- dbConnect(RPostgres::Postgres(), 
                  host = Sys.getenv("DB_HOST"), 
@@ -59,8 +54,7 @@ con <- dbConnect(RPostgres::Postgres(),
 
 ```
 
-```{r}
-#| label: Pull raw data
+```{r Pull-raw-data}
 
 # DATASET 1: Food inspections data, with some time logging for reference
 inspections_raw <- 
@@ -87,8 +81,8 @@ dbDisconnect(con)
 
 # Perform inspections data filtering and cleaning.
 
-```{r}
-#| label: Thin out inspection data pre-validation
+```{r Thin-out-inspections-data-pre-validation}
+
 
 inspections_filtered <- 
   inspections_raw |> 
@@ -123,8 +117,8 @@ inspections_filtered <-
 
 # Inspections data validation
 Perform data validation. The first validation just confirms the overall size and format of the data frame. If the validation fails here, a warning is thrown and the validation will not proceed.
-```{r}
-#| label: data frame size and format validation
+```{r data-fram-size-and-format-validation}
+
 
 # Define a column schema so we can check inputted data is as expected
 # Fun fact, also use .tbl argument in col_schema to compare the dataframe to an ideal table.
@@ -175,10 +169,8 @@ agent_df_integrity
 alert_me <- !(all_passed(agent_df_integrity))
 ```
 
-```{r}
-#| label: Send email alert for validation fail and stop processing this file
-#| eval: !expr (alert_me == TRUE)
-#| results: asis
+```{r send-email-alert-for-validation-fail-and-stop-processing-this-file, eval=alert_me, results="asis"}
+
 
 # note, `results: asis` to make the email html render
 
@@ -200,8 +192,8 @@ if (alert_me == TRUE){
 
 # Data validation
 As long as the the validation on Data Frame integrity passes, the following additional validations will run
-```{r}
-#| label: Data integrity validation
+```{r data-integrity-validation}
+
 
 #### VALIDATION 2: Data integrity validations. Failing rows from this validation will be stripped out. We can monitor these over time if we create a multi_agent too.
 agent_main <-  
@@ -246,8 +238,8 @@ agent_main
 ```
 
 # Sunder the data to remove failed rows
-```{r}
-#| label: Sunder data
+```{r sunder-data}
+
 
 inspections_validated <- get_sundered_data(agent_main, type = "pass")
 inspections_fail_validation <- get_sundered_data(agent_main, type = "fail")
@@ -258,8 +250,8 @@ inspections_fail_validation <- get_sundered_data(agent_main, type = "fail")
 
 # Final data transformation and processing
 
-```{r}
-#| label: transform data to processed form
+```{r transform-data-to-processed-form}
+
 
 inspections_processed <- 
   inspections_validated |>
@@ -305,8 +297,8 @@ inspections_processed <-
 
 # Summarize info
 Report on summary info. How many new inspections happened since last update?  How many total inspections?
-```{r}
-#| label: Summary info
+```{r summary-info}
+
 
 board <- board_connect()
 user_name <- "katie.masiello"
@@ -346,8 +338,8 @@ attach_connect_email(summary_email, subject = glue("ℹ️️Inspections Project
 
 Make and pin a reference table of restaurants that have an active business license. They may not have a corresponding entry in the inspections set. (1 record per license number)
 
-```{r}
-#| label: Reference table - Restaurants with an active license 
+```{r make-reference-table-restaurants-w-active-license}
+
 
 
 restaurants_active_license <- 
@@ -369,7 +361,7 @@ active_license_numbers <- restaurants_active_license |> pull(license_number)
 
 This data will be our model inputs. (1 record per license number)
 
-```{r}
+```{r create-model-inputs}
 #| label: Create model inputs - Active restaurants that have inspection history
 
 model_inputs <- inspections_processed |> 
@@ -387,7 +379,7 @@ model_inputs <- inspections_processed |>
 
 
 # Pin processed data
-```{r}
+```{r pin-processed-data-and-restaurants-w-active-licenses}
 #| label: Pin processed data and restaurant reference data
 
 board |> pin_write(inspections_processed,
@@ -413,9 +405,8 @@ pin_versions_prune(board, paste0(user_name,"/model_inputs"), days = 28)
 ```
 
 # Logging information
-```{r}
-#| label: logging
-#| results: asis
+```{r logging, results="asis"}
+
 
 glue("Report run {blastula::add_readable_time()}")
 

@@ -5,11 +5,11 @@ output: blastula::blastula_email
 
 ## `r glue("🌭{nrow(new_inspections)} records added to dataset. 🌯")`
 
-
+A sample of the data added:
 
 ```{r, echo=FALSE}
 
-new_inspections |> gt() |> 
+head(new_inspections,20) |> gt() |> 
   tab_header(
     title = md(glue("**New Inspections Data Added Since {last_inspection_date}**")),
     subtitle = md("Inspections data for Restaurant, Grocery Store, Coffee Shop, Bakery, or Wrigley Field Rooftop ⚾")) |>
