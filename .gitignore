@@ -4,6 +4,6 @@
 .Ruserdata
 .Renviron
 *.DS_Store
-materials/*.html
+materials/**/*.html
 
 /.luarc.json
