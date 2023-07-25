@@ -98,6 +98,7 @@ conf\@posit.co 844-448-1212
 :::
 
 ## What you will learn
+<!-- TODO: note the strings and glue. -->
 :::{.smaller}
 -   An opinionated end-to-end data science workflow
     -   Reading data

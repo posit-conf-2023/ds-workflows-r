@@ -1,25 +1,17 @@
 ---
 title: "00_Raw data download and write to DB and scan data"
-description: Scheduled document to write raw data to database and write the data scan for reference
-params:
-  test_mode: TRUE
-format:
-  html:
-    table-of-contents: true
-    anchor-sections: true
-    code-fold: true
-    code-overflow: wrap
-    code-summary: "Show Code"
-    code-tools: true
-    code-link: true
-editor_options: 
+description: Scheduled document to write raw data to database and write the data scan
+  for reference
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    code_folding: hide
+editor_options:
   chunk_output_type: console
 ---
 
-```{r}
-#| label: Load packages
-#| echo: false
-#| warning: false
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 
 library(tidyverse)
 library(janitor)
@@ -30,18 +22,18 @@ library(blastula)
 library(pointblank)
 library(glue)
 library(pins)
-library(downlit) # for code-linking
-library(xml2) # for code linking
 
+# set TEST_MODE=TRUE for faster processing and to preview the alert email. TEST_MODE will read smaller data frames from a pin and not write data to DB. Logic is written such that if TEST_MODE is any value other than TRUE (including not set), it behaves as if it is FALSE.
+test_mode <- Sys.getenv("TEST_MODE")
 ```
 
 
-`r if(params$test_mode == TRUE) { "<h3>❗❗Report generated in test mode. Simulated data used for speed in processing❗❗</h3>\n" }`
+`r if(test_mode == TRUE) { "<h3>❗❗Report generated in test mode. Simulated data used for speed in processing❗❗</h3>\n" }`
 
 # Download data from Chicago Data Portal
 
-```{r}
-#| label: Download data from Chicago Data Portal
+```{r Download-data-from-Chicago-Data-Portal}
+
 
 # notes for test mode - 
 # inspections_raw_test <- inspections_raw |> slice_sample(prop = 0.05)
@@ -49,7 +41,7 @@ library(xml2) # for code linking
 
 
 start_time <- Sys.time()
-if(params$test_mode == TRUE){
+if(test_mode == TRUE){
   inspections_raw <- pin_read(board_connect(), "katie.masiello/inspections_raw_test")
 }else{
 inspections_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv") |> 
@@ -64,7 +56,7 @@ print(paste("ℹ️ Info: Downloading Inspection data took", round(duration[[1]]
 
 # DATASET 2: Business data
 start_time <- Sys.time()
-if(params$test_mode == TRUE){
+if(test_mode == TRUE){
   bus_data_raw <- pin_read(board_connect(), "katie.masiello/bus_data_raw_test")
 }else{
 bus_data_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/r5kz-chrr/rows.csv") |> 
@@ -95,8 +87,8 @@ print(paste("ℹ️ Info: Downloading Business License data took", round(duratio
 
 
 # Load data into database
-```{r}
-#| label: Write raw data to database
+```{r Write-raw-data-to-database}
+
 
 # The `RPostgres` package is DBI-compliant and is built specifically for PosgreSQL DB. Performance may be faster than using the generic odbc package. It's perfectly reasonable to use the odbc package instead, and if we do, if we instead use the generic `odbc::odbc()` backend, the database will appear in the Connections pane. 
 con <- dbConnect(RPostgres::Postgres(), 
@@ -116,7 +108,7 @@ con <- dbConnect(RPostgres::Postgres(),
 #                   timeout = 10)
 
 # write inspections raw data
-if(params$test_mode == FALSE){
+if(test_mode != TRUE){
   start_time <- Sys.time()
   dbWriteTable(con, "inspections_raw", inspections_raw, overwrite = TRUE)
   end_time <- Sys.time()
@@ -126,7 +118,7 @@ if(params$test_mode == FALSE){
 
 
 # write business license raw data
-if(params$test_mode == FALSE){
+if(test_mode != TRUE){
   starts_time <- Sys.time()
   dbWriteTable(con, "bus_data_raw", bus_data_raw, overwrite = TRUE)
   end_time <- Sys.time()
@@ -148,10 +140,10 @@ dbDisconnect(con)
 
 ## Alert me if there's an issue with the data download, otherwise don't send an email
 
-```{r}
-#| label: Alert of data download has issues
+```{r Alert-if-data-download-has-issues}
 
-if(params$test_mode == TRUE){
+
+if(test_mode == TRUE){
   alert_me = TRUE
 }else{
   alert_me <- (insp_db_rowcount < 100000 | bus_db_rowcount < 100000)}
@@ -173,9 +165,8 @@ print(paste("ℹ️ Alert Triggered?", alert_me))
 
 # Generate data scan for reference
 
-```{r}
-#| label: Data scan on inspections_raw
-#| eval: !expr (params$test_mode == FALSE)
+```{r Data-scan-on-inspections-raw, eval=(test_mode == FALSE)}
+
 # 
 scan <- pointblank::scan_data(inspections_raw, sections = "OVMS")
 scan
@@ -185,10 +176,8 @@ scan
 
 
 # Logging information
-```{r}
-#| label: logging
-#| echo: false
-#| results: asis
+```{r logging, echo=FALSE, results="asis"}
+
 
 # note: the `results: asis` option will render the email html output for viewing.
 
