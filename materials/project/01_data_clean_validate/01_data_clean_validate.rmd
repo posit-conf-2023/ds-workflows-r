@@ -271,6 +271,13 @@ inspections_processed <-
     risk == "RISK 2 (MEDIUM)" ~ 2,
     risk == "RISK 3 (LOW)" ~ 3
   )) |> 
+  
+  # Calculate the days since last inspection. NA means not previously inspected
+  arrange(desc(inspection_date)) |> 
+  group_by(license_number) |> 
+  mutate(prev_inspection_date = lead(inspection_date, n=1, default=NA)) |>
+  mutate(days_since_last_inspection = as.numeric(inspection_date - prev_inspection_date)) |> 
+  
   # Extract violations (v_list) and total violation numbers (v_num)
   rowwise() |> 
   mutate(v_list = case_when(
@@ -410,7 +417,7 @@ pin_versions_prune(board, paste0(user_name,"/model_inputs"), days = 28)
 
 glue("Report run {blastula::add_readable_time()}")
 
-glue("Inspection data was validated and sundered. {nrow(inspections_fail_vaildation} rows that failed validation were removed. Restaurant reference data for model and cleaned, validated and processed inspection data written to pin. An email summary of new records added to dataset was generated, and is shown below. {summary_email$html_html}")
+glue("Inspection data was validated and sundered. {nrow(inspections_fail_validation)} rows that failed validation were removed. Restaurant reference data for model and cleaned, validated and processed inspection data written to pin. An email summary of new records added to dataset was generated, and is shown below. {summary_email$html_html}")
 
 
 ```
