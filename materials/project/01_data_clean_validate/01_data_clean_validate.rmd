@@ -272,11 +272,12 @@ inspections_processed <-
     risk == "RISK 3 (LOW)" ~ 3
   )) |> 
   
-  # Calculate the days since last inspection. NA means not previously inspected
+  # Calculate the days since last inspection. If never inspected before, we set it to 0, assuming the first inspection was at facility inception
   arrange(desc(inspection_date)) |> 
   group_by(license_number) |> 
   mutate(prev_inspection_date = lead(inspection_date, n=1, default=NA)) |>
   mutate(days_since_last_inspection = as.numeric(inspection_date - prev_inspection_date)) |> 
+  mutate(days_since_last_inspection = if_else(is.na(days_since_last_inspection), 0, days_since_last_inspection)) |> 
   
   # Extract violations (v_list) and total violation numbers (v_num)
   rowwise() |> 
@@ -373,12 +374,13 @@ This data will be our model inputs. (1 record per license number)
 
 model_inputs <- inspections_processed |> 
   filter(license_number %in% active_license_numbers) |> 
-  select(dba_name, aka_name, license_number, facility_type, risk, address, city, zip, inspection_date, latitude, longitude, v_cumsum, v_cumsum_cs) |> 
+  select(dba_name, license_number, facility_type, risk, address, city, zip, inspection_date, latitude, longitude, v_cumsum, v_cumsum_cs) |> 
   group_by(license_number) |> 
   arrange(desc(inspection_date)) |> 
   slice(1) |> 
   ungroup() |> 
-  mutate(days_since_last_inspection = today() - inspection_date)
+  rename(prev_inspection_date = inspection_date) |> 
+  mutate(days_since_last_inspection = as.numeric(today() - prev_inspection_date))
   
 
 ```
