@@ -116,6 +116,7 @@ section div.has-dark-background blockquote {
   margin-right: auto;
 }
 
+
 .center{
   margin-left: auto;
   margin-right: auto;
@@ -130,6 +131,15 @@ section div.has-dark-background blockquote {
   font-weight: 500;
   color: $dark-bg-text-color;
 }
+
+.section-title{
+  vertical-align: middle;
+  text-align: center;
+  margin-top: 350px;
+  font-size: 90px;
+  font-weight: 500;
+}
+
 
 
 // Custom Color Region
