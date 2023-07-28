@@ -90,7 +90,7 @@ print(paste("ℹ️ Info: Downloading Business License data took", round(duratio
 ```{r Write-raw-data-to-database}
 
 
-# The `RPostgres` package is DBI-compliant and is built specifically for PosgreSQL DB. Performance may be faster than using the generic odbc package. It's perfectly reasonable to use the odbc package instead, and if we do, if we instead use the generic `odbc::odbc()` backend, the database will appear in the Connections pane. 
+# The `RPostgres` package is DBI-compliant and is built specifically for PosgreSQL DB. Performance may be faster (particularly for writing data!) than using the generic odbc package. It's perfectly reasonable to use the odbc package instead, and if we do, if we instead use the generic `odbc::odbc()` backend, the database will appear in the Connections pane. 
 con <- dbConnect(RPostgres::Postgres(), 
                  host = Sys.getenv("DB_HOST"), 
                  port = "5432", 
