@@ -78,7 +78,7 @@ head(pins::pin_read(pins::board_connect(), "katie.masiello/bus_data_raw_test"),5
 -   🤖 Automate the pipeline
 -   ⚠️ Receive alerts if there are issues in the pipeline
 -   🔄 Project is easy to maintain and iterate upon
--   ♻️ Work is reusable by other teams, even if they don't use R (Lookin' at you 🐍)
+-   {{< bi share color=#2D8400 >}} Work is reusable by other teams, even if they don't use R (Lookin' at you {{< fa brands python >}})
 
 ##  {.brackets-dark}
 
@@ -91,17 +91,25 @@ Let's Get Started!
 ::: incremental
 -   What is this data?
 -   Where should I put it?
+-   How do I get data updates?
 :::
 
-
-
-
-## Activity Highlights --- What is this Data?
+:::{.fragment}
+:::{.center}
+<h2> <br>**Activity Time!**</h2>
+:::
 
 :::{.callout-note icon=false}
 ## Activity
-👉 Open the file `materials/activities/00_raw_data_exploration.qmd`
+👉 Open the file `materials/activities/activity-00_raw_data_exploration.qmd`
+
+You can render the document, but we recommend you interact run each code chunk as you work through it.
 :::
+:::
+
+
+## What is this Data?
+
 
 Our first introduction to `pointblank`
 
@@ -121,12 +129,12 @@ Our first introduction to `pointblank`
 ## Sample data scan
 
 ```r
-pointblank::scan_data(mtcars)
+pointblank::scan_data(palmerpenguins::penguins)
 ```
 <br>
 
 
-<iframe src="slide_resources/scan_mtcars.html" width=100% height=100%></iframe>
+<iframe src="slide_resources/scan_penguins.html" width=100% height="650"></iframe>
  
 ## Where should I put the data?
 
@@ -145,6 +153,78 @@ Specific topics:
 - [Securing credentials](https://solutions.posit.co/connections/db/best-practices/managing-credentials/)
 - [Making scripts portable](https://solutions.posit.co/connections/db/best-practices/portable-code/)
 
+:::
 
+## How do I get data updates?
+
+🧰 Deploy and schedule your notebook on Posit Connect
+
+:::{.fragment}
+:::{.center}
+<h2> <br>**Activity Time!**</h2>
+:::
+
+:::{.callout-note icon=false}
+## Activity
+👉 Open the file `materials/activities/activity-01_publish_and_schedule_data_pull.Rmd`
 
 :::
+:::
+
+## Deployment Methods
+
+1. Push-button ![](slide_resources/publishIcon_2x.png){height="50" style="vertical-align:middle"} 
+2. Git-backed
+3. Programmatic 
+
+📣 Push-button is good for rapid prototyping. Beyond that, you really should be using [**git-backed or programmatic deployment via CI/CD pipeline**]{.fuchsia} to keep your code in sync with your deployment. 
+
+## 😱 Did your deployment fail?
+
+:::::{.columns}
+
+::::{.column width=50%}
+
+:::{.fragment}
+<br>
+Why?
+:::
+
+:::{.fragment}
+<br><br>
+🤦️ Environment variables!
+
+:::
+
+::::
+
+::::{.column width=50%}
+
+:::{.fragment}
+![](slide_resources/vars-panel-settings.png){height="700"}
+:::
+::::
+:::::
+
+
+## Scheduling
+
+::::{.columns}
+
+:::{.column width=30%}
+![](slide_resources/scheduling.png){height="700"}
+:::
+
+:::{.column width=70%}
+
+:::{.fragment}
+<h3>What's the benefit of having this as a standalone scheduled job?</h3>
+:::
+
+:::{.fragment}
+<h3><br>📣 Breaking up the pieces of your project into uni-taskers keeps your end product lightweight, and your elements are easier to maintain and reuse.</h3>
+:::
+
+:::
+
+::::
