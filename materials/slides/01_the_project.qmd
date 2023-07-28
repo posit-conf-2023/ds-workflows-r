@@ -1,0 +1,150 @@
+---
+title: "Session 1"
+title-slide-attributes: 
+  data-background-color: white
+  data-background-image: _extensions/positconfslides/assets/backgrounds/content2-light.svg
+  data-background-size: contain
+format:
+  positconfslides-revealjs: 
+    chalkboard: true
+    slide-number: c/t
+    footer: "[http://pconf23-workflows.com/](http://pconf23-workflows.com/)"
+    code-copy: true
+    center-title-slide: false
+    code-link: true
+    code-overflow: wrap
+    highlight-style: a11y
+    width: "1600"
+    height: "900"
+    filters:
+      - positconfslides
+execute: 
+  eval: true
+  echo: true
+  cache: true
+---
+
+
+## Workshop approach
+
+We will use an [**end-to-end fictional project**]{.fuchsia} to demonstrate workflows and best practices using [**open source packages**]{.teal} and [**Posit professional tools**]{.teal}.
+
+:::{.fragment}
+
+<h2><br> Conventions </h2>
+
+|                                               |                                                                            |
+|-----------------------------------------------|----------------------------------------------------------------------------|
+| 🧰                                            | Add this to your toolbox.                                                  |
+| 📣                                            | I will stand on my soapbox and profess this until I am blue in the face.   |
+| {{< bi sign-turn-right-fill color=orange >}}  | Detour warning. We could get really into this, but there's not time today. |
+: {tbl-colwidths="[5,95]"}
+
+:::
+
+
+
+
+
+## About the Project
+
+This workshop will use data from the City of Chicago Open Data Portal: <https://data.cityofchicago.org>.
+
+::: smaller
+1.  🍕 Food inspections: [https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5](https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5){.smaller}
+
+```{r}
+#| echo: false
+head(pins::pin_read(pins::board_connect(), "katie.masiello/inspections_raw_test"),5) |> 
+  dplyr::select(dba_name, license_number, facility_type, risk, address, results, violations) |> 
+  dplyr::mutate(violations=stringr::str_trunc(violations,30))|> gt::gt()
+```
+
+2.  📒 Business licenses: [https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses/r5kz-chrr](https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses/r5kz-chrr){.smaller}
+
+```{r}
+#| echo: false
+head(pins::pin_read(pins::board_connect(), "katie.masiello/bus_data_raw_test"),5) |>
+  dplyr::select(license_number, doing_business_as_name, address, license_description, license_term_expiration_date) |> gt::gt()
+```
+:::
+
+## Project Objective
+
+-   Provide users with a self-service tool that predicts the likelihood of a facility failing their next inspection
+
+<h2><br>Project Requirements</h2>
+
+-   🤖 Automate the pipeline
+-   ⚠️ Receive alerts if there are issues in the pipeline
+-   🔄 Project is easy to maintain and iterate upon
+-   ♻️ Work is reusable by other teams, even if they don't use R (Lookin' at you 🐍)
+
+##  {.brackets-dark}
+
+::: section-title-dark
+Let's Get Started!
+:::
+
+## First Questions {.brackets-light}
+
+::: incremental
+-   What is this data?
+-   Where should I put it?
+:::
+
+
+
+
+## Activity Highlights --- What is this Data?
+
+:::{.callout-note icon=false}
+## Activity
+👉 Open the file `materials/activities/00_raw_data_exploration.qmd`
+:::
+
+Our first introduction to `pointblank`
+
+::: columns
+::: {.column width="15%"}
+![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){style="padding-right: 15px;"}
+:::
+
+::: {.column width="75%"}
+<br>`pointblank` provides data quality assessment and metadata reporting for data frames and database tables. <https://github.com/rstudio/pointblank>
+:::
+:::
+
+
+🧰 The `pointblank::scan_data()` function provides a HTML report of the input data to help you understand your data. 
+
+## Sample data scan
+
+```r
+pointblank::scan_data(mtcars)
+```
+<br>
+
+
+<iframe src="slide_resources/scan_mtcars.html" width=100% height=100%></iframe>
+ 
+## Where should I put the data?
+
+<br>
+
+📣 Production data belongs in a database.
+
+:::{.callout-tip icon=false}
+## {{< bi sign-turn-right-fill color=orange >}} Best practices in working with databases
+<https://solutions.posit.co/connections/db/> 
+
+Specific topics:
+
+- [Connect to a database](https://solutions.posit.co/connections/db/getting-started/connect-to-database/)
+- [Query a database table](https://solutions.posit.co/connections/db/getting-started/database-queries/)
+- [Securing credentials](https://solutions.posit.co/connections/db/best-practices/managing-credentials/)
+- [Making scripts portable](https://solutions.posit.co/connections/db/best-practices/portable-code/)
+
+
+
+:::
