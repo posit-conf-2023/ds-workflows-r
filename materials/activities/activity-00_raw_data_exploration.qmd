@@ -5,8 +5,6 @@ toc: true
 toc-depth: 4
 editor_options: 
   chunk_output_type: console
-execute: 
-  eval: false
 ---
 
 This workshop will use data from the City of Chicago Open Data Portal: <https://data.cityofchicago.org>. The following datasets will be used:
@@ -34,13 +32,9 @@ library(pointblank)
 
 ✅ Solution
 
-The City of Chicago data portal provides access to their datasets via the Socrata Open Data (SODA) API:
+The City of Chicago data portal provides access to their datasets via the Socrata Open Data (SODA) API. Consulting the documentation provides us with some examples of how to use SODA: <https://dev.socrata.com/foundry/data.cityofchicago.org/4ijn-s7e5>.
 
-> The Socrata Open Data API (SODA) provides programmatic access to this dataset including the ability to filter, query, and aggregate data.
-=~
-Consulting the documentation provides us with some examples of how to use SODA: <https://dev.socrata.com/foundry/data.cityofchicago.org/4ijn-s7e5>.
-
-There is a R package called `RSocrata` to interact with SODA, however we can also query the SODA API directly and download the full dataset as a `.csv` using `readr::read_csv()`. In our initial testing, the column schemas were better preserved using the latter method as opposed to using the `RSocrata` package.
+We will query the SODA API directly and download the full dataset as a `.csv` using `readr::read_csv()`.^[There is a R package called `RSocrata` to interact with SODA, however, in our initial testing, the column schemas were better-preserved using `readr` as opposed to using the `RSocrata` package]
 
 
 
@@ -106,12 +100,12 @@ The `pointblank::scan_data()` function provides a HTML report of the input data 
 
 The scan can take a little while to run on a large dataset, but you can also omit sections that are not needed. 
 
-First try it out on a small data frame, such as `mtcars`:
+First try it out on a small data frame, such as `penguins` from the `palmerpenguins` package:
 
 ```{r}
 #| label: Data scan on mtcars
 
-pointblank::scan_data(mtcars)
+pointblank::scan_data(palmerpenguins::penguins) 
 
 ```
 
@@ -123,8 +117,6 @@ Our Food Inspection data is much larger than mtcars so to save time, and because
 scan <- pointblank::scan_data(inspections_raw, sections = "OVMS")
 scan
 
-
-
 ```
 
 ## Activity 3 - Explore the data scan
@@ -132,6 +124,7 @@ scan
 🔄 Task
 
 Explore the data scan and share your observations in slido.  
+<!-- TODO: ADD SLIDO INFO -->
 
 1.  What is the most common value for `DBA NAME` and `AKA Name` (hint: Toggle details)
 2.  Explore the `Facility Type`. Does the number of distinct values surprise you?
@@ -175,56 +168,57 @@ inspections_raw |>
   arrange(desc(n)) |> print(n=20)
 ```
 
+Use this space if you'd like to do your own exploration:
+```{r}
+#| label: My scratchpad
+
+
+
+```
+
 
 Some conclusions from exploration: 
 
-- We've got some very messy data, particularly in `DBA NAME` and `FACILITY TYPE`
+- We've got some very messy data, particularly in `FACILITY TYPE`
 - We are going to want the `FACILITY TYPE` to be as clean as possible so we can filter out the establishments we don't care about for this analysis (e.g., hotels, caterers, etc.). A grep search seems sufficient for identifying types of interest.
-- For our model, we will need the `DBA NAME` to be as clean and consistent as possible, so we should do some work here too. We will plan to join the Business License data with the Inspections data based on License Number so we can have a "source of truth" DBA Name.
+- Share your own observations in Slido
 
-<!-- Let's to a first pass thin out the data based on facility_type -->
+## Activity 4 - Write raw data to database
 
-<!-- ```{r} -->
-<!-- #| label: thin out data -->
+🔄 Task
 
-<!-- # When we inspect the Facility Type, we see there is a lot of variation in how the inspector recorded this data. It certainly doesn't align with the stated possible values in the data documentation. For example:  -->
-<!-- inspections_raw |> filter(grepl("REST", facility_type)) |> group_by(facility_type) |> tally() |> arrange(desc(n)) -->
-<!-- inspections_raw |> filter(grepl("BAKERY", facility_type)) |> group_by(facility_type) |> tally() |> arrange(desc(n)) -->
-<!-- inspections_raw |> filter(grepl("COFFEE", facility_type)) |> group_by(facility_type) |> tally() |> arrange(desc(n)) -->
+- Create a database connection using the DSN defined for you by your IT Admin (Workshop Instructors)
+- Write the raw data, `inspections_raw` and `bus_data_raw` to the database with your name appended to the table name, i.e., 
+  - `inspections_raw_masiello` and `bus_data_raw_masiello`
+  
+✅ Solution
 
-<!-- # We'd like to work with the following types: Restaurant, Bakery, Coffee Shop. And The Wrigley Field Rooftop sounds like a blast.  We'll filter the Facility Type based on regex to account for abbreviations, mis-spellings, and extra information. This is a coarse filter on the raw data before validation to thin out the dataset.   -->
+<!-- TODO: configure a DSN For the database. Can this work with the `RPostgres` package? -->
+```{r}
+#| label: Connect to the Postgres database
 
-<!-- inspections_pass1 <-  -->
-<!--   inspections_raw |>  -->
-<!--   filter( -->
-<!--     # Filter for "RESTAURANTS" and variations including "REST", "RSTRNT", etc. -->
-<!--     grepl("RE?STA?U?R?A?N?T?", `facility_type`) |  -->
-<!--     # OR Filter for "BAKERY" and variations to account for typos or shortenings -->
-<!--     grepl("BA?KE?R?Y?", `facility_type`) |  -->
-<!--     # OR Filter for "COFFEE SHOP" and variations, but consciously including "SHOP" to avoid carts, roasters, vending machines -->
-<!--     grepl("COFFEE *SHOP", `facility_type`) |  -->
-<!--     # OR Filter for "WRIGLEY" -->
-<!--     grepl("WRIGLEY", `facility_type`) -->
-<!--     )  -->
+con <- dbConnect(RPostgres::Postgres(), 
+                 host = Sys.getenv("DB_HOST"), 
+                 port = "5432", 
+                 dbname = "r_workshop", 
+                 user = Sys.getenv("DB_USER"), 
+                 password = Sys.getenv("DB_PASSWORD"))
 
-<!-- #Now let's also join in the reference business data table so we have a "source of truth" DBA name to check against. -->
-<!-- inspections_pass2 <-  -->
-<!--   inspections_pass1 |>  -->
-<!--   left_join(select(bus_data_ref, license_number, doing_business_as_name), by=join_by(license_number)) |> -->
-<!--   rename(ref_dba_name = doing_business_as_name)  -->
+```
 
-<!-- # Finally, add a column with the Jaro ("jw") string distance to help us determine how similar or dissimilar the inspectors' inputted dba name is to the reference. A distance of 0 indicates identical; a 1 indicates completely dissimilar -->
-<!-- inspections <- tidystringdist::tidy_stringdist(inspections_pass2,v1=dba_name, v2=ref_dba_name, method="jw")  -->
+```{r}
+#| label: Write raw data to database
 
-<!-- # inspecting the data, we can select a jw value of 0.34 as a reasonable threshold for identifying dissimilar values. Take a look: -->
-<!-- hist(inspections$jw, breaks = c(seq(0,1,0.05))) -->
-<!-- # these are definitely very different -->
-<!-- inspections |> filter(jw > 0.5) |> select(dba_name, ref_dba_name, jw) |> distinct() |> arrange(jw) -->
-<!-- # these are generally the same -->
-<!-- inspections |> filter(jw < 0.2) |> select(dba_name, ref_dba_name, jw) |> distinct() |> arrange(desc(jw)) -->
-<!-- # goldilocks value of 0.34 seems to be about right. -->
-<!-- inspections |> filter(jw <0.5 & jw > 0.2) |> select(dba_name, ref_dba_name, jw) |> distinct() |> arrange(jw) -->
+my_name <- Sys.getenv("USER")
 
-<!-- ``` -->
+# We use `overwrite = TRUE` rather than appending to an existing table
+dbWriteTable(con, paste0("inspections_raw_",my_name), inspections_raw, overwrite = TRUE)
 
-At this point, we have a good sense of the data and can move on from ad hoc exploration into a repeatable workflow 🎉
+dbWriteTable(con, paste0("bus_data_raw_",my_name), bus_data_raw, overwrite = TRUE)
+
+
+```
+
+
+At this point, we have a good sense of the data, we've moved it to a database, and can move on from ad hoc exploration into a repeatable workflow 🎉  
+
