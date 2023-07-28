@@ -84,13 +84,13 @@ Use the `pointblank` package to gather basic information about the Food Inspecti
 
 ::: columns
 ::: {.column width="20%"}
-![](https://rich-iannone.github.io/pointblank/logo.svg){style="padding-right: 15px;"}
+![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){style="padding-right: 15px;"}
 :::
 
 ::: {.column width="75%"}
-<br> `pointblank` provides data quality assessment and metadata reporting for data frames and database tables. Use the same functions to validate and report on a local data frame or table in a database! 🤯
+<br> `pointblank` provides data quality assessment and metadata reporting for data frames and database tables. 
 
-**Reference**: <https://github.com/rich-iannone/pointblank>
+**Reference**: <https://github.com/rstudio/pointblank>
 :::
 :::
 :::
