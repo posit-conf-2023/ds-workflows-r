@@ -1,5 +1,5 @@
 ---
-title: "00_Raw Data Exploration"
+title: "activity-00_Raw Data Exploration"
 description: "Conduct ad hoc exploration of the data, first exposure to `pointblank`"
 toc: true
 toc-depth: 4

@@ -138,26 +138,50 @@ pointblank::scan_data(palmerpenguins::penguins)
  
 ## Where should I put the data?
 
-<br>
-
+:::{.fragment}
 📣 Production data belongs in a database.
-
+:::
+<!-- TODO: Add a bp about efficient queries -->
+:::{.fragment}
 :::{.callout-tip icon=false}
 ## {{< bi sign-turn-right-fill color=orange >}} Best practices in working with databases
+
 <https://solutions.posit.co/connections/db/> 
 
-Specific topics:
+- `odbc` is an R package that provides a generic `DBI`-compliant interface to the ODBC driver installed on your system
+- `RPostgres`, `RMariaDB`, `RSQLite`, and `bigrquery` are database-specific R packages that implement the drivers themselves. In many cases, they are more performant (especially in writing data) and may have more translations available for query types
+- These will make the same connection
+  ```r
+  con <- DBI::dbConnect(RPostgres::postgres(), ...)
+  con <- DBI::dbConnect(odbc::odbc(), driver = “Postgres”, ...)
+  ```
+- use `dplyr` to query the database table in the same manner you would a local data frame
 
+Specific resources:
+
+::::{columns}
+
+:::{.column width=40%}
 - [Connect to a database](https://solutions.posit.co/connections/db/getting-started/connect-to-database/)
 - [Query a database table](https://solutions.posit.co/connections/db/getting-started/database-queries/)
+:::
+
+:::{.column width=60%}
+
 - [Securing credentials](https://solutions.posit.co/connections/db/best-practices/managing-credentials/)
 - [Making scripts portable](https://solutions.posit.co/connections/db/best-practices/portable-code/)
+:::
+::::
+
+:::
 
 :::
 
 ## How do I get data updates?
 
+:::{.fragment}
 🧰 Deploy and schedule your notebook on Posit Connect
+:::
 
 :::{.fragment}
 :::{.center}
@@ -228,3 +252,43 @@ Why?
 :::
 
 ::::
+
+##  {.brackets-dark}
+
+::: section-title-dark
+Now what?
+:::
+
+## Next Questions {.brackets-light}
+
+::: incremental
+-   How can I ensure this is quality data? 🤔
+-   How will I know when it's not?
+
+:::
+
+
+## How can I ensure this is quality data?
+
+Pointblank
+
+pointblank diagrams. 
+
+detour items: multi-agent, data dictionary
+
+## How will I know if my data has issues?
+
+Blastula
+
+:::{.fragment}
+:::{.center}
+<h2> <br>**Activity Time!**</h2>
+:::
+
+:::{.callout-note icon=false}
+## Activity
+👉 Open the file `materials/activities/activity-02`
+
+
+:::
+:::

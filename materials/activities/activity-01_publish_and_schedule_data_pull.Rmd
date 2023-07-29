@@ -1,5 +1,5 @@
 ---
-title: "01_publish_and_schedule_data_pull"
+title: "activity-01_publish_and_schedule_data_pull"
 description: This document pulls our raw data and saves it to the database. Publish this to Connect and schedule it to run at an appropriate interval
 output:
   html_document:
@@ -9,16 +9,16 @@ output:
 editor_options:
   chunk_output_type: console
 ---
-
+<!-- TODO: add some activities and solutions within this doc -->
 # Activity Notes
 
-This notebook is a simplified version of the deployed notebook used for the project solution. This notebook is stripped down to only pull the inspection raw data and write a small subset to the database (business data omitted just to keep things speedier). You may find it interesting to browse the project notebook (`materials/project/00_raw_data_scan_db_write.rmd`) to see additional elements that make for a more robust element in the project pipeline. The project solution has these additional features: 
+This notebook is a simplified version of the deployed notebook used for the project solution. This notebook is stripped down to only pull the inspection raw data and write a small subset to the database (business data omitted just to keep things speedier). You may find it interesting to browse the project notebook (`materials/project/00_raw_data_scan_db_write.rmd`) to see additional elements that make for a more robust component in the project pipeline. The project solution has these additional features: 
 
 - A check to ensure that at least 100k rows were written to the database. Failure of this would indicate an issue with the input data source.
 - An email alert if the number of rows written is not more than 100k
 - A pointblank data scan for reference and exploration
 - Ability to set the document to "TEST MODE" which will speed up processing by pulling a smaller test mode raw data set, avoids writes to the database, and generates the alert email for inspection
-- 
+
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 
 library(tidyverse)

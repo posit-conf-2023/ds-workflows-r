@@ -1,0 +1,23 @@
+---
+title: Email alert for issues with the integrity of the inspections data data frame 
+output: blastula::blastula_email
+---
+
+## ⚠️ There was an issue with the food inspection project data for validation. 
+
+The data frame validation checks for expected column schema, columns present, and at least 100k rows of data. 
+
+Due to the data frame integrity issues, further processing of the data did not take place. **Downstream content and artifacts are not updated.**
+
+The results of the data frame validation are shown below: 
+
+```{r, echo=FALSE}
+
+agent_df_integrity
+```
+
+```{r}
+ # get_agent_report(agent_df_integrity,display_table = FALSE) |> filter(n_pass < units)
+# glue("the number of failures in address were {xlist$n_failed[[3]]}")
+```
+
