@@ -13,6 +13,7 @@ format:
     center-title-slide: false
     code-link: true
     code-overflow: wrap
+    code-annotations: hover
     highlight-style: a11y
     width: "1600"
     height: "900"
@@ -269,12 +270,114 @@ Now what?
 
 
 ## How can I ensure this is quality data?
+<br>
+🧰 `pointblank` for data validation 
 
-Pointblank
 
-pointblank diagrams. 
 
-detour items: multi-agent, data dictionary
+## The `pointblank` workflow
+
+
+
+![](https://rstudio.github.io/pointblank/reference/figures/data_quality_reporting_workflow.svg){height=300}
+
+:::{.smaller}
+
+```{.r}
+agent <- df |>                                # <1>
+  create_agent(
+    actions = action_levels(warn_at = 1)) |>  # <2>
+  col_vals_between(                           # <3>
+    vars(a), 1, 9,
+    na_pass = TRUE)  |>                       # <3>
+  col_vals_lt(
+    vars(c), 12,
+    preconditions = ~ . %>% dplyr::mutate(c = a + b))  |>  # <4> 
+  col_is_numeric(vars(a, b))  |>              # <3>
+  interrogate()                               # <5>
+```
+1. A local or database table
+2. Optionally define alert levels
+3. Define validations. There are 36 validation functions! 
+4. It's possible to validate against a transformed version of the input table 
+5. Interrogate to run the validation
+:::
+
+
+## Pointblank agent report
+
+
+![](https://rstudio.github.io/pointblank/reference/figures/agent_report.png)
+
+## Your Turn
+<!-- TODO: include an informant -->
+
+## {{< bi sign-turn-right-fill color=orange >}} There's much more to `pointblank`
+
+<https://rstudio.github.io/pointblank/>
+
+
+:::::{.fragment .fade-in-then-out .absolute top=130}
+
+::::{.columns}
+
+:::{.column width=40%}
+- Is your data quality changing over time? Create a `multiagent` to summarize repeated validations.
+
+:::
+
+:::{.column width=50%}
+![](slide_resources/multiagent.png)
+
+:::
+
+::::
+
+:::::
+
+:::::{.fragment .fade-in-then-out .absolute top=130}
+
+::::{.columns}
+
+:::{.column width=40%}
+- [Is your data quality changing over time? Create a `multiagent` to summarize repeated validations.]{.lightgray} 
+- Standardize validations across your organization. Agents and informants can be saved as YAML ✨
+
+:::
+
+:::{.column width=0%}
+![](slide_resources/yaml.png){.absolute top=220 width=500}
+
+:::
+
+::::
+
+:::::
+
+:::::{.fragment .fade-in-then-out .absolute top=130}
+
+::::{.columns}
+
+:::{.column width=40%}
+- [Is your data quality changing over time? Create a `multiagent` to summarize repeated validations.]{.lightgray} 
+- [Standardize validations across your organization. Agents and informants can be saved as YAML ✨]{.lightgray}
+
+:::
+
+:::{.column width=50%}
+
+:::
+
+<h3><br>**In-depth `pointblank` test drive on Posit Cloud: <https://posit.cloud/project/3411822>**</h3>
+
+::::
+
+:::::
+
+
+
+
+<!-- TODO: detour items: multi-agent, data dictionary -->
 
 ## How will I know if my data has issues?
 
