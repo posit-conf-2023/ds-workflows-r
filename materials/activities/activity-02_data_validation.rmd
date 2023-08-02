@@ -1,0 +1,366 @@
+---
+title: "activity-02_data_validation"
+description: "A notebook that performs data validation usingg `pointblank`"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+ 
+# Activity Notes
+<!-- TODO: expand on this -->
+This notebook is a simplified version of the deployed notebook used for the project solution.  `01_data_clean_validate.rmd`
+
+- No business data
+- Just validation, no alerting yet
+- A few less validations
+- Skipped final mutations and cleanings that we do before training model
+- Omit summarization of data that is presented in an email
+- Omit write to database
+
+## Overview of cleaning and processing steps
+
+1. Pull data from database (`inspections_raw`)
+1. Filter inspection data to only types we are interested in (`inspections_filtered`)
+1. Validate and pass only passing data (`inspections_validated`)
+
+# Load packages
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(DBI)
+library(odbc)
+library(pointblank)
+library(glue)
+
+```
+
+
+
+# Activity prework - Pull raw data from database
+🔄 Task
+
+- Download the raw inspection data from the database
+
+✅ Solution
+
+```{r DB-connection}
+# This time we will use the odbc package to make the connection. The benefit of this is that we will see the connection in the Connections pane in RStudio.
+
+con <- dbConnect(odbc::odbc(),
+                  Driver = "postgresql",
+                  Server = Sys.getenv("DB_HOST"),
+                  Port = "5432",
+                  Database = "r_workshop",
+                  UID = Sys.getenv("DB_USER"),
+                  PWD = Sys.getenv("DB_PASSWORD"),
+                  timeout = 10)
+
+
+```
+
+```{r Pull-raw-data}
+
+inspections_raw <- 
+  tbl(con, "inspections_raw") |> 
+  # the `collect()` statement brings the database table into local memory.
+  # In practice we'd collect as late as possible, but to avoid the abstraction
+  # of working in a database table in this workshop, we will bring local
+  # (tip: pointblank can run against a database table so you don't have to collect this early!)
+  collect() |>
+  # convert inspection_date to date format
+  mutate(inspection_date = lubridate::mdy(inspection_date)) 
+
+
+dbDisconnect(con)
+```
+
+# Activity prework -  Perform inspections data filtering and cleaning
+🔄 Task
+
+- Perform some cleanup on Facility Type
+- Filter `inspections_raw` to only Restaurants, Grocery Stores, Bakeries, Coffee Shops, and the Wrigley Field Rooftop (because that sounds pretty fun)
+- Filter for only records where the result was a Pass, Fail, or Pass w Conditions
+- Discuss with your neightbor and share thoughts in Slido: What data should be filtered out versus what would you want to run through validation
+
+✅ Solution
+
+```{r Thin-out-inspections-data-pre-validation}
+
+inspections_filtered <- 
+  inspections_raw |> 
+  # Clean facility_type
+  mutate(facility_type = case_when(
+    # Using regex to account for abbreviations and mis-spellings of "RESTAURANT"
+    grepl("RE?STA?U?R?A?N?T?", `facility_type`) ~ "RESTAURANT",
+    grepl("GROCERY", facility_type) ~ "GROCERY STORE", 
+    # Again, use regex in case Bakery is mis-spelled
+    grepl("BA?KE?R?Y?", `facility_type`) ~ "BAKERY",
+    # This regex will account for variations in how many spaces between the words
+    grepl("COFFEE *SHOP", `facility_type`) ~ "COFFEE SHOP", 
+    grepl("WRIGLEY", `facility_type`) ~ "WRIGLEY FIELD ROOFTOP",
+    .default = paste("OTHER")
+    )) |> 
+  
+  # filter out inspections not at a restaurant, grocery store, bakery, coffee shop, or Wrigley
+  filter(facility_type != "OTHER") |> 
+  
+   # Filter for only Pass, Fail, Pass with conditions (Removes entries such as "Out of business", "Business not located", etc.)
+  filter(!results %in% c("PASS", "FAIL", "PASS W/ CONDITIONS")) 
+
+
+
+```
+
+# Activity 1 -  First Validation of Data for Size, Shape, and Format of Data
+🔄 Task
+
+Validate that: 
+
+- the data has the expected columns
+- the column formats are as expected
+- there are at least 100k rows of data (an arbitrary value, but if it's less than this, we're missing a lot of data)
+
+✅ Solution
+
+This is our first validation. It just confirms the overall size and format of the data frame. If the validation fails here, a warning is thrown and the validation will not proceed.
+```{r data-fram-size-and-format-validation}
+
+
+# Define a column schema so we can check inputted data is as expected
+# troubleshooting tip, if the validation fails, look at the x_list$col_types and $col_names to see the discrepancy
+schema_inspections <- col_schema(inspection_id = "numeric",
+                               dba_name = "character",
+                               aka_name = "character",
+                               license_number = "numeric",
+                               facility_type = "character",
+                               risk = "character",
+                               address = "character",
+                               city = "character",
+                               state = "character",
+                               zip = "numeric",
+                               inspection_date = "Date",
+                               inspection_type = "character",
+                               results = "character",
+                               violations = "character",
+                               latitude = "numeric",
+                               longitude = "numeric",
+                               location = "character"
+                               )
+
+
+#### VALIDATION 1: Data set integrity validations. All of these trigger a warning under fail conditions.
+agent_df_integrity <- 
+  create_agent(inspections_filtered, 
+               label = "Inital validation of the inspections data set to confirm overall schema and size. If there are issues with this validation, further processing stops and an alert is triggered.") |> 
+  # verify column schema 
+  col_schema_match(schema_inspections, 
+                   label = "Is the column schema as expected?", 
+                   actions = action_levels(warn_at = 1)) |> 
+  #Check that expected columns exist. 
+  # To do this, we modify the input df and call it a "precondition." The modification is made using a unique pointblank function `tt_tbl_colnames` that turns the column names of our input df into a data frame perfectly formatted to pointblank's preferences. That table is then compared to the set of schema_inspection names. See other cool transforms named `tt_*`
+  col_vals_in_set(columns = value, 
+                  set = names(schema_inspections), 
+                  preconditions = ~. %>% tt_tbl_colnames, 
+                  label = "Are the expected columns in the data set?", 
+                  actions = action_levels(warn_at = 0.01) ) |> 
+  # verify there are A LOT of rows of data to be sure import didn't mess up. 
+  # If we didn't get a full set of data, we don't want to proceed. 
+  col_vals_gte(columns = n, 
+               value = 25000L, # an arbitrary high-ish number
+               preconditions = ~. %>% tally,
+               label = "Are there more than 25k rows in the data?", 
+               actions = action_levels(warn_at = 1)) |>
+  interrogate()
+agent_df_integrity
+
+# We'll make a variable `alert_me` which will be a logical TRUE/FALSE. We'll talk about *how* to alert in the next activity, so just hold this in the back of your mind for now.
+alert_me <- !(all_passed(agent_df_integrity))
+```
+
+# Activity 2 -  Second validation for data integrity
+🔄 Task
+
+Validate that the data itself 
+
+- does not have null/NA values
+- has valid entries for Inspection Date, 
+- has no repeated Inspection IDs 
+- License Number is within a valid range
+- Latitude and Longitude are within a bounding box surrounding Chicago
+- Zip Code follows the expected standard
+
+Bonus: Only run this validation if there was not an alert in the previous validation
+
+✅ Solution
+
+Here's a logical statement we can use to stop processing this file if the previous validation failed.
+```{r optional-knit_exit-if-alert-is-true}
+if (alert_me == TRUE){
+  glue("Validation of inspection data set integrity failed. No additional validations were run, and processed data was NOT written to the database")}
+
+# 🧰 stop processing this file
+if (alert_me == TRUE){knitr::knit_exit()} 
+# if alert_me is FALSE, all is good and let's go!
+```
+
+
+As long as the the validation on Data Frame integrity passes, the following additional validations will run. 
+```{r data-integrity-validation}
+
+
+#### VALIDATION 2: Data integrity validations. Failing rows from this validation will be stripped out. 
+agent_main <-  
+  create_agent(inspections_filtered, label = "Validation of inspections data") |> 
+  # No null values
+  col_vals_not_null(columns = inspection_id) |> 
+  col_vals_not_null(columns = dba_name) |> 
+  col_vals_not_null(columns = address) |> 
+  col_vals_not_null(columns = latitude) |>
+  col_vals_not_null(columns = longitude) |>
+  col_vals_not_null(columns = inspection_date) |> 
+  col_vals_not_null(columns = inspection_type) |> 
+  col_vals_not_null(columns = results) |> 
+  # verify inspection date is valid
+  col_vals_lte(columns = inspection_date, today(),
+               label = "Is inspection date in the past?") |> 
+  # verify Inspection ID is unique
+  rows_distinct(columns = vars(inspection_id), 
+                label = "Is the Inspection ID unique?", 
+                actions = action_levels(warn_at = 0.001)) |> 
+  # verify license number is valid
+  col_vals_between(columns = license_number, 1, 99999999, 
+                   label = "Is the License Number a valid entry?") |>
+  # verify lat and long bounds (set na_pass = TRUE to ignore NAs)
+  col_vals_between(columns = latitude, left = 41.5001, right = 42.3772, na_pass = TRUE) |> 
+  col_vals_between(columns = longitude, left = -88.2959, right = -87.316, na_pass = TRUE) |> 
+  # verify w col_vals_within_spec for postal_code / aka zip
+  col_vals_within_spec(columns = zip, spec = "postal[USA]", na_pass = TRUE) |> 
+  interrogate() 
+
+agent_main
+
+```
+
+
+# Activity 3 -  Remove the failed data from the data set
+🔄 Task
+
+Pointblank has identified all of the rows that passed and failed validation. Now remove those that failed so the data that is passed downstream is squeaky clean.
+
+✅ Solution
+We will "sunder" (sunder | ˈsəndər |verb | split apart) the data using `pointblank::get_sundered_data()`.
+
+
+```{r sunder-data}
+
+# Passed data
+inspections_validated <- get_sundered_data(agent_main, type = "pass")
+
+# Failed data
+inspections_fail_validation <- get_sundered_data(agent_main, type = "fail")
+
+```
+
+
+# Activity 4 -  Provide a data dictionary (aka Informant) to explain the data
+🔄 Task
+
+Data should never be used blindly. Proper documentation is essential. Pointblank can generate an `informant` table that can provide both static and dynamically-rendered details about your data.
+
+- Explore the table below.
+
+✅ Solution
+
+Table information can be synthesized in an information management workflow, giving us a snapshot of a data table we care to collect information on. The pointblank informant is fed a series of `info_*()` functions to define bits of information about a table. This info text can pertain to individual columns, the table as a whole, and whatever additional information makes sense for your organization. We can even glean little snippets of information (like column stats or sample values) from the target table with info_snippet() and the `snip_*()` functions and mix them into the data dictionary wherever they’re needed.
+
+Informant table / Data Dictionary 
+```{r data-dictionary}
+
+create_informant(
+  tbl = inspections_validated,
+  label = "Data Dictionary - Validated Data from Chicago Food Inspection Dataset") |> 
+  info_tabular(
+    description = "This table defines the columns in the validated dataset from City of Chicago Food Inspection dataset"
+  ) |> 
+  info_section(
+    section_name = "further information",
+    `source` = "Data from City of Chicago, <https://www.cityofchicago.org>",
+    `🔄 updates` = "Original data source updated every Friday. This table last updated {Sys.Date()}.",
+    `ℹ️ note` = "This example material using data that has been modified for use from its original source, <https://www.cityofchicago.org>, the official website of the City of Chicago.  The City of Chicago makes no claims as to the content, accuracy, timeliness, or completeness of any of the data provided at this site.  The data provided at this site is subject to change at any time.  It is understood that the data provided at this site is being used at one's own risk."
+  ) |> 
+  info_columns(
+    columns = inspection_id,
+    `ℹ️` = "A unique record number."
+  ) |> 
+  info_columns(
+    columns = dba_name,
+    `ℹ️` = "'Doing Business As.' This is legal name of the establishment."
+  ) |> 
+  info_columns(
+    columns = aka_name,
+      `ℹ️` = "'Also Known As.' This is the name the public would know the establishment as."
+  ) |> 
+  info_columns(
+    columns = license_number,
+      `ℹ️` = "This is a unique number assigned to the establishment for the 
+purposes of licensing by the Department of Business Affairs and Consumer Protection."
+  ) |>  
+  info_columns(
+    columns = facility_type,
+      `ℹ️` =
+      "Cleaned and validated data includes only establishments described by one of the following: \n - **Bakery** \n - **Coffee Shop** \n - **Grocery Store** \n - **Restaurant** \n - **Wrigley Field Rooftop**"
+  )  |>
+  info_columns(
+    columns = risk,
+      `ℹ️` = "Risk category of facility. Each establishment is categorized as to its risk of adversely affecting the public's health, with 1 being the highest and 3 the lowest. The frequency of inspection is tied to this risk, with risk 1 establishments inspected most frequently and risk 3 least frequently."
+  ) |>  
+  info_columns(
+    columns = address,
+      `ℹ️` = "Street address, city, state and zip code of facility: This is the complete address where the facility is located."
+  ) |>  
+  info_columns(
+    columns = city,
+      `ℹ️` = "City of the facility."
+  ) |>  
+  info_columns(
+    columns = state,
+      `ℹ️` = "State of the facility."
+  ) |>  
+  info_columns(
+    columns = zip,
+      `ℹ️` = "Zip Code of the facility."
+  ) |>  
+  info_columns(
+    columns = inspection_date,
+      `ℹ️` = "This is the date the inspection occurred. A particular establishment is likely to have multiple inspections which are denoted by different inspection dates."
+  ) |>  
+  info_columns(
+    columns = inspection_type,
+      `ℹ️` = "An inspection can be one of the following types: \n - **canvass**: the most common type of inspection performed at a frequency relative to the risk of the establishment \n - **consultation**: when the inspection is done at the request of the owner prior to the opening of the establishment \n - **complaint**: when  the inspection is done in response to a complaint against the establishment \n - **license**: when the inspection is done as a requirement for the establishment to receive its license to operate \n - **suspect food poisoning**: 🤢when the inspection is done in response to one or more persons claiming to have gotten ill as a result of eating at the establishment (a specific type of complaint-based inspection) \n - **task-force inspection**: when an inspection of a bar or tavern is done. \n Re-inspections can occur for most types of these inspections and are indicated as such."
+  ) |>  
+  info_columns(
+    columns = results,
+      `ℹ️` = "An inspection can pass, pass with conditions or fail. Establishments receiving a 'pass' were found to have no critical or serious violations (violation number 1-14 and 15-29, respectively). Establishments receiving a 'pass with conditions' were found to have critical or serious violations, but these were corrected during the inspection. Establishments receiving a 'fail' were found to have critical or serious violations that were not correctable during the inspection. An establishment receiving a 'fail' does not necessarily mean the establishment's licensed is suspended."
+  ) |>  
+  info_columns(
+    columns = violations,
+      `ℹ️` = "An establishment can receive one or more of 45 distinct violations (violation numbers 1-44 and 70). For each violation number listed for a given establishment, the requirement the establishment must meet in order for it to NOT receive a violation is noted, followed by a specific description of the findings that caused the violation to be issued."
+  ) |>  
+  info_columns(
+    columns = latitude,
+      `ℹ️` = "The Latitude of the facility."
+  ) |>
+  info_columns(
+    columns = longitude,
+      `ℹ️` = "The Longitude of the facility."
+  ) |>
+  info_columns(
+    columns = location,
+      `ℹ️` = "The Latitude and Longitude of the facility."
+  ) |>
+  incorporate()
+
+
+```
+
