@@ -9,7 +9,6 @@ output:
 editor_options:
   chunk_output_type: console
 ---
-<!-- TODO: add some activities and solutions within this doc -->
 # Activity Notes
 
 This notebook is a simplified version of the deployed notebook used for the project solution. This notebook is stripped down to only pull the inspection raw data and write a small subset to the database (business data omitted just to keep things speedier). You may find it interesting to browse the project notebook (`materials/project/00_raw_data_scan_db_write.rmd`) to see additional elements that make for a more robust component in the project pipeline. The project solution has these additional features: 
@@ -30,9 +29,13 @@ library(glue)
 
 ```
 
+# Activity prework - Download data from Chicago Data Portal
+🔄 Task
 
+- Download the raw inspections data from the Chicago Data Portal 
 
-# Download data from Chicago Data Portal
+✅ Solution
+
 
 ```{r Download-data-from-Chicago-Data-Portal}
 
@@ -50,9 +53,15 @@ print(paste("ℹ️ Info: Downloading Inspection data took", round(duration[[1]]
 
 ```
 
+# Activity - Load data into databse
+🔄 Task
 
+- Pair up with a neighbor. Chose who will use the `odbc` package and who will use `RPostgres
+- Write a subset of the inspections data into the database (use a subset for sake of time. A fraction of 1% has been chosen for you to write ~2.5k rows)
+- Compare your write times with your neighbor
 
-# Load data into database
+✅ Solution
+
 <!-- TODO: Change to DSN for easier publishing -->
 ```{r Write-raw-data-to-database}
 
@@ -95,9 +104,7 @@ insp_db_rowcount <- insp_db |> tally() |> pull(n) |> as.numeric()
 dbDisconnect(con)
 ```
 
-
-
-# Logging information
+# Logging information for our scheduled report
 ```{r logging, echo=FALSE}
 
 glue("Report run {blastula::add_readable_time()}")
@@ -107,4 +114,16 @@ glue("{nrow(inspections_raw)} rows of inspection data downloaded.
 
 
 ```
+
+# Activity - Publish this document to Connect and schedule it
+🔄 Task
+
+- Use push-button publishing to publish this document, with source code, to Connect
+- Schedule it to run on a timescale that seems appropriate for the data update cycle
+
+✅ Solution
+
+The Connect User Guide provides instructions for publishing: <https://docs.posit.co/connect/user/publishing/#publishing-general>
+
+
 
