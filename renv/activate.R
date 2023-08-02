@@ -2,11 +2,26 @@
 local({
 
   # the requested version of renv
-  version <- "1.0.0"
-  attr(version, "sha") <- NULL
+  version <- "1.0.0.9000"
+  attr(version, "sha") <- "9079d925242cc87914a34b67c5fce6c6df2fed91"
 
   # the project directory
   project <- getwd()
+
+  # use start-up diagnostics if enabled
+  diagnostics <- Sys.getenv("RENV_STARTUP_DIAGNOSTICS", unset = "FALSE")
+  if (diagnostics) {
+    start <- Sys.time()
+    profile <- tempfile("renv-startup-", fileext = ".Rprof")
+    utils::Rprof(profile)
+    on.exit({
+      utils::Rprof(NULL)
+      elapsed <- signif(difftime(Sys.time(), start, units = "auto"), digits = 2L)
+      writeLines(sprintf("- renv took %s to run the autoloader.", format(elapsed)))
+      writeLines(sprintf("- Profile: %s", profile))
+      print(utils::summaryRprof(profile))
+    }, add = TRUE)
+  }
 
   # figure out whether the autoloader is enabled
   enabled <- local({
@@ -504,7 +519,7 @@ local({
   
     # open the bundle for reading
     # We use gzcon for everything because (from ?gzcon)
-    # > Reading from a connection which does not supply a ‘gzip’ magic
+    # > Reading from a connection which does not supply a 'gzip' magic
     # > header is equivalent to reading from the original connection
     conn <- gzcon(file(bundle, open = "rb", raw = TRUE))
     on.exit(close(conn))
@@ -841,7 +856,7 @@ local({
     hooks <- getHook("renv::autoload")
     for (hook in hooks)
       if (is.function(hook))
-        tryCatch(hook(), error = warning)
+        tryCatch(hook(), error = warnify)
   
     # load the project
     renv::load(project)
@@ -982,10 +997,15 @@ local({
   
   }
   
-  renv_bootstrap_version_friendly <- function(version, sha = NULL) {
+  renv_bootstrap_version_friendly <- function(version, shafmt = NULL, sha = NULL) {
     sha <- sha %||% attr(version, "sha", exact = TRUE)
-    parts <- c(version, sprintf("[sha: %s]", substring(sha, 1L, 7L)))
-    paste(parts, collapse = " ")
+    parts <- c(version, sprintf(shafmt %||% " [sha: %s]", substring(sha, 1L, 7L)))
+    paste(parts, collapse = "")
+  }
+  
+  renv_bootstrap_exec <- function(project, libpath, version) {
+    if (!renv_bootstrap_load(project, libpath, version))
+      renv_bootstrap_run(version, libpath)
   }
   
   renv_bootstrap_run <- function(version, libpath) {
@@ -1015,6 +1035,14 @@ local({
   
   renv_bootstrap_in_rstudio <- function() {
     commandArgs()[[1]] == "RStudio"
+  }
+  
+  # Used to work around buglet in RStudio if hook uses readline
+  renv_bootstrap_flush_console <- function() {
+    tryCatch({
+      tools <- as.environment("tools:rstudio")
+      tools$.rs.api.sendToConsole("", echo = FALSE, focus = FALSE)
+    }, error = function(cnd) {})
   }
   
   renv_json_read <- function(file = NULL, text = NULL) {
@@ -1155,25 +1183,15 @@ local({
   # construct full libpath
   libpath <- file.path(root, prefix)
 
-  # attempt to load
-  if (renv_bootstrap_load(project, libpath, version))
-    return(TRUE)
-
   if (renv_bootstrap_in_rstudio()) {
+    # RStudio only updates console once .Rprofile is finished, so
+    # instead run code on sessionInit
     setHook("rstudio.sessionInit", function(...) {
-      renv_bootstrap_run(version, libpath)
-
-      # Work around buglet in RStudio if hook uses readline
-      tryCatch(
-        {
-          tools <- as.environment("tools:rstudio")
-          tools$.rs.api.sendToConsole("", echo = FALSE, focus = FALSE)
-        },
-        error = function(cnd) {}
-      )
+      renv_bootstrap_exec(project, libpath, version)
+      renv_bootstrap_flush_console()
     })
   } else {
-    renv_bootstrap_run(version, libpath)
+    renv_bootstrap_exec(project, libpath, version)
   }
 
   invisible()
