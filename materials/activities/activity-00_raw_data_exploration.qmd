@@ -198,11 +198,11 @@ Some conclusions from exploration:
 #| label: Connect to the Postgres database
 
 con <- dbConnect(RPostgres::Postgres(), 
-                 host = Sys.getenv("DB_HOST"), 
+                 host = Sys.getenv("CONF23_DB_HOST"), 
                  port = "5432", 
                  dbname = "r_workshop", 
-                 user = Sys.getenv("DB_USER"), 
-                 password = Sys.getenv("DB_PASSWORD"))
+                 user = Sys.getenv("CONF23_DB_USER"), 
+                 password = Sys.getenv("CONF23_DB_PASSWORD"))
 
 ```
 

@@ -7,6 +7,8 @@ output:
     toc_float: yes
 ---
  
+<!-- TODO: Make these more DIY Code friendly.e.g., write your own validations. -->
+ 
 # Activity Notes
 <!-- TODO: expand on this -->
 This notebook is a simplified version of the deployed notebook used for the project solution.  `01_data_clean_validate.rmd`
@@ -49,11 +51,11 @@ library(glue)
 
 con <- dbConnect(odbc::odbc(),
                   Driver = "postgresql",
-                  Server = Sys.getenv("DB_HOST"),
+                  Server = Sys.getenv("CONF23_DB_HOST"),
                   Port = "5432",
                   Database = "r_workshop",
-                  UID = Sys.getenv("DB_USER"),
-                  PWD = Sys.getenv("DB_PASSWORD"),
+                  UID = Sys.getenv("CONF23_DB_USER"),
+                  PWD = Sys.getenv("CONF23_DB_PASSWORD"),
                   timeout = 10)
 
 

@@ -92,19 +92,19 @@ print(paste("ℹ️ Info: Downloading Business License data took", round(duratio
 
 # The `RPostgres` package is DBI-compliant and is built specifically for PosgreSQL DB. Performance may be faster (particularly for writing data!) than using the generic odbc package. It's perfectly reasonable to use the odbc package instead, and if we do, if we instead use the generic `odbc::odbc()` backend, the database will appear in the Connections pane. 
 con <- dbConnect(RPostgres::Postgres(), 
-                 host = Sys.getenv("DB_HOST"), 
+                 host = Sys.getenv("CONF23_DB_HOST"), 
                  port = "5432", 
                  dbname = "r_workshop", 
-                 user = Sys.getenv("DB_USER"), 
-                 password = Sys.getenv("DB_PASSWORD"))
+                 user = Sys.getenv("CONF23_DB_USER"), 
+                 password = Sys.getenv("CONF23_DB_PASSWORD"))
 
 # con_alternative <- dbConnect(odbc::odbc(), 
 #                   Driver = "postgresql", 
-#                   Server = Sys.getenv("DB_HOST"), 
+#                   Server = Sys.getenv("CONF23_DB_HOST"), 
 #                   Port = "5432", 
 #                   Database = "r_workshop", 
-#                   UID = Sys.getenv("DB_USER"),    
-#                   PWD = Sys.getenv("DB_PASSWORD"), 
+#                   UID = Sys.getenv("CONF23_DB_USER"),    
+#                   PWD = Sys.getenv("CONF23_DB_PASSWORD"), 
 #                   timeout = 10)
 
 # write inspections raw data
