@@ -183,7 +183,8 @@ if (alert_me == TRUE){
   # logging
   glue("Report run {blastula::add_readable_time()}")
   glue("Validation of inspection data set integrity failed. An email alert was generated, and is shown below. {email_alert$html_html}")
-  
+}
+if (alert_me == TRUE){
   # stop processing this file
   knitr::knit_exit()
 } 
