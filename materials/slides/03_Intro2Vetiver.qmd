@@ -1,0 +1,54 @@
+---
+format:
+  positslides-revealjs: 
+    chalkboard: true
+    slide-number: c/t
+    footer: "[http://pconf23-workflows.com/](http://pconf23-workflows.com/)"
+    code-copy: true
+    center-title-slide: false
+    code-link: true
+    code-overflow: wrap
+    highlight-style: a11y
+    width: "1600"
+    height: "900"
+    filters:
+      - positslides
+execute: 
+  eval: false
+  echo: true
+  cache: true
+---
+
+## Tidymodels and Vetiver {.toc-light}
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/tidymodels.png?raw=true){.absolute top="200" left="50" width="260"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){.absolute top="200" left="310" width="260"}
+
+## Agenda {.toc2-dark}
+
+-   Tidymodels
+-   Vetiver
+    -   Create, deploy, and monitor a tidymodel model
+-   Food inspection model (xgboost)
+    -   Interacting with the model
+
+## Test
+
+content before the pause
+
+. . .
+
+content after the pause
+
+## Disclaimer
+
+<br>
+
+::: {style="text-align: center; font-size: 200%; color: #EE6331"}
+THIS IS NOT A MODELING WORKSHOP!
+:::
+
+. . .
+
+<br>
+
+... but modeling is still super cool 😎 !

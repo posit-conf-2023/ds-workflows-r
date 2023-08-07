@@ -1,5 +1,5 @@
 ---
-title: 02_model_creation
+title: 03_model_creation
 ---
 
 ## Set up Environment
@@ -26,8 +26,10 @@ tidymodels_prefer() # for handling package conflicts
 #| cache: true
 
 # For testing purposes, I'll only read in 20,000 rows
-inspections_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv", n_max = 20000, show_col_types = FALSE) |> 
-  mutate(Zip = as.character(Zip))
+# inspections_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv", n_max = 20000, show_col_types = FALSE) |> 
+#   mutate(Zip = as.character(Zip))
+
+
 ```
 
 ## Clean Data
