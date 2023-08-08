@@ -1,0 +1,37 @@
+---
+title: "activity-03_conditional_emails"
+description: "A notebook that will send conditional emails using `blastula`"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+ 
+<!-- TODO: Make these more DIY Code friendly.e.g., write your own validations. -->
+ 
+# Activity Notes
+<!-- TODO: expand on this -->
+This notebook is a simplified version of the deployed notebook used for the project solution. 
+
+# Task 1 - Define a condition for email alert 
+🔄 Task
+
+- 
+
+✅ Solution
+
+
+# Task 2 - Create an email
+🔄 Task
+
+- 
+
+✅ Solution
+
+
+# Task 3 - Use blastula to attach the email and send under conditions
+🔄 Task
+
+-  
+
+✅ Solution
