@@ -121,6 +121,8 @@ glue("{nrow(inspections_raw)} rows of inspection data downloaded.
 - Use push-button publishing to publish this document, with source code, to Connect
 - Schedule it to run on a timescale that seems appropriate for the data update cycle
 
+Notes: 
+- Recall we specified our database connection details with environment variables. Typically when you publish content to Connect, you will also need to supply the environment variables using the "Vars" pane in Connect. For this workshop, these environment variables have already been stored on the Connect server for you so you won't need to do this step for this activity.
 ✅ Solution
 
 The Connect User Guide provides instructions for publishing: <https://docs.posit.co/connect/user/publishing/#publishing-general>

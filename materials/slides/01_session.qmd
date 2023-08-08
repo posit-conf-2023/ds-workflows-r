@@ -22,7 +22,6 @@ format:
 execute: 
   eval: true
   echo: true
-  cache: true
 ---
 
 
@@ -204,33 +203,6 @@ Specific resources:
 
 📣 Push-button is good for rapid prototyping. Beyond that, you really should be using [**git-backed or programmatic deployment via CI/CD pipeline**]{.fuchsia} to keep your code in sync with your deployment. 
 
-## 😱 Did your deployment fail?
-
-:::::{.columns}
-
-::::{.column width=50%}
-
-:::{.fragment}
-<br>
-Why?
-:::
-
-:::{.fragment}
-<br><br>
-🤦️ Environment variables!
-
-:::
-
-::::
-
-::::{.column width=50%}
-
-:::{.fragment}
-![](slide_resources/vars-panel-settings.png){height="700"}
-:::
-::::
-:::::
-
 
 ## Scheduling
 
@@ -310,7 +282,18 @@ agent <- df |>                                # <1>
 ![](https://rstudio.github.io/pointblank/reference/figures/agent_report.png)
 
 ## Your Turn
-<!-- TODO: include an informant -->
+
+:::{.center}
+<h2> <br>**Activity Time!**</h2>
+:::
+
+:::{.callout-note icon=false}
+## Activity
+👉 Open the file `materials/activities/activity-02_data_validation.rmd`
+
+
+:::
+
 
 ## {{< bi sign-turn-right-fill color=orange >}} There's much more to `pointblank`
 
@@ -377,21 +360,66 @@ agent <- df |>                                # <1>
 
 
 
-<!-- TODO: detour items: multi-agent, data dictionary -->
-
 ## How will I know if my data has issues?
 
-Blastula
+:::{.columns}
 
-:::{.fragment}
+:::{.column width=25%}
+![](slide_resources/email_option.png){height=700 style="padding-left: 25px;"}
+:::
+
+:::{.column width=10%}
+[+]{.largest .middle}
+:::
+
+
+:::{.column width=25%}
+![](https://github.com/rstudio/blastula/raw/master/man/figures/logo.svg){.middle height=400}
+:::
+
+:::{.column width=10%}
+[=]{.largest .middle}
+:::
+
+:::{.column width=30%}
+
+[🧰 Customized, conditional emails]{.large .middle}
+
+:::
+
+:::
+
+## How `blastula` works with Connect
+
+![](slide_resources/blastula_process.png){.absolute top=130}
+
+:::{.absolute bottom=40 .smaller}
+**Key functions:**
+
+`blastula::render_connect_email`
+
+`blastula::attach_connect_email`
+
+`blastula::suppress_scheduled_email`
+:::
+
+## Your Turn {.content-light}
+
 :::{.center}
 <h2> <br>**Activity Time!**</h2>
 :::
 
 :::{.callout-note icon=false}
 ## Activity
-👉 Open the file `materials/activities/activity-02`
-
+👉 Open the file `materials/activities/activity-03_conditional_emails.rmd`
 
 :::
-:::
+
+## Other Alerting Approaches {.content2-light}
+
+{{< bi sign-turn-right-fill color=orange >}} Send alerts to a Slack channel or MS Teams, or via text message:
+<https://rviews.rstudio.com/2020/06/18/how-to-have-r-notify-you/>
+
+## {.toc-people-dark}
+<br><br>
+[**Break Time ☕ **]{.larger}
