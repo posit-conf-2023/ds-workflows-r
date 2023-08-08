@@ -96,6 +96,8 @@ section div.has-dark-background blockquote {
 
 // font sizes
 
+.smallest{font-size:x-small}
+
 .smaller{font-size:smaller}
 
 .medium{font-size:medium}
@@ -121,6 +123,12 @@ section div.has-dark-background blockquote {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+}
+
+.middle{
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
 }
 
 .section-title-dark{
@@ -152,3 +160,4 @@ section div.has-dark-background blockquote {
 .teal {color: $link-color;}
 .fuchsia {color: $code-color;}
 .lightgray {color: $lightgray;}
+.white {color: $body-bg;}
