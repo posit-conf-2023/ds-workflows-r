@@ -1,0 +1,111 @@
+---
+title: "Session 3"
+title-slide-attributes: 
+  data-background-color: white
+  data-background-image: _extensions/positconfslides/assets/backgrounds/content2-light.svg
+  data-background-size: contain
+format:
+  positconfslides-revealjs: 
+    chalkboard: true
+    slide-number: c/t
+    footer: "[http://pconf23-workflows.com/](http://pconf23-workflows.com/)"
+    code-copy: true
+    center-title-slide: false
+    code-link: true
+    code-overflow: wrap
+    code-annotations: hover
+    highlight-style: a11y
+    width: "1600"
+    height: "900"
+    filters:
+      - positconfslides
+execute: 
+  eval: true
+  echo: true
+---
+
+## Session Outline
+
+- Making Shiny resources: 
+  - bslib, shinyuieditor
+  - mastering shiny, gallery
+- Don't make a kitchen sink app
+  - Goal for a light weight presentation layer
+  - DB, pins, scheduled ETLs
+  - log4r
+  - shinyloadtest, profvis
+  - Connect runtime settings <activity / discussion>
+- Managing your content
+  - Connect Widgets + Connect API
+  - Monitor usage
+  
+## Let's talk Shiny
+
+![](https://raw.githubusercontent.com/rstudio/hex-stickers/580e9bada770756d25dbd3696159744d1e9c9251/SVG/shiny.svg){style="padding-right: 15px;" .absolute left=600 top=10 width=200}
+<br><br>
+
+::::{.columns}
+
+:::{.column width=50%}
+
+:::{.fragment}
+
+Whether you're here <br>
+in your Shiny journey:
+
+![](slide_resources/andriyko-podilnyk-RCfi7vgJjUY-unsplash.jpg) 
+<br>[Photo by <a href="https://unsplash.com/@andriyko?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Andriyko Podilnyk</a> on <a href="https://unsplash.com/photos/orange-tabby-kitten-in-grasses-RCfi7vgJjUY?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>]{.smallest}
+
+:::
+
+:::
+
+:::{.column width=50%}
+
+:::{.fragment}
+<br>
+Or here:
+
+![](slide_resources/francesco-ZxNKxnR32Ng-unsplash.jpg) 
+
+[Photo by <a href="https://unsplash.com/@detpho?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Francesco</a> on <a href="https://unsplash.com/photos/ZxNKxnR32Ng?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>]{.smallest}
+
+:::
+:::
+::::
+
+## 🧰 Shiny resources
+
+- Get started with Shiny (R or Python!) <https://shiny.posit.co/getstarted>
+- Gallery of examples <https://shiny.posit.co/r/gallery/>
+- **The authoritative reference, Mastering Shiny** <https://mastering-shiny.org>
+- Helper packages
+  - [`bslib`](https://rstudio.github.io/bslib/) - add themes, components, and layouts with ease 
+  - [`thematic`](https://rstudio.github.io/thematic/) - extends your Shiny theme to plots  
+  - [`shinyuieditor`](https://rstudio.github.io/shinyuieditor/index.html#trouble-installing/) - a visual tool to help create the UI portion of your Shiny app
+
+## Shiny in production
+
+📣 Design principle: Make your app a lightweight presentation layer <br><br>
+
+:::{.fragment}
+Performance workflow:
+
+- use [`shinyloadtest`](https://rstudio.github.io/shinyloadtest/) to simulate app performance under load 
+- use [`profvis`](https://rstudio.github.io/profvis/) to profile your app to identify bottlenecks
+- Optimize app by:
+  - Move work upstream out of Shiny (💪💪💪💪)
+  - Make code faster (💪💪💪)
+  - Use caching (💪💪)
+  - Use async (💪)
+- Add logging to app, either basic `message` statements or use [`log4r`](https://github.com/johnmyleswhite/log4r) package
+  
+References: 
+
+- Joe Cheng's [Shiny in Production](https://youtu.be/Wy3TY0gOmJw) talk at 2019 rstudio::conf 
+- [Mastering Shiny, Performance](https://mastering-shiny.org/performance.html) chapter
+:::
+
+## Shiny on Connect
+
+Runtime settings 

@@ -1,0 +1,25 @@
+---
+title: "Session 2"
+title-slide-attributes: 
+  data-background-color: white
+  data-background-image: _extensions/positconfslides/assets/backgrounds/content2-light.svg
+  data-background-size: contain
+format:
+  positconfslides-revealjs: 
+    chalkboard: true
+    slide-number: c/t
+    footer: "[http://pconf23-workflows.com/](http://pconf23-workflows.com/)"
+    code-copy: true
+    center-title-slide: false
+    code-link: true
+    code-overflow: wrap
+    code-annotations: hover
+    highlight-style: a11y
+    width: "1600"
+    height: "900"
+    filters:
+      - positconfslides
+execute: 
+  eval: true
+  echo: true
+---
