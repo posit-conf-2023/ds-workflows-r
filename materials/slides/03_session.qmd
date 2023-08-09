@@ -8,7 +8,7 @@ format:
   positconfslides-revealjs: 
     chalkboard: true
     slide-number: c/t
-    footer: "[http://pconf23-workflows.com/](http://pconf23-workflows.com/)"
+    footer: "[https://conf23workflows.training.posit.co/](https://conf23workflows.training.posit.co/)"
     code-copy: true
     center-title-slide: false
     code-link: true
@@ -38,6 +38,12 @@ execute:
 - Managing your content
   - Connect Widgets + Connect API
   - Monitor usage
+  
+- Environments management (renv)
+- Dev, test, prod workflows with git backed and CICD
+- hot swap urls
+- deploying content that uses a private package
+
   
 ## Let's talk Shiny
 
@@ -85,27 +91,98 @@ Or here:
   - [`shinyuieditor`](https://rstudio.github.io/shinyuieditor/index.html#trouble-installing/) - a visual tool to help create the UI portion of your Shiny app
 
 ## Shiny in production
+<br>
+"But my app runs great on my laptop..."
+<br><br>
+
+:::{.fragment}
+Two sides to this coin:
+
+1. Optimize your app
+2. Tune your runtime settings 
+:::
+
+## Shiny in production --- Optimize your app
+
+<br>
 
 📣 Design principle: Make your app a lightweight presentation layer <br><br>
 
+
+::::{.columns}
+
 :::{.fragment}
+
+:::{.column width=45%}
 Performance workflow:
 
+:::{.smaller}
+- Add logging to app, either basic `message` statements or use [`log4r`](https://github.com/johnmyleswhite/log4r) package
 - use [`shinyloadtest`](https://rstudio.github.io/shinyloadtest/) to simulate app performance under load 
 - use [`profvis`](https://rstudio.github.io/profvis/) to profile your app to identify bottlenecks
-- Optimize app by:
-  - Move work upstream out of Shiny (💪💪💪💪)
-  - Make code faster (💪💪💪)
-  - Use caching (💪💪)
-  - Use async (💪)
-- Add logging to app, either basic `message` statements or use [`log4r`](https://github.com/johnmyleswhite/log4r) package
-  
-References: 
+- Optimize app (in order of value-add):
+  - Move work upstream out of Shiny
+  - Make code faster 
+  - Use caching 
+  - Use async 
+
+:::
+
+:::
+
+:::{.column width=50%}
+
+:::{style="background: #F6F6F6; width: 600px; height: 400px; margin: 20px; padding: 20px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" }
+🧰 References: 
 
 - Joe Cheng's [Shiny in Production](https://youtu.be/Wy3TY0gOmJw) talk at 2019 rstudio::conf 
 - [Mastering Shiny, Performance](https://mastering-shiny.org/performance.html) chapter
 :::
 
+:::
+
+:::
+
+::::
+
 ## Shiny on Connect
 
 Runtime settings 
+
+::::{.columns}
+
+:::{.column width=30%}
+
+![](slide_resources/runtime_settings.png)
+
+:::
+
+:::{.column width=70%} 
+
+::: {.r-stack}
+![](https://media.giphy.com/media/3o6Mbsras7qdAwgABW/giphy.gif){.fragment .fade-in-then-out fig-align="center" }
+
+![](https://media.giphy.com/media/lvlLuc2zhi39C/giphy.gif){.fragment .fade-in-then-out fig-align="center"}
+
+:::{.fragment}
+**Min processes** — Keep a process running on the server at all times?
+
+**Max processes** — Put a bound on the number of processes spawned?
+
+**Connections per process** — [A connection = a browser tab]{.teal}. How many connections will share the same process? Call this **n**
+
+**Load factor** — Much like *min processes*, how early do you want to start a new process for that **n + 1** connection?
+:::
+
+
+:::{.fragment}
+
+:::
+
+:::
+
+
+
+:::
+
+::::

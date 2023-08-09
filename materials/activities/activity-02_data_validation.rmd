@@ -53,7 +53,7 @@ con <- dbConnect(odbc::odbc(),
                   Driver = "postgresql",
                   Server = Sys.getenv("CONF23_DB_HOST"),
                   Port = "5432",
-                  Database = "r_workshop",
+                  Database = "conf23_r",
                   UID = Sys.getenv("CONF23_DB_USER"),
                   PWD = Sys.getenv("CONF23_DB_PASSWORD"),
                   timeout = 10)

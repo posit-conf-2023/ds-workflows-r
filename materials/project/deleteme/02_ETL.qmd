@@ -26,7 +26,7 @@ Import data
 con <- dbConnect(RPostgres::Postgres(), 
                  host = Sys.getenv("CONF23_DB_HOST"), 
                  port = "5432", 
-                 dbname = "r_workshop", 
+                 dbname = "conf23_r", 
                  user = Sys.getenv("CONF23_DB_USER"), 
                  password = Sys.getenv("CONF23_DB_PASSWORD"))
 
