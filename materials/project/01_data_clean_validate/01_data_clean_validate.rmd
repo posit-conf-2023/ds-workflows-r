@@ -47,7 +47,7 @@ library(arrow) # we might drop this if we decide not to write the pin in arrow f
 con <- dbConnect(RPostgres::Postgres(), 
                  host = Sys.getenv("CONF23_DB_HOST"), 
                  port = "5432", 
-                 dbname = "r_workshop", 
+                 dbname = "conf23_r", 
                  user = Sys.getenv("CONF23_DB_USER"), 
                  password = Sys.getenv("CONF23_DB_PASSWORD"))
 
