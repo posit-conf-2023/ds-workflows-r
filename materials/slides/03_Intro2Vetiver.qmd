@@ -3,7 +3,7 @@ format:
   positslides-revealjs: 
     chalkboard: true
     slide-number: c/t
-    footer: "[http://pconf23-workflows.com/](http://pconf23-workflows.com/)"
+    footer: "[https://conf23workflows.training.posit.co/](https://conf23workflows.training.posit.co/)"
     code-copy: true
     center-title-slide: false
     code-link: true
