@@ -1,8 +1,8 @@
 library(shiny)
-library(bslib)
 library(tidyverse)
 library(leaflet)
 library(pins)
+library(vetiver)
 
 # Read in model input data data ------------------------------
 board <- board_connect()
@@ -82,11 +82,5 @@ server <- function(input, output) {
 }
 
   
-
-
-
-
-
-
 # Run App ------------------------------------------------
 shinyApp(ui, server)

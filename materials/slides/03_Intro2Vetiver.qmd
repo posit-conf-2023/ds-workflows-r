@@ -1,6 +1,6 @@
 ---
 format:
-  positslides-revealjs: 
+  positconfslides-revealjs: 
     chalkboard: true
     slide-number: c/t
     footer: "[http://pconf23-workflows.com/](http://pconf23-workflows.com/)"
@@ -8,15 +8,15 @@ format:
     center-title-slide: false
     code-link: true
     code-overflow: wrap
+    code-annotations: hover
     highlight-style: a11y
     width: "1600"
     height: "900"
     filters:
-      - positslides
+      - positconfslides
 execute: 
-  eval: false
+  eval: true
   echo: true
-  cache: true
 ---
 
 ## Tidymodels and Vetiver {.toc-light}
@@ -26,20 +26,25 @@ execute:
 ## Agenda {.toc2-dark}
 
 -   Tidymodels
+
+    -   Crash course on tidymodels
+
+    -   Create your own tidymodel! \[Assignment\]
+
+    -   Introduction to workbench jobs \[Assignment\]
+
 -   Vetiver
-    -   Create, deploy, and monitor a tidymodel model
+
+    -   What is Vetiver?
+        -   Overview of Pins and Plumber
+    -   Deploy and monitor your tidymodel \[Assignment\]
+
 -   Food inspection model (xgboost)
-    -   Interacting with the model
 
-## Test
+    -   Overview of model for food inspections
+    -   Interacting with the model \[Assignment\]
 
-content before the pause
-
-. . .
-
-content after the pause
-
-## Disclaimer
+## {{< bi sign-turn-right-fill color=orange >}} Disclaimer
 
 <br>
 
@@ -52,3 +57,13 @@ THIS IS NOT A MODELING WORKSHOP!
 <br>
 
 ... but modeling is still super cool 😎 !
+
+## Introduction to Tidymodels {.content-light}
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/tidymodels.png?raw=true){.absolute top="200" right="50" width="260"}
+
+<br>
+
+✋ If you have used `tidymodels` before?
+
+. . .

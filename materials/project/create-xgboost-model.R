@@ -18,7 +18,7 @@ tidymodels_prefer() # for handling package conflicts
 
 
 
-# Read in Data --------------------------------------------
+# Read in Data (should be from database, not pin) ------------------
 board <- board_connect()
 inspections_data <- pin_read(board, "katie.masiello/inspections_processed")
 

@@ -1,0 +1,56 @@
+---
+title: "Background and Workbench Jobs"
+description: "Experiment with running background and workbench jobs within Posit Workbench."
+toc: true
+toc-depth: 4
+editor_options: 
+  chunk_output_type: console
+execute: 
+  eval: false
+---
+
+![](images/logo-workbench-full-color.svg){fig-align="center"}
+
+Have you ever ran code in RStudio that took a long time to run? Do you remember how frustrating it was when you couldn't write anything else and have to wait...and wait....and wait...for the code to finish running before you can continue?
+
+Fortunately, there are two ways in which you can run "long jobs" in the the background and continue your development! We wanted to share this process with you since some steps in your workflow, like training a model, can take a very long time.
+
+## Activity 1 - Create a long R job
+
+For this activity, we are going to simulate a long running R script that leverages the `Sys.sleep()`. See the code below, and take some time to understand what each step is doing:
+
+``` r
+library(ggplot2)
+
+Sys.sleep(10) # Sleep for 10 seconds
+
+my_data <- data(mtcars)
+
+Sys.sleep(10) # Sleep for 10 seconds
+
+my_plot <- ggplot(my_data, aes(x = mpg, y = wt, color = cyl)) + geom_point
+
+Sys.sleep(10) # Sleet for 10 seconds
+
+ggsave(filename = "my_plot.png", plot = my_plot, width = 7, height = 7)
+```
+
+🔄 Tasks
+
+-   Take the above code and save it as an R script called `my_long_job.r` in your current working directory.
+
+## Activity 2 - Run a Background Job
+
+🔄 Tasks
+
+-   Run the `my_long_job.r` script as a background job. You can access **Background Jobs** by clicking the tab next to the console/terminal (likely the bottom left quadrant of the RStudio IDE). Click `Start Background Job` and follow the instructions.
+
+-   There are a few Environment options to choose from. Try running the script multiple times and get a feel for what each option does.
+
+-   Run the script one more time, and as it's running, try to close out of the RStudio IDE (orange button in the top right corner) and see what happens!
+
+## Activity 3 - Run a Workbench Job
+
+-   Run the `my_long_job.r` script as a workbench job. You can access **Workbench Jobs** by clicking the tab next to the console/terminal (likely the bottom left quadrant of the RStudio IDE). Click `Start Workbench Job` and follow the instructions.
+
+-   Run the script one more time, and as it's running, try to close out of the RStudio IDE (orange button in the top right corner) and see what happens!

@@ -26,9 +26,9 @@ execute:
   cache: true
 ---
 
-## {.brackets-dark }
+##  {.brackets-dark}
 
-:::{.section-title-dark}
+::: section-title-dark
 Introduction
 :::
 
@@ -98,8 +98,10 @@ conf\@posit.co 844-448-1212
 :::
 
 ## What you will learn
+
 <!-- TODO: note the strings and glue. -->
-:::{.smaller}
+
+::: smaller
 -   An opinionated end-to-end data science workflow
     -   Data storage locations
     -   Data validation
@@ -115,98 +117,78 @@ conf\@posit.co 844-448-1212
 
 ## Agenda
 
-
-+---------------+---------------------------------------------------------------+
-| Time          | Activity                                                      |
-+:==============+:==============================================================+
-| 9:00 - 10:30  | Workshop Introduction (20 minutes)   <br>                     |
-|               | Reading, Cleaning, Writing and Validating Data (70 minutes)   |
-+---------------+---------------------------------------------------------------+
-| 10:30 - 11:00 | *Coffee break*   ☕                                           |
-+---------------+---------------------------------------------------------------+
-| 11:00 - 12:30 | Creating, Delivering, and Monitoring a Tidymodel              |
-+---------------+---------------------------------------------------------------+
-| 12:30 - 1:30  | *Lunch break* 🥪                                              |
-+---------------+---------------------------------------------------------------+
-| 1:30 - 3:00   | Reporting                                                     |
-+---------------+---------------------------------------------------------------+
-| 3:00 - 3:30   | *Coffee break*    ☕                                          |
-+---------------+---------------------------------------------------------------+
-| 3:30 - 5:00   | Advancing your Workflow                                       |
-+---------------+---------------------------------------------------------------+
+| Time          | Activity                                                                                            |
+|:----------------|:------------------------------------------------------|
+| 9:00 - 10:30  | Workshop Introduction (20 minutes) <br> Reading, Cleaning, Writing and Validating Data (70 minutes) |
+| 10:30 - 11:00 | *Coffee break* ☕                                                                                   |
+| 11:00 - 12:30 | Creating, Delivering, and Monitoring a model using Vetiver                                          |
+| 12:30 - 1:30  | *Lunch break* 🥪                                                                                    |
+| 1:30 - 3:00   | Reporting                                                                                           |
+| 3:00 - 3:30   | *Coffee break* ☕                                                                                   |
+| 3:30 - 5:00   | Advancing your Workflow                                                                             |
 
 ## The Sticky Situation
 
-::::{.columns .center}
-
-:::{.column width="50%"}
-
-:::{style="background: #F5EF94; width: 400px; height: 400px; margin: 50px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;"}
+::: {.columns .center}
+::: {.column width="50%"}
+::: {style="background: #F5EF94; width: 400px; height: 400px; margin: 50px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;"}
 :::
 
 "I'm lost / need help"
-
 :::
 
-
-
-:::{.column width="50%"}
-
-:::{style="background: #83D2F3; width: 400px; height: 400px; margin: 50px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;"}
+::: {.column width="50%"}
+::: {style="background: #83D2F3; width: 400px; height: 400px; margin: 50px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;"}
 :::
 
-"I’m done and ready to move along"
-
-
+"I'm done and ready to move along"
 :::
+
 <br><br>
 
 ### 👨‍💻Put your sticky note on the back of your laptop screen 👩‍💻
-::::
-
-
-## {.brackets-dark }
-
-:::{.section-title-dark}
-Get Your Environment Set Up
-
 :::
 
-## Your Tools — Workbench, Connect, Package Manager
+##  {.brackets-dark}
 
-:::{.center}
+::: section-title-dark
+Get Your Environment Set Up
+:::
+
+## Your Tools --- Workbench, Connect, Package Manager
+
+::: center
 ![](https://solutions.posit.co/get-started/images/concept_map.jpeg){height="800px"}
 :::
 
 ## Access Your Tools
 
 <!-- TODO: update this -->
+
 🛜WiFi credentials:
 
-- Network: TBD
-- Password: TBD
+-   Network: TBD
+-   Password: TBD
 
 Visit the following URLs and verify that you are able to login:
 
-- Workbench: <https://workbench.pconf23-workflows.com> 
-- Connect: <https://connect.pconf23-workflows.com> 
-- Package Manager: <https://package-manager.pconf23-workflows.com> 
+-   Workbench: <https://workbench.pconf23-workflows.com>
+-   Connect: <https://connect.pconf23-workflows.com>
+-   Package Manager: <https://package-manager.pconf23-workflows.com>
 
-## Fork and Clone the Class Repo 
+## Fork and Clone the Class Repo
 
-Fork the class repo:  <https://github.com/posit-conf-2023/ds-workflows-r>
+Fork the class repo: <https://github.com/posit-conf-2023/ds-workflows-r>
 
 In Workbench, clone the repo as a new Project:
 
-1. Execute the **New Project** command (from the Project menu)
-1. Choose to create a new project from **Version Control**
-1. Choose **Git**
-1. Provide the repository URL and then click **Create Project**
+1.  Execute the **New Project** command (from the Project menu)
+2.  Choose to create a new project from **Version Control**
+3.  Choose **Git**
+4.  Provide the repository URL and then click **Create Project**
 
+##  {.brackets-dark}
 
-## {.brackets-dark }
-
-:::{.section-title-dark}
-Let's Get to Work! 
-
+::: section-title-dark
+Let's Get to Work!
 :::
