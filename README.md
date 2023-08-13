@@ -86,48 +86,28 @@ ADD INFORMATION YOU WANT LEARNERS TO HAVE / STEPS THEY WANT THEM TO COMPLETE PRI
 
 <!-- TODO: refine this schedule. It's not super accurate --> 
 
-+---------------+---------------------------------------------------------------------+
-| Time          | Activity                                                            |
-+:==============+:====================================================================+
-| 09:00 - 10:30 | 1.  Workshop Introduction (20 minutes)                              |
-|               |     1.  Emphasising the research question                           |
-|               | 2.  Reading, Cleaning, Writing and Validating Data (70 minutes)     |
-|               |     1.  Databases (best practices, and why you should use them)     |
-|               |     2.  ETL (data validation, pins)                                 |
-+---------------+---------------------------------------------------------------------+
-| 10:30 - 11:00 | *Coffee break*                                                      |
-+---------------+---------------------------------------------------------------------+
-| 11:00 - 12:30 | 1.  Creating, Delivering, and Monitoring a Tidymodel                |
-|               |     1.  Vetiver (model A/B testing and versioning)                  |
-|               |                                                                     |
-|               |     2.  Tidymodels                                                  |
-+---------------+---------------------------------------------------------------------+
-| 12:30 - 13:30 | *Lunch break*                                                       |
-+---------------+---------------------------------------------------------------------+
-| 13:30 - 15:00 | 1.  Reporting                                                       |
-|               |                                                                     |
-|               |     1.  Building "shiny" things using the assets we already created |
-|               |                                                                     |
-|               |     2.  Shiny - Quarto                                              |
-+---------------+---------------------------------------------------------------------+
-| 15:00 - 15:30 | *Coffee break*                                                      |
-+---------------+---------------------------------------------------------------------+
-| 15:30 - 17:00 | 1.  Advancing your Workflow                                         |
-|               |     1.  Connect API                                                 |
-|               |     2.  Package Development (optional)                              |
-+---------------+---------------------------------------------------------------------+
+| **Time**          | **Activity**                                                |
+|-------------------|-------------------------------------------------------------|
+| **9:00 - 10:30**  | Workshop Introduction                                       |
+|                   | Reading, Cleaning, Writing and Validating Data              |
+| **10:30 - 11:00** | **Coffee break**                                            |
+| **11:00 - 12:30** | Creating, Delivering, and Monitoring a Tidymodel            |
+| **12:30 - 1:30**  | **Lunch Break**                                             |
+| **1:30-3:00**     | Reporting                                                   |
+| **3:00-3:30**     | **Coffee break**                                            |
+| **3:30-5:00**     | Advancing your Workflow                                     |
 
 ## Instructors
 
 **Ryan Johnson**, Data Science Advisor, Posit
 
-![](https://static.rainfocus.com/posit/positconf23/att/1677178604739001JAiJ/attprofile/ryan-johnson_1677178699411001Jhx9.jpeg){width="150"}
+<img src="https://static.rainfocus.com/posit/positconf23/att/1677178604739001JAiJ/attprofile/ryan-johnson_1677178699411001Jhx9.jpeg" alt="Ryan Johnson" width="150" height="150">
 
 Ryan Johnson is a Data Science Advisor at Posit with a background in Microbiology and Bioinformatics. He obtained his PhD from the Uniformed Services University in Maryland and did his postdoctoral training at the National Human Genome Research Institute, NIH. The only thing that rivals his love for infectious diseases is generating 'super cool' visualizations from large data sets using R and RStudio. In his free time, you can find Ryan running marathons/ultramarathons in the DC area or hiking miles along the Appalachian Trail. Ryan resides in Gaithersburg with his wife and two feline co-workers.
 
 **Katie Masiello**, Solutions Engineer, Posit
 
-![](https://static.rainfocus.com/posit/positconf23/att/1677178634814001OIcK/attprofile/katie-masiello_1677178747298001qORW.jpeg){width="150"}
+<img src="https://static.rainfocus.com/posit/positconf23/att/1677178634814001OIcK/attprofile/katie-masiello_1677178747298001qORW.jpeg" alt="Katie Masiello" width="150" height="150">
 
 Katie Masiello is a Solutions Engineer at Posit. A mechanical engineer by training, she found her calling in data science while working statistical analysis in the aerospace industry. A good cup of coffee, reproducibility, and making life easier for the next user are three things she loves most. Katie is an avid knitter and knitr, and she can often be found trying to tame her ridiculously overgrown garden, collecting pebbles, or thinking about taking up running as a hobby.
 
