@@ -32,17 +32,6 @@ ADD INFORMATION YOU WANT LEARNERS TO HAVE / STEPS THEY WANT THEM TO COMPLETE PRI
 
 ## Schedule
 
-| Time          | Activity                                       |
-|---------------|------------------------------------------------|
-| 09:00 - 9:30  | Workshop Introduction                          |
-| 9:30 - 10:30  | Reading, Cleaning, Writing and Validating Data |
-| 10:30 - 11:00 | *Coffee Break*                                 |
-| 11:00 - 12:30 | Tidymodels and Vetiver                         |
-| 12:30 - 1:30  | *Lunch*                                        |
-| 1:30 - 3:00   | Reporting                                      |
-| 3:00 - 3:30   | *Coffee Break*                                 |
-| 3:30 - 5:00   | Advancing Your Workflow                        |
-
 <!--
 ## Course Outline
 
@@ -84,17 +73,16 @@ ADD INFORMATION YOU WANT LEARNERS TO HAVE / STEPS THEY WANT THEM TO COMPLETE PRI
 
 -->
 
-<!-- TODO: refine this schedule. It's not super accurate --> 
 
 | **Time**          | **Activity**                                                |
 |-------------------|-------------------------------------------------------------|
 | **9:00 - 10:30**  | Workshop Introduction                                       |
 |                   | Reading, Cleaning, Writing and Validating Data              |
-| **10:30 - 11:00** | **Coffee break**                                            |
+| **10:30 - 11:00** | *Coffee break*                                              |
 | **11:00 - 12:30** | Creating, Delivering, and Monitoring a Tidymodel            |
-| **12:30 - 1:30**  | **Lunch Break**                                             |
+| **12:30 - 1:30**  | *Lunch Break*                                               |
 | **1:30-3:00**     | Reporting                                                   |
-| **3:00-3:30**     | **Coffee break**                                            |
+| **3:00-3:30**     | *Coffee break*                                              |
 | **3:30-5:00**     | Advancing your Workflow                                     |
 
 ## Instructors
