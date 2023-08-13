@@ -2,17 +2,12 @@
 
 ### posit::conf 2023
 
-by INSTRUCTOR_NAME
+by Ryan Johnson and Katie Masiello
+
 
 ------------------------------------------------------------------------
 
-INSTRUCTIONS FOR INSTRUCTORS: Please insert information about your workshop below. Then, add workshop content in the materials folder and link to each session's materials from the schedule below. You are welcomed to add more rows to the schedule. We just ask that you take breaks at the specified times. Once you are done adding information, you can remove these instructions from the README.
-
-Alternatively, you can completely redo the organization of this repo as a Quarto website or some other format you prefer to host your workshop materials. The only requirement is that your workshop materials are hosted here.
-
-------------------------------------------------------------------------
-
-:spiral_calendar: September 17 and 18, 2023\
+:spiral_calendar: September 17, 2023\
 :alarm_clock: 09:00 - 17:00\
 :hotel: ROOM TBD\
 :writing_hand: [pos.it/conf](http://pos.it/conf)
@@ -21,11 +16,15 @@ Alternatively, you can completely redo the organization of this repo as a Quarto
 
 ## Overview
 
-ADD ABSTRACT
+In this R-focused workshop, we will discuss ways to improve your data science workflows! During the course, we will review packages for data validation, alerting, modeling, and more. We'll use Posit's open source and professional tools to string all the pieces together for an efficient workflow. We'll discuss environments, managing deployed content, working with databases, and interoperability across data products.
 
-\*\*This workshop is for you if you...\*
+**This course is for you if you:**
 
-ADD THREE POINTS
+-   Build finished data products starting from raw data and are looking to improve your workflow
+-   Are looking to expand your knowledge of Posit open source and professional tools
+-   Want to improve interoperability between data products in your work or on your team
+-   Have experience developing in R. An analogous course with a Python focus is also offered
+
 
 ## Prework
 
@@ -44,64 +43,96 @@ ADD INFORMATION YOU WANT LEARNERS TO HAVE / STEPS THEY WANT THEM TO COMPLETE PRI
 | 3:00 - 3:30   | *Coffee Break*                                 |
 | 3:30 - 5:00   | Advancing Your Workflow                        |
 
+<!--
 ## Course Outline
 
--   Workshop Introduction
-    -   Get to know the Instructors
-    -   Get to know the Learners
-    -   Workshop overview and logistics
-    -   Infrastructure set-up
-    -   The Data
-    -   The Workflow Goal
--   Reading, Cleaning, Writing and Validating Data
-    -   Databases (best practices and why you should use them)
-    -   Extract-Transform-Load (ETL), data validation, and Pins.
--   Creating, Delivering, and Monitoring a Tidymodel
-    -   Tidymodels
-    -   Vetiver
--   Reporting
-    -   Shiny & Quarto
--   Advancing your Workflow
-    -   Connect API
-    -   Package Development (optional)
+- Workshop Introduction
 
-+---------------+-----------------------------------------------------------------------------------------+
-| Time          | Activity                                                                                |
-+:==============+:========================================================================================+
-| 09:00 - 10:30 | 1.  Workshop Introduction (20 minutes)                                                  |
-|               |     1.  Emphasising the research question                                               |
-|               | 2.  Reading, Cleaning, Writing and Validating Data (70 minutes)                         |
-|               |     1.  Databases (best practices, and why you should use them)                         |
-|               |     2.  ETL (data validation, pins)                                                     |
-+---------------+-----------------------------------------------------------------------------------------+
-| 10:30 - 11:00 | *Coffee break*                                                                          |
-+---------------+-----------------------------------------------------------------------------------------+
-| 11:00 - 12:30 | 1.  Creating, Delivering, and Monitoring a Tidymodel                                    |
-|               |     1.  Vetiver (model A/B testing and versioning)                                      |
-|               |                                                                                         |
-|               |     2.  Tidymodels                                                                      |
-|               |                                                                                         |
-|               |         **The goal is not to teach tidymodels, it's what to do what a model is built.** |
-+---------------+-----------------------------------------------------------------------------------------+
-| 12:30 - 13:30 | *Lunch break*                                                                           |
-+---------------+-----------------------------------------------------------------------------------------+
-| 13:30 - 15:00 | 1.  Reporting                                                                           |
-|               |                                                                                         |
-|               |     1.  Building "shiny" things using the assets we already created                     |
-|               |                                                                                         |
-|               |     2.  Shiny - Quarto                                                                  |
-+---------------+-----------------------------------------------------------------------------------------+
-| 15:00 - 15:30 | *Coffee break*                                                                          |
-+---------------+-----------------------------------------------------------------------------------------+
-| 15:30 - 17:00 | 1.  Advancing your Workflow                                                             |
-|               |     1.  Connect API                                                                     |
-|               |     2.  Package Development (optional)                                                  |
-+---------------+-----------------------------------------------------------------------------------------+
+- Get to know the Instructors
 
-## Instructor
+- Get to know the Learners
 
-ADD INSTRUCTOR BIO
+- Workshop overview and logistics
 
-------------------------------------------------------------------------
+- Infrastructure set-up
+
+- The Data
+
+- The Workflow Goal
+
+- Reading, Cleaning, Writing and Validating Data
+
+- Databases (best practices and why you should use them)
+
+- Extract-Transform-Load (ETL), data validation, and Pins.
+
+- Creating, Delivering, and Monitoring a Tidymodel
+
+- Tidymodels
+
+- Vetiver
+
+- Reporting
+
+- Shiny & Quarto
+
+- Advancing your Workflow
+
+- Connect API
+
+- Package Development (optional)
+
+-->
+
+<!-- TODO: refine this schedule. It's not super accurate --> 
+
++---------------+---------------------------------------------------------------------+
+| Time          | Activity                                                            |
++:==============+:====================================================================+
+| 09:00 - 10:30 | 1.  Workshop Introduction (20 minutes)                              |
+|               |     1.  Emphasising the research question                           |
+|               | 2.  Reading, Cleaning, Writing and Validating Data (70 minutes)     |
+|               |     1.  Databases (best practices, and why you should use them)     |
+|               |     2.  ETL (data validation, pins)                                 |
++---------------+---------------------------------------------------------------------+
+| 10:30 - 11:00 | *Coffee break*                                                      |
++---------------+---------------------------------------------------------------------+
+| 11:00 - 12:30 | 1.  Creating, Delivering, and Monitoring a Tidymodel                |
+|               |     1.  Vetiver (model A/B testing and versioning)                  |
+|               |                                                                     |
+|               |     2.  Tidymodels                                                  |
++---------------+---------------------------------------------------------------------+
+| 12:30 - 13:30 | *Lunch break*                                                       |
++---------------+---------------------------------------------------------------------+
+| 13:30 - 15:00 | 1.  Reporting                                                       |
+|               |                                                                     |
+|               |     1.  Building "shiny" things using the assets we already created |
+|               |                                                                     |
+|               |     2.  Shiny - Quarto                                              |
++---------------+---------------------------------------------------------------------+
+| 15:00 - 15:30 | *Coffee break*                                                      |
++---------------+---------------------------------------------------------------------+
+| 15:30 - 17:00 | 1.  Advancing your Workflow                                         |
+|               |     1.  Connect API                                                 |
+|               |     2.  Package Development (optional)                              |
++---------------+---------------------------------------------------------------------+
+
+## Instructors
+
+**Ryan Johnson**, Data Science Advisor, Posit
+
+![](https://static.rainfocus.com/posit/positconf23/att/1677178604739001JAiJ/attprofile/ryan-johnson_1677178699411001Jhx9.jpeg){width="150"}
+
+Ryan Johnson is a Data Science Advisor at Posit with a background in Microbiology and Bioinformatics. He obtained his PhD from the Uniformed Services University in Maryland and did his postdoctoral training at the National Human Genome Research Institute, NIH. The only thing that rivals his love for infectious diseases is generating 'super cool' visualizations from large data sets using R and RStudio. In his free time, you can find Ryan running marathons/ultramarathons in the DC area or hiking miles along the Appalachian Trail. Ryan resides in Gaithersburg with his wife and two feline co-workers.
+
+**Katie Masiello**, Solutions Engineer, Posit
+
+![](https://static.rainfocus.com/posit/positconf23/att/1677178634814001OIcK/attprofile/katie-masiello_1677178747298001qORW.jpeg){width="150"}
+
+Katie Masiello is a Solutions Engineer at Posit. A mechanical engineer by training, she found her calling in data science while working statistical analysis in the aerospace industry. A good cup of coffee, reproducibility, and making life easier for the next user are three things she loves most. Katie is an avid knitter and knitr, and she can often be found trying to tame her ridiculously overgrown garden, collecting pebbles, or thinking about taking up running as a hobby.
+
+
+## Notice
+The sample data science project used for this workshop provides applications using data that has been modified for use from its original source, www.cityofchicago.org, the official website of the City of Chicago. The City of Chicago makes no claims as to the content, accuracy, timeliness, or completeness of any of the data provided at this site. The data provided at this site is subject to change at any time. It is understood that the data provided at this site is being used at one’s own risk.
 
 ![](https://i.creativecommons.org/l/by/4.0/88x31.png) This work is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
