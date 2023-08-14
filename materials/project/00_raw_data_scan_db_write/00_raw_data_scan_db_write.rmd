@@ -44,7 +44,7 @@ start_time <- Sys.time()
 if(test_mode == TRUE){
   inspections_raw <- pin_read(board_connect(), "katie.masiello/inspections_raw_test")
 }else{
-inspections_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv") |> 
+inspections_raw <- readr::read_csv(paste0("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv?$$app_token=",Sys.getenv("CONF23_APP_TOKEN"))) |> 
   #clean column names so they are postgres-compliant (no special characters or spaces) and less annoying to type
   clean_names() |> 
   #convert data to uppercase for uniformity
