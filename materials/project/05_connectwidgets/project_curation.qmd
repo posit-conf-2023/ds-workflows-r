@@ -1,0 +1,144 @@
+---
+title: "Chicago Food Inspections Predictions"
+format:
+  html:
+    pagetitle: "End-to-End Data Science Workflows with Posit Tools — R Focus"
+    description-meta: "ETL, alerting, model serving, and app deployment--powered by
+      open source data science and Posit professional tools"
+resource_files:
+- "ds-workflows-r.png"
+---
+
+::: {.column-screen}
+`r gitlink::ribbon_css("https://github.com/posit-conf-2023/ds-workflows-r", text="View on GitHub")`
+
+```{css, echo=FALSE}
+.jumbotron {
+  color: white;
+  text-shadow: -1px -1px 1px rgba(255, 255, 255, 0.2), 
+               1px 1px 1px rgba(0, 0, 0, 0.6);
+  background-image: url("https://source.unsplash.com/1920x1080/?restaurant-kitchen");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 30vh;
+  padding-top: 0px;
+  margin-top: 0px;
+}
+.jumbotron-title {
+  margin-left: 25px;
+  margin-right: 25px;
+}
+.quarto-title {
+  display: none;
+}
+```
+
+<div class="jumbotron jumbotron-fluid">
+<div class="container">
+<h1 class="display-3 jumbotron-title" color="#f0f0f0">Chicago Food Inspections Predictions</h1>
+<p class="lead jumbotron-title">End-to-End Data Science Workflows with Posit Tools — R Focus</p>
+</div>
+</div>
+
+:::
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(connectwidgets)
+library(dplyr)
+library(stringr)
+
+client <- connect()
+all_content <- client %>% content()
+project_r <- all_content %>% 
+  by_tag("posit::conf(2023) R Workflows") 
+
+```
+
+<br>
+
+## Background
+
+This project illustrates using Posit Team to develop and deploy a data science project featuring:
+
+![](ds-workflows-r.png)
+
+### Scheduled jobs
+
+- Fetching and cleaning data from a continuously updating web source
+- Pushing cleaned data to a relational database
+- Creating intermediate datasets for subsequent use
+
+### Pins
+
+- Serving intermediate datasets and model objects for use in apps, APIs, and other jobs
+
+### APIs / Vetiver
+
+- Serving model predictions via HTTP requests deployed using vetiver
+
+### Development and Production Apps
+  
+- Exposing model predictions to end-users through Shiny apps
+- Using git-backed deployment to keep a stable version of the application available from the main branch while doing development work on another branch
+
+### Private Packages
+
+- Encapsulate re-usable logic in an R package, and distribute with Package Manager 
+
+## Content
+
+Explore the deployed items below:
+
+### Scheduled Jobs
+
+::: {.panel-tabset}
+
+#### ETL
+
+```{r}
+project_r %>% 
+  filter(str_detect(title, "00|01")) %>%
+  arrange(title) %>%
+  rsc_card()
+```
+
+#### Modeling
+
+```{r}
+project_r %>% 
+  filter(str_detect(tolower(title), "model")) %>%
+  arrange(title) %>%
+  rsc_card()
+```
+
+:::
+
+### Pins
+
+```{r}
+project_r %>%
+  filter(str_detect(tolower(title), "pinned")) %>%
+  rsc_table()
+```
+
+### APIs
+
+```{r}
+project_r %>%
+  filter(str_detect(title, "API")) %>%
+  rsc_card()
+```
+
+### Apps
+
+```{r}
+project_r %>%
+  filter(str_detect(title, "app")) %>%
+  rsc_card()
+```
+
+
+#### Notice
+The sample data science project used for this demonstration provides applications using data that has been modified for use from its original source, www.cityofchicago.org, the official website of the City of Chicago. The City of Chicago makes no claims as to the content, accuracy, timeliness, or completeness of any of the data provided at this site. The data provided at this site is subject to change at any time. It is understood that the data provided at this site is being used at one’s own risk.
