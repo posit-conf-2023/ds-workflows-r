@@ -10,8 +10,9 @@ resource_files:
 - "email-01_data_integrity_alert.Rmd"
 - "email-01_data_summary.Rmd"
 ---
- 
+
 # Load packages
+
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 
 library(tidyverse)
@@ -30,14 +31,13 @@ library(arrow) # we might drop this if we decide not to write the pin in arrow f
 
 ```
 
-
 # Overview
 
-1. Pull data from database (`inspections_raw`)
-1. Filter inspection data to only types we are interested in (`inspections_filtered`)
-1. Validate and pass only passing data (`inspections_validated`)
-1. Run a few transforms, mutations, cleanups and finalize dataset processing (`inspections_processed`)
-1. Write pins
+1.  Pull data from database (`inspections_raw`)
+2.  Filter inspection data to only types we are interested in (`inspections_filtered`)
+3.  Validate and pass only passing data (`inspections_validated`)
+4.  Run a few transforms, mutations, cleanups and finalize dataset processing (`inspections_processed`)
+5.  Write pins
 
 # Pull data from Database
 
@@ -103,20 +103,12 @@ inspections_filtered <-
   filter(results %in% c("PASS", "FAIL", "PASS W/ CONDITIONS")) 
 
 
-#Now let's also join in the reference business data table so we have a "source of truth" DBA name to check against.
-# inspections_step2 <- 
-#   inspections_filtered |> 
-#   left_join(select(bus_data_ref, license_number, doing_business_as_name), by=join_by(license_number)) |>
-#   rename(ref_dba_name = doing_business_as_name) 
-
-# Finally, add a column with the Jaro ("jw") string distance to help us determine how similar or dissimilar the inspectors' inputted dba name is to the reference. A distance of 0 indicates identical; a 1 indicates completely dissimilar
-# inspections_processed <- tidystringdist::tidy_stringdist(inspections_step2,v1=dba_name, v2=ref_dba_name, method="jw") 
-
-
 ```
 
 # Inspections data validation
+
 Perform data validation. The first validation just confirms the overall size and format of the data frame. If the validation fails here, a warning is thrown and the validation will not proceed.
+
 ```{r data-fram-size-and-format-validation}
 
 
@@ -192,7 +184,9 @@ if (alert_me == TRUE){
 ```
 
 # Data validation
+
 As long as the the validation on Data Frame integrity passes, the following additional validations will run
+
 ```{r data-integrity-validation}
 
 
@@ -227,11 +221,6 @@ agent_main <-
   # verify w col_vals_within_spec for postal_code / aka zip
   col_vals_within_spec(columns = zip, spec = "postal[USA]", na_pass = TRUE) |> 
 
-
-  # Is the DBA inconsistent with that listed on the Business License?
-  # col_vals_lte(columns = jw, 
-  #              value = 0.34, 
-  #              label = "Dissimilarity measure between reported DBA Name and licensed DBA Name") |> 
   interrogate() 
 
 agent_main
@@ -239,6 +228,7 @@ agent_main
 ```
 
 # Sunder the data to remove failed rows
+
 ```{r sunder-data}
 
 
@@ -246,8 +236,6 @@ inspections_validated <- get_sundered_data(agent_main, type = "pass")
 inspections_fail_validation <- get_sundered_data(agent_main, type = "fail")
 
 ```
-
-
 
 # Final data transformation and processing
 
@@ -300,12 +288,18 @@ inspections_processed <-
   mutate(v_total = sum(v_num)) |> 
   mutate(v_cumsum = cumsum(v_num)) |> 
   mutate(v_cumsum_cs = cumsum(v_num_cs)) |> 
+  
+  # Calcuate total pass and fail inspections
+  mutate(times_inspected_total = n()) |> 
+  mutate(times_passed_total = sum(results == "PASS")) |> 
+  mutate(times_failed_total = sum(results == "FAIL")) |> 
   ungroup(license_number)  
 ```
 
-
 # Summarize info
-Report on summary info. How many new inspections happened since last update?  How many total inspections?
+
+Report on summary info. How many new inspections happened since last update? How many total inspections?
+
 ```{r summary-info}
 
 
@@ -330,13 +324,194 @@ new_inspections |> gt() |>
   tab_source_note(source_note = md(glue("**New records added: {nrow(new_inspections)} <br> Total inspection records: {nrow(inspections_processed)}**"))) |> 
   opt_interactive()
 
+# TODO: Add this to a package
+food_emoji <- function(n=1) {
+  emojis <- c("🥪", "🍕", "🍲", "🥘", "🥡", "🫘", "🧆", "🍛", "🍤",
+              "🍜", "🫒", "🥓", "🥚", "🥑", "🥐", "🥔", "🥗", "🍽",
+              "🥠", "🍱", "🍳", "🥞", "🧇", "🥯", "🍩", "🍗", "🌯",
+              "☕","🧋", "🥤", "🍮", "🥧", "🧁", "🍪", "🍨", "🥟",
+              "🍣", "🍝", "🍚", "🫕", "🥙", "🫔", "🌮", "🌭", "🍟",
+              "🍔", "🥨", "🥖", "🥜") 
+  sample(emojis, n)
+  
+}
+
+send_summary <- if(nrow(new_inspections) > 0){TRUE}else{FALSE}
+ 
+if(send_summary){
 
 summary_email <- render_connect_email(input = "email-01_data_summary.Rmd") 
 
 attach_connect_email(summary_email, subject = glue("ℹ️️Inspections Project: 
-                       🍕{nrow(new_inspections)} records added to dataset"))
+                       {food_emoji()} {nrow(new_inspections)} records added to dataset"))
 
-## TODO: MAKE DATA DICTIONARY
+}else{suppress_scheduled_email()}
+
+```
+
+# Summarize inspections per week 
+
+```{r inspections-per-week}
+
+inspections_per_week_by_facility <- inspections_processed |> 
+  select(facility_type, inspection_date, results) |> 
+  group_by(facility_type, year(inspection_date), week(inspection_date)) |> 
+  summarize(inspections_this_week = n(), 
+            pass_this_week = sum(results == "PASS"), 
+            fail_this_week = sum(results == "FAIL"))
+
+inspections_per_week <- inspections_processed |> 
+  select(inspection_date, results) |> 
+  group_by(year(inspection_date), week(inspection_date)) |> 
+  summarize(inspections_this_week = n(), 
+            pass_this_week = sum(results == "PASS"), 
+            fail_this_week = sum(results == "FAIL"))
+
+
+```
+
+
+
+# Data Dictionary
+```{r data-dictionary}
+
+create_informant(
+  tbl = inspections_processed,
+  label = "Data Dictionary - Validated Data from Chicago Food Inspection Dataset, Processed for Model Training") |> 
+  info_tabular(
+    description = "This table defines the columns in the processed dataset from City of Chicago Food Inspection dataset. It has been validated and processed for use as a model training dataset."
+  ) |> 
+  info_section(
+    section_name = "further information",
+    `source` = "Data from City of Chicago, <https://www.cityofchicago.org>",
+    `🔄 updates` = "Original data source updated every Friday. This table last updated {Sys.Date()}.",
+    `ℹ️ note` = "This example material using data that has been modified for use from its original source, <https://www.cityofchicago.org>, the official website of the City of Chicago.  The City of Chicago makes no claims as to the content, accuracy, timeliness, or completeness of any of the data provided at this site.  The data provided at this site is subject to change at any time.  It is understood that the data provided at this site is being used at one's own risk."
+  ) |> 
+  info_columns(
+    columns = inspection_id,
+    `ℹ️` = "A unique record number."
+  ) |> 
+  info_columns(
+    columns = dba_name,
+    `ℹ️` = "'Doing Business As.' This is legal name of the establishment."
+  ) |> 
+  info_columns(
+    columns = aka_name,
+      `ℹ️` = "'Also Known As.' This is the name the public would know the establishment as."
+  ) |> 
+  info_columns(
+    columns = license_number,
+      `ℹ️` = "This is a unique number assigned to the establishment for the 
+purposes of licensing by the Department of Business Affairs and Consumer Protection."
+  ) |>  
+  info_columns(
+    columns = facility_type,
+      `ℹ️` =
+      "Cleaned and validated data includes only establishments described by one of the following: \n - **Bakery** \n - **Coffee Shop** \n - **Grocery Store** \n - **Restaurant** \n - **Wrigley Field Rooftop**"
+  )  |>
+  info_columns(
+    columns = risk,
+      `ℹ️` = "Risk category of facility. Each establishment is categorized as to its risk of adversely affecting the public's health, with 1 being the highest and 3 the lowest. The frequency of inspection is tied to this risk, with risk 1 establishments inspected most frequently and risk 3 least frequently."
+  ) |>  
+  info_columns(
+    columns = address,
+      `ℹ️` = "Street address, city, state and zip code of facility: This is the complete address where the facility is located."
+  ) |>  
+  info_columns(
+    columns = city,
+      `ℹ️` = "City of the facility."
+  ) |>  
+  info_columns(
+    columns = state,
+      `ℹ️` = "State of the facility."
+  ) |>  
+  info_columns(
+    columns = zip,
+      `ℹ️` = "Zip Code of the facility."
+  ) |>  
+  info_columns(
+    columns = inspection_date,
+      `ℹ️` = "This is the date the inspection occurred. A particular establishment is likely to have multiple inspections which are denoted by different inspection dates."
+  ) |>  
+  info_columns(
+    columns = inspection_type,
+      `ℹ️` = "An inspection can be one of the following types: \n - **canvass**: the most common type of inspection performed at a frequency relative to the risk of the establishment \n - **consultation**: when the inspection is done at the request of the owner prior to the opening of the establishment \n - **complaint**: when  the inspection is done in response to a complaint against the establishment \n - **license**: when the inspection is done as a requirement for the establishment to receive its license to operate \n - **suspect food poisoning**: 🤢when the inspection is done in response to one or more persons claiming to have gotten ill as a result of eating at the establishment (a specific type of complaint-based inspection) \n - **task-force inspection**: when an inspection of a bar or tavern is done. \n Re-inspections can occur for most types of these inspections and are indicated as such."
+  ) |>  
+  info_columns(
+    columns = results,
+      `ℹ️` = "An inspection can pass, pass with conditions or fail. Establishments receiving a 'pass' were found to have no critical or serious violations (violation number 1-14 and 15-29, respectively). Establishments receiving a 'pass with conditions' were found to have critical or serious violations, but these were corrected during the inspection. Establishments receiving a 'fail' were found to have critical or serious violations that were not correctable during the inspection. An establishment receiving a 'fail' does not necessarily mean the establishment's licensed is suspended."
+  ) |>  
+  info_columns(
+    columns = violations,
+      `ℹ️` = "An establishment can receive one or more of 45 distinct violations (violation numbers 1-44 and 70). For each violation number listed for a given establishment, the requirement the establishment must meet in order for it to NOT receive a violation is noted, followed by a specific description of the findings that caused the violation to be issued."
+  ) |>  
+  info_columns(
+    columns = latitude,
+      `ℹ️` = "The Latitude of the facility."
+  ) |>
+  info_columns(
+    columns = longitude,
+      `ℹ️` = "The Longitude of the facility."
+  ) |>
+  info_columns(
+    columns = location,
+      `ℹ️` = "The Latitude and Longitude of the facility."
+  ) |>
+  info_columns(
+    columns = prev_inspection_date,
+      `ℹ️` = "The data of the previous inspection record. A NA value indicates there are no prior records."
+  ) |>  
+  info_columns(
+    columns = days_since_last_inspection,
+      `ℹ️` = "The difference between `inspection_date` and `prev_inspection_date"
+  ) |>
+    info_columns(
+    columns = v_list,
+      `ℹ️` = "Violations identified in the `violations` column, in list form."
+  ) |>
+    info_columns(
+    columns = v_num,
+      `ℹ️` = "The number of items in `v_list`, corresponding to the number of violations found in a particular inspection."
+  ) |>
+    info_columns(
+    columns = v_num_cs,
+      `ℹ️` = "The number of violations that are of \"critical\" type, indicated as violation numbers 1-29."
+  ) |>
+    info_columns(
+    columns = v_total,
+      `ℹ️` = "The total violations across all inspection records for a given license number."
+  ) |>
+    info_columns(
+    columns = v_cumsum,
+      `ℹ️` = "The cumulative total of violations for a given license number."
+  ) |>
+    info_columns(
+    columns = days_since_last_inspection,
+      `ℹ️` = "The difference between `inspection_date` and `prev_inspection_date"
+  ) |>
+    info_columns(
+    columns = v_cumsum_cs,
+      `ℹ️` = "The cumulative total of critical violations for a given license number."
+  ) |>
+      info_columns(
+    columns = times_inspected_total,
+      `ℹ️` = "Total number of times a facility with a given license number has been inspected."
+  ) |>
+      info_columns(
+    columns = times_passed_total,
+      `ℹ️` = "The total number of times a facility has passed an inspection."
+  ) |>
+      info_columns(
+    columns = times_failed_total,
+      `ℹ️` = "The total number of times a facility has failed an inspection."
+  ) |>
+  
+  
+  incorporate()
+
+
+```
+
 
 ```
 
@@ -365,7 +540,7 @@ restaurants_active_license <-
 active_license_numbers <- restaurants_active_license |> pull(license_number)
 
 ```
-  
+
 ## Restaurants that have inspection history and have a current active license
 
 This data will be our model inputs. (1 record per license number)
@@ -375,7 +550,7 @@ This data will be our model inputs. (1 record per license number)
 
 model_inputs <- inspections_processed |> 
   filter(license_number %in% active_license_numbers) |> 
-  select(dba_name, license_number, facility_type, risk, address, city, zip, inspection_date, latitude, longitude, v_cumsum, v_cumsum_cs) |> 
+  select(dba_name, license_number, facility_type, risk, address, city, zip, inspection_date, latitude, longitude, v_cumsum, v_cumsum_cs, times_inspected_total, times_passed_total, times_failed_total, aka_name) |> 
   group_by(license_number) |> 
   arrange(desc(inspection_date)) |> 
   slice(1) |> 
@@ -386,11 +561,18 @@ model_inputs <- inspections_processed |>
 
 ```
 
-
-
 # Pin processed data
+
 ```{r pin-processed-data-and-restaurants-w-active-licenses}
 #| label: Pin processed data and restaurant reference data
+
+board |> pin_write(inspections_per_week_by_facility,
+                   name = paste0(user_name, "/inspections_per_week_by_facility"),
+                   description = "Number of facility inspections per week, broken out by Bakery, Grocery Store, Wrigley Field Rooftop, or Restaurant")
+
+board |> pin_write(inspections_per_week,
+                   name = paste0(user_name, "/inspections_per_week"),
+                   description = "Number of inspections per week of type Bakery, Grocery Store, Wrigley Field Rooftop, or Restaurant.  See pin `inspections_per_week_by_facility` for by-facility breakdown.")
 
 board |> pin_write(inspections_processed,
                    name = paste0(user_name,"/inspections_processed"), 
@@ -400,7 +582,7 @@ board |> pin_write(inspections_processed,
 
 
 board |> pin_write(model_inputs, 
-                   name = paste0(user_name,"/model_inputs"),
+                   name = paste0(user_name,"/inspections_model_inputs"),
                    description = "Reference df with the list of restaurants that 
                    can be submitted to the model. 
                    From inspection dataset, reduced to facilities that have an 
@@ -410,17 +592,24 @@ board |> pin_write(model_inputs,
 
 # prune saved versions to last 28 days
 pin_versions_prune(board, paste0(user_name,"/inspections_processed"), days = 28)
-pin_versions_prune(board, paste0(user_name,"/model_inputs"), days = 28)
+pin_versions_prune(board, paste0(user_name,"/inspections_model_inputs"), days = 28)
+pin_versions_prune(board, paste0(user_name,"/inspections_per_week"), days = 28)
+pin_versions_prune(board, paste0(user_name,"/inspections_per_week_by_facility"), days = 28)
+
 
 ```
 
 # Logging information
+
 ```{r logging, results="asis"}
 
 
 glue("Report run {blastula::add_readable_time()}")
 
-glue("Inspection data was validated and sundered. {nrow(inspections_fail_validation)} rows that failed validation were removed. Restaurant reference data for model and cleaned, validated and processed inspection data written to pin. An email summary of new records added to dataset was generated, and is shown below. {summary_email$html_html}")
+glue("Inspection data was validated and sundered. {nrow(inspections_fail_validation)} rows that failed validation were removed. Restaurant reference data for model and cleaned, validated and processed inspection data written to pin.")
+if(send_summary == TRUE){glue("An email summary of new records added to dataset was generated, and is shown below. {summary_email$html_html}")}else{
+{glue("Because no new records were added to the database, an email summary was not sent.")}
+}
 
 
 ```
