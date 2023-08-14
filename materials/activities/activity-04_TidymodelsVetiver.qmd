@@ -66,7 +66,7 @@ str(diamonds)
 
 ### Train a model to predict `price`
 
-Within the `workflow()` function below, you will add two arguments. The first is the formula for the model, and the second will be they type of model you want to use. For the formula, we would like you to predict the `price` of diamonds based on every other column in the dataset (represented by a `.`). And to start, we'll use linear regression (`linear_reg()`).
+Within the `workflow()` function below, you will add two arguments. The first is the formula for the model, and the second will be the type of model you want to use. For the formula, we would like you to predict the `price` of diamonds based on every other column in the dataset (represented by a `.`). And to start, we'll use linear regression (`linear_reg()`).
 
 Next, fit the workflow to the data (`diamonds_train`). As a reminder, we sliced the last 100 rows of the raw diamonds dataset to replicate "new" data that will be used later on.
 
@@ -75,11 +75,12 @@ Next, fit the workflow to the data (`diamonds_train`). As a reminder, we sliced 
 diamonds_train <- diamonds |> slice_tail(n = -100)
 diamonds_new <- diamonds |> slice_tail(n = 100)
 
-price_fit <- 
-  # Start by creating a workflow
-  workflow(price ~ ., linear_reg()) |> 
-  # fit the model using 75% of the diamonds dataset
-  fit(diamonds_train)
+model_recipe <- recipes::recipe(price ~ ., data = diamonds_train)
+model_type <- parsnip::linear_reg()
+model_wflow <- workflows::workflow(model_formula, model_type)
+
+# Fit the model to data
+model_fit <- fit(model_wflow, diamonds_train)
 ```
 
 ## Activity 2 - Create and Deploy a Vetiver model
