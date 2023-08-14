@@ -19,19 +19,29 @@ library(doParallel) # for parallel processing
 library(pins)       # Saving model to Connect
 library(plumber)    # For serving model as an API
 library(arrow)      # for reading pinned data
+library(DBI)        # DB Connection
+library(RPostgres)  # DB Connection
 
 tidymodels_prefer() # for handling package conflicts
 ```
 
 ## Read in Data
 
-**🔴 Need to update to pull in data from DB!**
-
 ```{r}
 #| label: read-data
 #| cache: true
 
-inspections_data <- pin_read(board, "katie.masiello/inspections_processed")
+# Connect to postgres DB
+con <- dbConnect(RPostgres::Postgres(), 
+                 host = Sys.getenv("CONF23_DB_HOST"), 
+                 port = "5432", 
+                 dbname = "conf23_r", 
+                 user = Sys.getenv("CONF23_DB_USER"), 
+                 password = Sys.getenv("CONF23_DB_PASSWORD"))
+
+# Read validated food inspections data
+inspections_data <- 
+  tbl(con, "inspections_processed")
 ```
 
 ## Split Data
