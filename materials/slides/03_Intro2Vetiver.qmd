@@ -15,7 +15,7 @@ format:
     filters:
       - positconfslides
 execute: 
-  eval: true
+  eval: false
   echo: true
 ---
 
@@ -23,21 +23,21 @@ execute:
 
 ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/tidymodels.png?raw=true){.absolute top="200" left="50" width="260"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){.absolute top="200" left="310" width="260"}
 
-## Agenda {.toc2-dark}
+## Agenda
+
+-   Food inspections model goal
 
 -   Tidymodels
 
     -   Crash course on tidymodels
 
-    -   Create your own tidymodel! \[Assignment\]
-
-    -   Introduction to workbench jobs \[Assignment\]
-
 -   Vetiver
 
     -   What is Vetiver?
         -   Overview of Pins and Plumber
-    -   Deploy and monitor your tidymodel \[Assignment\]
+    -   Create, deploy and monitor your tidymodel \[Assignment\]
+    -   Create a model card
+    -   {{< bi sign-turn-right-fill color=orange >}} Running jobs on Posit Workbench \[Assignment\]
 
 -   Food inspection model (xgboost)
 
@@ -58,6 +58,38 @@ THIS IS NOT A MODELING WORKSHOP!
 
 ... but modeling is still super cool 😎 !
 
+## Review
+
+\<diagram of workflow to date\>
+
+## What's the Goal?
+
+::: columns
+::: {.column width="50%"}
+![](slide_resources/data_model_meme.jpg){width="710"}
+:::
+
+::: {.column width="50%"}
+**What we have:**
+
+-   A ***beautiful - tidy - validated*** dataset
+
+    -   Historical food inspection results
+
+    -   Business information
+
+<br>
+
+**What do we want:**
+
+-   A <font color="#9A4665"> MODEL </font> that can *predict if an establishment will fail an inspection*
+:::
+:::
+
+## Where are we going
+
+\<diagram of workflow and steps we'll complete in this assignment\>
+
 ## Introduction to Tidymodels {.content-light}
 
 ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/tidymodels.png?raw=true){.absolute top="200" right="50" width="260"}
@@ -66,4 +98,68 @@ THIS IS NOT A MODELING WORKSHOP!
 
 ✋ If you have used `tidymodels` before?
 
-. . .
+## Introduction to Tidymodels {.content-light}
+
+<br>
+
+Steps to create (most) models:
+
+::: incremental
+1.  Data - preprocessing?
+2.  Create a formula - what does the model do?
+3.  Define your model type - Linear regression, decision tree, xgboost, etc?
+4.  Train
+5.  Test
+6.  Predict
+:::
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/recipes.png?raw=true){.absolute top="100" right="300" width="150"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/parsnip.png?raw=true){.absolute top="100" right="450" width="150"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/workflows.png?raw=true){.absolute top="100" right="150" width="150"}
+
+## Introduction to Tidymodels {.content-light}
+
+<br>
+
+```{r}
+library(tidymodels)
+
+# Create Recipe
+model_recipe <- recipes::recipe(what-to-predict ~ data-features, 
+                                data = your-data)
+
+# Define model using parsnip (e.x. linear regression)
+model_type <- parsnip::linear_reg()
+
+# Combine the two to create a workflow
+model_wflow <- workflows::workflow(model_recipe, model_type)
+
+# Fit workflow to data using parsnip
+model_fit <- parsnip::fit(model_wflow, your-data)
+```
+
+## Introduction to Tidymodels {.content-light}
+
+::: center
+<h2><br>**Activity Time!**</h2>
+:::
+
+::: {.callout-note icon="false"}
+## Activity
+
+👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
+
+**Complete Activity 1 only!**
+:::
+
+## Introduction to Vetiver {.content-light}
+
+![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){fig-align="center" width="830"}
+
+::: fragment
+...but first!
+:::
+
+## Introduction to Pins & Plumber {.content-light}
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/pins.png?raw=true){.absolute top="120" right="800" width="500"}
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/plumber.png?raw=true){.absolute top="120" right="300" width="500"}
