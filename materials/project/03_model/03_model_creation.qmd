@@ -1,5 +1,6 @@
 ---
 title: 03_model_creation
+engine: knitr
 ---
 
 ## Set up Environment
@@ -41,7 +42,8 @@ con <- dbConnect(RPostgres::Postgres(),
 
 # Read validated food inspections data
 inspections_data <- 
-  tbl(con, "inspections_processed")
+  tbl(con, "inspections_processed") |> 
+  collect()
 ```
 
 ## Split Data
@@ -66,11 +68,9 @@ inspections_test <- testing(inspections_split)
 
 Before we do any actual modeling, we first create a recipe. A recipe is a description of the steps to be applied to a data set in order to prepare it for modeling. In the below recipe, we will do the following:
 
--   Define our modeling goal, which is to predict `Results` based on `Facility Type`, `Risk`, `Zip`, `v_cumsum`, and `v_cumsum_cs`.
+-   Define our modeling goal, which is to predict `Results` based on `Facility Type`, `Risk`, `Latitude`, `Longitude`, `v_cumsum`, and `v_cumsum_cs`, and `days_since_last_inspection`.
 
 -   Modeling works better with binary predictors (1 or 0). Since `Facility Type` is nominal, we'll widen the column to multiple columns based on the various factors, (e.g., `Restaurant`), and a 1 or 0 as the value, by using the `step_dummy()` function.
-
--   In the above step, it's easy to convert `Facility Type` to binary since there are only a few unique levels. However, `Zip` has many unique levels. Thus, we can convert `Zip` to a numeric column (or score) by measuring the effect of each zip code on `Results`. In this recipe, we'll use a glm model within the `step_lencode_glm()` function to achieve this.
 
 ```{r}
 #| label: create-recipe
