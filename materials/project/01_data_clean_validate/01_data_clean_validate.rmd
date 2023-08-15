@@ -9,6 +9,8 @@ output:
 resource_files:
 - "email-01_data_integrity_alert.Rmd"
 - "email-01_data_summary.Rmd"
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Load packages
@@ -321,7 +323,6 @@ last_inspection_date <- last_inspection |>
 new_inspections <- inspections_processed |> 
   filter(!inspection_id %in% last_inspection$inspection_id) |>
   select(inspection_date, dba_name, facility_type, results, v_num, v_num_cs)
-}
 
 new_inspections |> gt() |> 
   tab_header(
@@ -329,6 +330,7 @@ new_inspections |> gt() |>
     subtitle = md("Inspections data for Restaurant, Grocery Store, Coffee Shop, Bakery, or Wrigley Field Rooftop ⚾")) |>
   tab_source_note(source_note = md(glue("**New records added: {nrow(new_inspections)} <br> Total inspection records: {nrow(inspections_processed)}**"))) |> 
   opt_interactive()
+}
 
 # TODO: Add this to a package
 food_emoji <- function(n=1) {
