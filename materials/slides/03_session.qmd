@@ -252,3 +252,5 @@ Content returned by `connectwidgets::content` will be scoped to the API key prov
 <https://colorado.posit.co/rsc/chicago-food-r/>
 
 ## How will I know if people are consuming my content?
+
+- 🧰 `connectapi` 
