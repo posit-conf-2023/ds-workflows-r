@@ -599,10 +599,10 @@ pin_versions_prune(board, paste0(user_name,"/inspections_per_week_by_facility"),
 ```
 
 # Write data to database
-```{r}
+```{r write-validated-data-to-db}
 # write validated and processed data
 start_time <- Sys.time()
-dbWriteTable(con, "inspections_processed", inspections_processed, overwrite = TRUE)
+dbWriteTable(con, "inspections_processed", (inspections_processed |> select(-v_list)), overwrite = TRUE)
 end_time <- Sys.time()
 duration <- end_time - start_time
 print(paste("ℹ️ Info: Writing validated and processed inspection data to database took", round(duration[[1]], 2),  units(duration)))
