@@ -114,7 +114,7 @@ Two sides to this coin:
 :::{.fragment}
 
 :::{.column width=45%}
-Performance workflow:
+{{< bi sign-turn-right-fill color=orange >}} Performance workflow:
 
 :::{.smaller}
 - Add logging to app, either basic `message` statements or use [`log4r`](https://github.com/johnmyleswhite/log4r) package
@@ -186,3 +186,71 @@ Runtime settings
 :::
 
 ::::
+
+##  {.brackets-dark}
+
+::: section-title-dark
+Managing Content
+:::
+
+
+## Managing Content {.brackets-light}
+
+::: incremental
+-   How can I organize this content so stakeholders can find it?
+-   How will I know if people are consuming my content?
+
+:::
+
+## How can I organize this content so stakeholders can find it?
+
+- [Tags in Connect](https://docs.posit.co/connect/admin/content-management/index.html#tags)
+
+![](slide_resources/tag_schema.png){height=400 fig-align=center}
+
+- 🧰 [`connectwidgets`](https://rstudio.github.io/connectwidgets/) for content curation
+
+## Connectwidgets flow
+
+Incorporate into a stylized R Markdown or Quarto document or Shiny application.
+```{.r code-line-numbers="1-5|7-14|16-27"}
+# Establish a connection to the Connect Server
+client <- connect(
+  server  = Sys.getenv("CONNECT_SERVER"),
+  api_key = Sys.getenv("CONNECT_API_KEY")
+  )
+
+# Return a dataframe of content information to curate
+project_content <- client |> 
+  content() |> 
+  # filter helpers:
+  by_tag() |> 
+  by_owner() |> 
+  # or use your own dplyr filter
+  dplyr::filter()
+  
+# Use widgets to lay out your content
+### card
+project_content |> 
+  rsc_card()
+
+### grid
+project_content |> 
+  rsc_grid()
+
+### table
+project_content %>%
+  rsc_table()
+
+```
+
+:::{.callout-tip}
+Content returned by `connectwidgets::content` will be scoped to the API key provided.
+:::
+
+## Example
+<https://colorado.posit.co/rsc/chicago-food-r/>
+
+## How will I know if people are consuming my content?
+
+- 🧰 `connectapi` 

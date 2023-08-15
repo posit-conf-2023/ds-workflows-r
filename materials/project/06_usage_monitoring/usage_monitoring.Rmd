@@ -46,7 +46,7 @@ library(connectapi)
 library(connectwidgets)
 library(thematic)
 
-thematic::thematic_rmd()
+thematic::thematic_rmd(font = "Open Sans")
 
 days_back <- as.numeric(Sys.getenv("DAYSBACK", 30))
 
