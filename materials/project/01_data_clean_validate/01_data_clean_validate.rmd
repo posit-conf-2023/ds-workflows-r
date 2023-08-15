@@ -309,6 +309,7 @@ user_name <- "katie.masiello"
 if(board |> pin_exists("katie.masiello/inspections_processed") == FALSE){
   last_inspection <- NULL
   new_inspections <- inspections_processed
+  last_inspection_date <- new_inspections |> arrange(inspection_date) |> slice(1) |> pull(inspection_date)
 }else{
 
 last_inspection <- board |> pin_read(paste0(user_name,"/inspections_processed"))
