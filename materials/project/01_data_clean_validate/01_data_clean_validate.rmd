@@ -305,16 +305,22 @@ Report on summary info. How many new inspections happened since last update? How
 board <- board_connect()
 user_name <- "katie.masiello"
 
+
+if(board |> pin_exists("katie.masiello/inspections_processed") == FALSE){
+  last_inspection <- NULL
+  new_inspections <- inspections_processed
+}else{
+
 last_inspection <- board |> pin_read(paste0(user_name,"/inspections_processed"))
 last_inspection_date <- last_inspection |> 
   arrange(desc(inspection_date)) |> 
   slice(1) |> 
   pull(inspection_date)
 
-
 new_inspections <- inspections_processed |> 
   filter(!inspection_id %in% last_inspection$inspection_id) |>
   select(inspection_date, dba_name, facility_type, results, v_num, v_num_cs)
+}
 
 new_inspections |> gt() |> 
   tab_header(
