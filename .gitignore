@@ -5,6 +5,7 @@
 .Renviron
 *.DS_Store
 materials/**/*.html
+!materials/slides/slide_resources/*.html
 materials/slides/*_files
 materials/slides/*_cache
 
