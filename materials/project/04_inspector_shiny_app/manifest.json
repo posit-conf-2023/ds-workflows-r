@@ -2947,22 +2947,22 @@
         "Package": "rstudioapi",
         "Title": "Safely Access the RStudio API",
         "Description": "Access the RStudio API (if available) and provide informative error\nmessages when it's not.",
-        "Version": "0.14",
-        "Authors@R": "c(\nperson(\"Kevin\", \"Ushey\", role = c(\"aut\", \"cre\"), email = \"kevin@rstudio.com\"),\nperson(\"JJ\", \"Allaire\", role = c(\"aut\"), email = \"jj@rstudio.com\"),\nperson(\"Hadley\", \"Wickham\", role = c(\"aut\"), email = \"hadley@rstudio.com\"),\nperson(\"Gary\", \"Ritchie\", role = c(\"aut\"), email = \"gary@rstudio.com\"),\nperson(family = \"RStudio\", role = \"cph\")\n)",
+        "Version": "0.15.0",
+        "Authors@R": "c(\nperson(\"Kevin\", \"Ushey\", role = c(\"aut\", \"cre\"), email = \"kevin@rstudio.com\"),\nperson(\"JJ\", \"Allaire\", role = c(\"aut\"), email = \"jj@posit.co\"),\nperson(\"Hadley\", \"Wickham\", role = c(\"aut\"), email = \"hadley@posit.co\"),\nperson(\"Gary\", \"Ritchie\", role = c(\"aut\"), email = \"gary@posit.co\"),\nperson(family = \"RStudio\", role = \"cph\")\n)",
         "Maintainer": "Kevin Ushey <kevin@rstudio.com>",
         "License": "MIT + file LICENSE",
         "URL": "https://rstudio.github.io/rstudioapi/,\nhttps://github.com/rstudio/rstudioapi",
         "BugReports": "https://github.com/rstudio/rstudioapi/issues",
-        "RoxygenNote": "7.2.1.9000",
+        "RoxygenNote": "7.2.3",
         "Suggests": "testthat, knitr, rmarkdown, clipr, covr",
         "VignetteBuilder": "knitr",
         "Encoding": "UTF-8",
         "NeedsCompilation": "no",
-        "Packaged": "2022-08-22 18:55:08 UTC; kevin",
+        "Packaged": "2023-07-07 17:59:12 UTC; jacquelinegutman",
         "Author": "Kevin Ushey [aut, cre],\nJJ Allaire [aut],\nHadley Wickham [aut],\nGary Ritchie [aut],\nRStudio [cph]",
         "Repository": "RSPM",
-        "Date/Publication": "2022-08-22 22:00:03 UTC",
-        "Built": "R 4.3.0; ; 2023-04-21 21:44:49 UTC; unix"
+        "Date/Publication": "2023-07-07 19:10:02 UTC",
+        "Built": "R 4.3.0; ; 2023-07-10 11:39:37 UTC; unix"
       }
     },
     "rvest": {
@@ -3902,6 +3902,9 @@
     }
   },
   "files": {
+    "app_testing.R": {
+      "checksum": "1fc41ecd99d97fbb93cf006e7c0b3f6a"
+    },
     "app.R": {
       "checksum": "fa9a9410197559412c8da93eb61891b7"
     }
