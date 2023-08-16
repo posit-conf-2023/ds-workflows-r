@@ -1,6 +1,7 @@
 ---
 title: 03_model_creation
-engine: knitr
+format: html
+editor: visual
 ---
 
 ## Set up Environment
@@ -13,7 +14,6 @@ engine: knitr
 
 library(tidymodels) # For modeling
 library(tidyverse)  # For data analysis
-library(embed)      # Extending recipes 
 library(janitor)    # For data cleaning
 library(vetiver)    # ML ops
 library(doParallel) # for parallel processing
@@ -22,6 +22,8 @@ library(plumber)    # For serving model as an API
 library(arrow)      # for reading pinned data
 library(DBI)        # DB Connection
 library(RPostgres)  # DB Connection
+library(xgboost)    # For modeling
+library(rsconnect)  # For publishing
 
 tidymodels_prefer() # for handling package conflicts
 ```
@@ -223,14 +225,4 @@ inspections_wf_model <- extract_workflow(final_xgb) |>
 # Save model as pin to Posit Connect
 board <- board_connect()
 vetiver_pin_write(board, inspections_wf_model)
-
-# Serve the plumber API --------------------------------
-vetiver_deploy_rsconnect(
-  board = board, 
-  name = "ryan/inspections-xgboost-model",
-  predict_args = list(debug = TRUE, type = "prob"),
-  account = "ryan",
-  appName = "inspections-predict-api"
-)
-
 ```
