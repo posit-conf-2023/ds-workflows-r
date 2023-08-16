@@ -4,7 +4,7 @@
   "platform": "4.3.1",
   "metadata": {
     "appmode": "rmd-static",
-    "primary_rmd": "00_raw_data_scan_db_write.rmd",
+    "primary_rmd": "01_data_clean_validate.rmd",
     "primary_html": null,
     "content_category": null,
     "has_parameters": false
@@ -244,6 +244,38 @@
         "Built": "R 4.3.0; x86_64-pc-linux-gnu; 2023-04-21 23:13:49 UTC; unix"
       }
     },
+    "arrow": {
+      "Source": "RSPM",
+      "Repository": "https://packagemanager.posit.co/cran/latest",
+      "description": {
+        "Package": "arrow",
+        "Title": "Integration to 'Apache' 'Arrow'",
+        "Version": "12.0.1.1",
+        "Authors@R": "c(\nperson(\"Neal\", \"Richardson\", email = \"neal.p.richardson@gmail.com\", role = c(\"aut\")),\nperson(\"Ian\", \"Cook\", email = \"ianmcook@gmail.com\", role = c(\"aut\")),\nperson(\"Nic\", \"Crane\", email = \"thisisnic@gmail.com\", role = c(\"aut\", \"cre\")),\nperson(\"Dewey\", \"Dunnington\", role = c(\"aut\"), email = \"dewey@fishandwhistle.net\", comment = c(ORCID = \"0000-0002-9415-4582\")),\nperson(\"Romain\", \"Fran\\u00e7ois\", email = \"romain@rstudio.com\", role = c(\"aut\"), comment = c(ORCID = \"0000-0002-2444-4226\")),\nperson(\"Jonathan\", \"Keane\", email = \"jkeane@gmail.com\", role = c(\"aut\")),\nperson(\"Drago\\u0219\", \"Moldovan-Gr\\u00fcnfeld\", email = \"dragos.mold@gmail.com\", role = c(\"aut\")),\nperson(\"Jeroen\", \"Ooms\", email = \"jeroen@berkeley.edu\", role = c(\"aut\")),\nperson(\"Javier\", \"Luraschi\", email = \"javier@rstudio.com\", role = c(\"ctb\")),\nperson(\"Karl\", \"Dunkle Werner\", email = \"karldw@users.noreply.github.com\", role = c(\"ctb\"), comment = c(ORCID = \"0000-0003-0523-7309\")),\nperson(\"Jeffrey\", \"Wong\", email = \"jeffreyw@netflix.com\", role = c(\"ctb\")),\nperson(\"Apache Arrow\", email = \"dev@arrow.apache.org\", role = c(\"aut\", \"cph\"))\n)",
+        "Description": "'Apache' 'Arrow' <https://arrow.apache.org/> is a cross-language\ndevelopment platform for in-memory data. It specifies a standardized\nlanguage-independent columnar memory format for flat and hierarchical data,\norganized for efficient analytic operations on modern hardware. This\npackage provides an interface to the 'Arrow C++' library.",
+        "Depends": "R (>= 3.4)",
+        "License": "Apache License (>= 2.0)",
+        "URL": "https://github.com/apache/arrow/, https://arrow.apache.org/docs/r/",
+        "BugReports": "https://github.com/apache/arrow/issues",
+        "Encoding": "UTF-8",
+        "Language": "en-US",
+        "SystemRequirements": "C++17; for AWS S3 support on Linux, libcurl and\nopenssl (optional)",
+        "Biarch": "true",
+        "Imports": "assertthat, bit64 (>= 0.9-7), glue, methods, purrr, R6, rlang\n(>= 1.0.0), stats, tidyselect (>= 1.0.0), utils, vctrs",
+        "RoxygenNote": "7.2.3",
+        "Config/testthat/edition": "3",
+        "Suggests": "blob, cli, DBI, dbplyr, decor, distro, dplyr, duckdb (>=\n0.2.8), hms, knitr, lubridate, pillar, pkgload, reticulate,\nrmarkdown, stringi, stringr, sys, testthat (>= 3.1.0), tibble,\ntzdb, withr",
+        "LinkingTo": "cpp11 (>= 0.4.2)",
+        "Collate": "'arrowExports.R' 'enums.R' 'arrow-object.R' 'type.R'\n'array-data.R' 'arrow-datum.R' 'array.R' 'arrow-info.R'\n'arrow-package.R' 'arrow-tabular.R' 'buffer.R'\n'chunked-array.R' 'io.R' 'compression.R' 'scalar.R' 'compute.R'\n'config.R' 'csv.R' 'dataset.R' 'dataset-factory.R'\n'dataset-format.R' 'dataset-partition.R' 'dataset-scan.R'\n'dataset-write.R' 'dictionary.R' 'dplyr-across.R'\n'dplyr-arrange.R' 'dplyr-collect.R' 'dplyr-count.R'\n'dplyr-datetime-helpers.R' 'dplyr-distinct.R' 'dplyr-eval.R'\n'dplyr-filter.R' 'dplyr-funcs-augmented.R'\n'dplyr-funcs-conditional.R' 'dplyr-funcs-datetime.R'\n'dplyr-funcs-doc.R' 'dplyr-funcs-math.R' 'dplyr-funcs-simple.R'\n'dplyr-funcs-string.R' 'dplyr-funcs-type.R' 'expression.R'\n'dplyr-funcs.R' 'dplyr-glimpse.R' 'dplyr-group-by.R'\n'dplyr-join.R' 'dplyr-mutate.R' 'dplyr-select.R'\n'dplyr-slice.R' 'dplyr-summarize.R' 'dplyr-union.R'\n'record-batch.R' 'table.R' 'dplyr.R' 'duckdb.R' 'extension.R'\n'feather.R' 'field.R' 'filesystem.R' 'flight.R'\n'install-arrow.R' 'ipc-stream.R' 'json.R' 'memory-pool.R'\n'message.R' 'metadata.R' 'parquet.R' 'python.R'\n'query-engine.R' 'record-batch-reader.R'\n'record-batch-writer.R' 'reexports-bit64.R'\n'reexports-tidyselect.R' 'schema.R' 'udf.R' 'util.R'",
+        "NeedsCompilation": "yes",
+        "Packaged": "2023-07-18 12:11:35 UTC; nic2",
+        "Author": "Neal Richardson [aut],\nIan Cook [aut],\nNic Crane [aut, cre],\nDewey Dunnington [aut] (<https://orcid.org/0000-0002-9415-4582>),\nRomain François [aut] (<https://orcid.org/0000-0002-2444-4226>),\nJonathan Keane [aut],\nDragoș Moldovan-Grünfeld [aut],\nJeroen Ooms [aut],\nJavier Luraschi [ctb],\nKarl Dunkle Werner [ctb] (<https://orcid.org/0000-0003-0523-7309>),\nJeffrey Wong [ctb],\nApache Arrow [aut, cph]",
+        "Maintainer": "Nic Crane <thisisnic@gmail.com>",
+        "Repository": "RSPM",
+        "Date/Publication": "2023-07-18 18:50:07 UTC",
+        "Built": "R 4.3.0; x86_64-pc-linux-gnu; 2023-08-11 13:04:43 UTC; unix"
+      }
+    },
     "askpass": {
       "Source": "RSPM",
       "Repository": "https://packagemanager.posit.co/cran/latest",
@@ -270,6 +302,30 @@
         "Repository": "RSPM",
         "Date/Publication": "2019-01-13 12:50:03 UTC",
         "Built": "R 4.3.0; x86_64-pc-linux-gnu; 2023-04-21 21:46:18 UTC; unix"
+      }
+    },
+    "assertthat": {
+      "Source": "RSPM",
+      "Repository": "https://packagemanager.posit.co/cran/latest",
+      "description": {
+        "Package": "assertthat",
+        "Title": "Easy Pre and Post Assertions",
+        "Version": "0.2.1",
+        "Authors@R": "person(\"Hadley\", \"Wickham\", , \"hadley@rstudio.com\", c(\"aut\", \"cre\"))",
+        "Description": "An extension to stopifnot() that makes it easy to declare\nthe pre and post conditions that you code should satisfy, while also\nproducing friendly error messages so that your users know what's gone\nwrong.",
+        "License": "GPL-3",
+        "Imports": "tools",
+        "Suggests": "testthat, covr",
+        "RoxygenNote": "6.0.1",
+        "Collate": "'assert-that.r' 'on-failure.r' 'assertions-file.r'\n'assertions-scalar.R' 'assertions.r' 'base.r'\n'base-comparison.r' 'base-is.r' 'base-logical.r' 'base-misc.r'\n'utils.r' 'validate-that.R'",
+        "NeedsCompilation": "no",
+        "Packaged": "2019-03-21 13:11:01 UTC; hadley",
+        "Author": "Hadley Wickham [aut, cre]",
+        "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
+        "Repository": "RSPM",
+        "Date/Publication": "2019-03-21 14:53:46 UTC",
+        "Encoding": "UTF-8",
+        "Built": "R 4.3.0; ; 2023-04-21 23:12:04 UTC; unix"
       }
     },
     "backports": {
@@ -3885,11 +3941,14 @@
     }
   },
   "files": {
-    "00_raw_data_scan_db_write.rmd": {
-      "checksum": "b5084f08cc8c1a68cdd297b6450b2d33"
+    "01_data_clean_validate.rmd": {
+      "checksum": "c45edd2a9874a2840eebc84e9b86388d"
     },
-    "email-00_db_load_alert.Rmd": {
-      "checksum": "b2b61601d91b27cb15addd34f1db4ae2"
+    "email-01_data_integrity_alert.Rmd": {
+      "checksum": "a624b05e7b25092a3525aab3c9cc9874"
+    },
+    "email-01_data_summary.Rmd": {
+      "checksum": "21b4a5ba611f3575602ab5cdb14eb96a"
     }
   },
   "users": null

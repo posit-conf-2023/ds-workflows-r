@@ -9,6 +9,8 @@ output:
 resource_files:
 - "email-01_data_integrity_alert.Rmd"
 - "email-01_data_summary.Rmd"
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Load packages
@@ -305,12 +307,18 @@ Report on summary info. How many new inspections happened since last update? How
 board <- board_connect()
 user_name <- "katie.masiello"
 
+
+if(board |> pin_exists("katie.masiello/inspections_processed") == FALSE){
+  last_inspection <- NULL
+  new_inspections <- inspections_processed
+  last_inspection_date <- new_inspections |> arrange(inspection_date) |> slice(1) |> pull(inspection_date)
+}else{
+
 last_inspection <- board |> pin_read(paste0(user_name,"/inspections_processed"))
 last_inspection_date <- last_inspection |> 
   arrange(desc(inspection_date)) |> 
   slice(1) |> 
   pull(inspection_date)
-
 
 new_inspections <- inspections_processed |> 
   filter(!inspection_id %in% last_inspection$inspection_id) |>
@@ -322,6 +330,7 @@ new_inspections |> gt() |>
     subtitle = md("Inspections data for Restaurant, Grocery Store, Coffee Shop, Bakery, or Wrigley Field Rooftop ⚾")) |>
   tab_source_note(source_note = md(glue("**New records added: {nrow(new_inspections)} <br> Total inspection records: {nrow(inspections_processed)}**"))) |> 
   opt_interactive()
+}
 
 # TODO: Add this to a package
 food_emoji <- function(n=1) {

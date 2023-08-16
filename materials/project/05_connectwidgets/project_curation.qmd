@@ -7,6 +7,8 @@ format:
       open source data science and Posit professional tools"
 resource_files:
 - "ds-workflows-r.png"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ::: {.column-screen}
@@ -52,7 +54,7 @@ library(stringr)
 client <- connect()
 all_content <- client %>% content()
 project_r <- all_content %>% 
-  by_tag("posit::conf(2023) R Workflows") 
+  by_tag(c("posit::conf(2023) R Workflows", "R Workshop"))
 
 ```
 
@@ -108,7 +110,7 @@ project_r %>%
 
 ```{r}
 project_r %>% 
-  filter(str_detect(tolower(title), "model")) %>%
+  filter(str_detect(tolower(title), "03")) %>%
   arrange(title) %>%
   rsc_card()
 ```
@@ -138,6 +140,15 @@ project_r %>%
   filter(str_detect(title, "app")) %>%
   rsc_card()
 ```
+
+### Usage Monitoring 
+
+```{r}
+project_r |> 
+  filter(str_detect(title, "usage")) |> 
+  rsc_card()
+```
+
 
 
 #### Notice
