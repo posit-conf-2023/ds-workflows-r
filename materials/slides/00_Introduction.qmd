@@ -165,16 +165,20 @@ Get Your Environment Set Up
 
 <!-- TODO: update this -->
 
-🛜WiFi credentials:
+🛜 WiFi credentials:
 
 -   Network: TBD
 -   Password: TBD
 
 Visit the following URLs and verify that you are able to login:
 
--   Workbench: <https://workbench.pconf23-workflows.com>
--   Connect: <https://connect.pconf23-workflows.com>
--   Package Manager: <https://package-manager.pconf23-workflows.com>
+-   Workbench: <https://workbench.conf23workflows.training.posit.co>
+-   Connect: <https://connect.conf23workflows.training.posit.co>
+-   Package Manager: <https://package-manager.conf23workflows.training.posit.com>
+
+You can visit <https://conf23workflows.training.posit.co> at anytime to see these links again.
+
+## Connect Setup
 
 ## Fork and Clone the Class Repo
 

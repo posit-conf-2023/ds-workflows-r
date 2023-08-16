@@ -25,24 +25,20 @@ execute:
 
 ## Agenda
 
--   Food inspections model goal
+-   Goal of Food inspections Model
 
 -   Tidymodels
 
-    -   Crash course on tidymodels
+    -   Assignment - Create a tidymodel
 
 -   Vetiver
 
-    -   What is Vetiver?
-        -   Overview of Pins and Plumber
-    -   Create, deploy and monitor your tidymodel \[Assignment\]
-    -   Create a model card
-    -   {{< bi sign-turn-right-fill color=orange >}} Running jobs on Posit Workbench \[Assignment\]
+    -   Pins and Plumber
+    -   Assignment - Deploy and monitor your tidymodel
 
 -   Food inspection model (xgboost)
 
-    -   Overview of model for food inspections
-    -   Interacting with the model \[Assignment\]
+    -   Assignment - Interacting with the model
 
 ## {{< bi sign-turn-right-fill color=orange >}} Disclaimer
 
@@ -60,7 +56,7 @@ THIS IS NOT A MODELING WORKSHOP!
 
 ## Review
 
-\<diagram of workflow to date\>
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}
 
 ## What's the Goal?
 
@@ -88,7 +84,21 @@ THIS IS NOT A MODELING WORKSHOP!
 
 ## Where are we going
 
-\<diagram of workflow and steps we'll complete in this assignment\>
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}
+
+## Model Goal
+
+::: incremental
+-   1000's of food establishments across the City of Chicago
+
+-   Only a handful of food inspectors currently employed
+
+-   It's important to identify establishments currently in violation
+
+-   **Q**: Can we help inspectors identify which establishments are at highet risk for failing an inspection?
+
+-   **A**: Use the historical (validated) inspections data to create a model that will predict fail likelihood!
+:::
 
 ## Introduction to Tidymodels {.content-light}
 
@@ -120,6 +130,8 @@ Steps to create (most) models:
 <br>
 
 ```{r}
+#| code-line-numbers: "3-5|7-8|10-11|13-14"
+
 library(tidymodels)
 
 # Create Recipe
@@ -163,3 +175,102 @@ model_fit <- parsnip::fit(model_wflow, your-data)
 ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/pins.png?raw=true){.absolute top="120" right="800" width="500"}
 
 ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/plumber.png?raw=true){.absolute top="120" right="300" width="500"}
+
+## 🧰 Pins
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/pins.png?raw=true){fig-align="center" width="120"}
+
+::: incremental
+-   Open source R (and Python) package.
+-   Publishes data, models, and other R objects, making it easy to share them across projects and with your colleagues.
+    -   {{< bi sign-turn-right-fill color=orange >}} **Interoperability --\>** You can share an object built in R with Python users (and vice versa)!
+-   For our workflow:
+    -   **How can we save our model so that others (or other content) can use it?**
+:::
+
+## 🧰 Plumber
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/plumber.png?raw=true){fig-align="center" width="120"}
+
+::: incremental
+-   Open source R package.
+-   Create a web Application Programming Interface (**API**) using only R code!
+    -   {{< bi sign-turn-right-fill color=orange >}} **Interoperability --\>** You can interact with a Plumber API using Python (or any other language/HTTP client).
+-   For our workflow:
+    -   **How can we serve our model as an API?**
+:::
+
+## Vetiver
+
+<br>
+
+We have two questions:
+
+1.  How can we **save** our model so that others can use it?
+2.  How can we **serve** our model as an API?
+
+::: {.fragment .fade-up}
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){fig-align="center" width="309"}
+:::
+
+## Vetiver
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){fig-align="center" width="154"}
+
+::: incremental
+-   Open source R (and Python) package.
+-   Deploy and maintain machine learning models --\> **MLOps**
+-   Provides tools to version, deploy, and monitor a trained model.
+:::
+
+## Introduction to Vetiver {.content-light}
+
+::: center
+<h2><br>**Activity Time!**</h2>
+:::
+
+::: {.callout-note icon="false"}
+## Activity
+
+👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
+
+**Complete Activities 2-5**
+:::
+
+## Food Inspections Model
+
+Prior to this workshop:
+
+-   An **xgboost classification model** was created using the `inspections_validated` data saved to our Postgres database
+
+    -   `materials/project/03_model/03_model_creation.qmd`
+
+    -   Published to Posit Connect and set to run once per week (...takes a while to run 😏)
+
+    -   {{< bi sign-turn-right-fill color=orange >}} How to run background/workbench jobs for long running analyses!
+
+        -   `materials/activities/activity-05_jobs.qmd`
+
+<br>
+
+-   **Goal**: *Return the likelihood that a business will fail an inspection*
+
+-   Saves the model as pin and servers the model as an API (**Vetiver**).
+
+## Food Inspections Model {.content-light}
+
+::: center
+<h2><br>**Activity Time!**</h2>
+:::
+
+::: {.callout-note icon="false"}
+## Activity
+
+👉 Try interacting with the Food Inspections Model API on Posit Connect
+
+-   🔴 add URL here
+:::
+
+## Review
+
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}

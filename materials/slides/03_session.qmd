@@ -253,4 +253,40 @@ Content returned by `connectwidgets::content` will be scoped to the API key prov
 
 ## How will I know if people are consuming my content?
 
-- 🧰 `connectapi` 
+- 🧰 Posit Connect Server API 
+  - Reference <https://docs.posit.co/connect/api/>
+  - Cookbook <https://docs.posit.co/connect/cookbook/>
+  - Example reports and apps <https://solutions.posit.co/operations/connect-apis/>
+  - R package `connectapi` that is a wrapper around the API <https://pkgs.rstudio.com/connectapi/>
+
+  
+## Connect API endpoints
+
+*Most endpoints require an API Key*, and [**results will be scoped to the permissions of the key**]{.fuchsia}.
+<br>
+
+::::{.columns}
+
+:::{.column width=50%}
+**Helpful to publishers:**
+
+- List/Update content
+- Get content details
+- Set environment variables
+- Change permissions
+- Manage content tags
+- Manage content custom URL
+- Content usage ✨
+
+:::
+
+:::{.column width=50%}
+**Helpful to admins:**
+
+- 👈 all that
+- Audit logs
+- User and group management
+- Job management
+:::
+
+::::

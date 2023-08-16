@@ -56,7 +56,7 @@ report_from <- lubridate::today() - lubridate::ddays(days_back)
 
 client <- connectapi::connect()
 # Using connectwidgets to get content info because it's a little easier to filter by tags
-project_content <- connectwidgets::connect() |> connectwidgets::content() |> by_tag("posit::conf(2023) R Workflows") 
+project_content <- connectwidgets::connect() |> connectwidgets::content() |> by_tag(c("posit::conf(2023) R Workflows","R Workshop")) 
 
 project_content_guids <- project_content |> pull(guid)
 
@@ -91,9 +91,6 @@ This content summary may contain privileged information. The report is generated
 using the [Posit Connect Server API](http://docs.posit.co/connect/api). Data is limited to the last 
 `r days_back` days.
 
-The report uses the environment variables `CONNECT_SERVER` and `CONNECT_API_KEY`
-to collect the data. To limit the results to a single publisher, use a publisher
-API key.
 
 Column 
 -----------------------------------------------------------------------
