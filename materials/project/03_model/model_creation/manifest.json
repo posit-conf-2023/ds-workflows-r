@@ -4,7 +4,7 @@
   "platform": "4.2.3",
   "metadata": {
     "appmode": "quarto-static",
-    "primary_rmd": "03_model_creation.qmd",
+    "primary_rmd": "03_final_model.qmd",
     "primary_html": null,
     "content_category": null,
     "has_parameters": false
@@ -4978,6 +4978,9 @@
     }
   },
   "files": {
+    "03_final_model.qmd": {
+      "checksum": "f6d00926ffa34089461bf2843ece0939"
+    },
     "03_model_creation.qmd": {
       "checksum": "cf5706b5aa830c4765627610a0f1c03a"
     }
