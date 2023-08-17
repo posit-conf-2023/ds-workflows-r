@@ -1,9 +1,4 @@
 ---
-title: "Session 3"
-title-slide-attributes: 
-  data-background-color: white
-  data-background-image: _extensions/positconfslides/assets/backgrounds/content2-light.svg
-  data-background-size: contain
 format:
   positconfslides-revealjs: 
     chalkboard: true
@@ -20,273 +15,262 @@ format:
     filters:
       - positconfslides
 execute: 
-  eval: true
+  eval: false
   echo: true
 ---
 
-## Session Outline
+## Tidymodels and Vetiver {.toc-light}
 
-- Making Shiny resources: 
-  - bslib, shinyuieditor
-  - mastering shiny, gallery
-- Don't make a kitchen sink app
-  - Goal for a light weight presentation layer
-  - DB, pins, scheduled ETLs
-  - log4r
-  - shinyloadtest, profvis
-  - Connect runtime settings <activity / discussion>
-- Managing your content
-  - Connect Widgets + Connect API
-  - Monitor usage
-  
-- Environments management (renv)
-- Dev, test, prod workflows with git backed and CICD
-- hot swap urls
-- deploying content that uses a private package
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/tidymodels.png?raw=true){.absolute top="200" left="50" width="260"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){.absolute top="200" left="310" width="260"}
 
-  
-## Let's talk Shiny
+## Agenda
 
-![](https://raw.githubusercontent.com/rstudio/hex-stickers/580e9bada770756d25dbd3696159744d1e9c9251/SVG/shiny.svg){style="padding-right: 15px;" .absolute left=600 top=10 width=200}
-<br><br>
+-   Goal of Food inspections Model
 
-::::{.columns}
+-   Tidymodels
 
-:::{.column width=50%}
+    -   Assignment - Create a tidymodel
 
-:::{.fragment}
+-   Vetiver
 
-Whether you're here <br>
-in your Shiny journey:
+    -   Pins and Plumber
+    -   Assignment - Deploy and monitor your tidymodel
 
-![](slide_resources/andriyko-podilnyk-RCfi7vgJjUY-unsplash.jpg) 
-<br>[Photo by <a href="https://unsplash.com/@andriyko?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Andriyko Podilnyk</a> on <a href="https://unsplash.com/photos/orange-tabby-kitten-in-grasses-RCfi7vgJjUY?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>]{.smallest}
+-   Food inspection model (xgboost)
 
-:::
+    -   Assignment - Interacting with the model
 
-:::
-
-:::{.column width=50%}
-
-:::{.fragment}
-<br>
-Or here:
-
-![](slide_resources/francesco-ZxNKxnR32Ng-unsplash.jpg) 
-
-[Photo by <a href="https://unsplash.com/@detpho?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Francesco</a> on <a href="https://unsplash.com/photos/ZxNKxnR32Ng?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>]{.smallest}
-
-:::
-:::
-::::
-
-## 🧰 Shiny resources
-
-- Get started with Shiny (R or Python!) <https://shiny.posit.co/getstarted>
-- Gallery of examples <https://shiny.posit.co/r/gallery/>
-- **The authoritative reference, Mastering Shiny** <https://mastering-shiny.org>
-- Helper packages
-  - [`bslib`](https://rstudio.github.io/bslib/) - add themes, components, and layouts with ease 
-  - [`thematic`](https://rstudio.github.io/thematic/) - extends your Shiny theme to plots  
-  - [`shinyuieditor`](https://rstudio.github.io/shinyuieditor/index.html#trouble-installing/) - a visual tool to help create the UI portion of your Shiny app
-
-## Shiny in production
-<br>
-"But my app runs great on my laptop..."
-<br><br>
-
-:::{.fragment}
-Two sides to this coin:
-
-1. Optimize your app
-2. Tune your runtime settings 
-:::
-
-## Shiny in production --- Optimize your app
+## {{< bi sign-turn-right-fill color=orange >}} Disclaimer
 
 <br>
 
-📣 Design principle: Make your app a lightweight presentation layer <br><br>
-
-
-::::{.columns}
-
-:::{.fragment}
-
-:::{.column width=45%}
-{{< bi sign-turn-right-fill color=orange >}} Performance workflow:
-
-:::{.smaller}
-- Add logging to app, either basic `message` statements or use [`log4r`](https://github.com/johnmyleswhite/log4r) package
-- use [`shinyloadtest`](https://rstudio.github.io/shinyloadtest/) to simulate app performance under load 
-- use [`profvis`](https://rstudio.github.io/profvis/) to profile your app to identify bottlenecks
-- Optimize app (in order of value-add):
-  - Move work upstream out of Shiny
-  - Make code faster 
-  - Use caching 
-  - Use async 
-
+::: {style="text-align: center; font-size: 200%; color: #EE6331"}
+THIS IS NOT A MODELING WORKSHOP!
 :::
 
+. . .
+
+<br>
+
+... but modeling is still super cool 😎 !
+
+## Review
+
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}
+
+## What's the Goal?
+
+::: columns
+::: {.column width="50%"}
+![](slide_resources/data_model_meme.jpg){width="710"}
 :::
 
-:::{.column width=50%}
+::: {.column width="50%"}
+**What we have:**
 
-:::{style="background: #F6F6F6; width: 600px; height: 400px; margin: 20px; padding: 20px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" }
-🧰 References: 
+-   A ***beautiful - tidy - validated*** dataset
 
-- Joe Cheng's [Shiny in Production](https://youtu.be/Wy3TY0gOmJw) talk at 2019 rstudio::conf 
-- [Mastering Shiny, Performance](https://mastering-shiny.org/performance.html) chapter
+    -   Historical food inspection results
+
+    -   Business information
+
+<br>
+
+**What do we want:**
+
+-   A <font color="#9A4665"> MODEL </font> that can *predict if an establishment will fail an inspection*
+:::
 :::
 
-:::
+## Where are we going
 
-:::
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}
 
-::::
-
-## Shiny on Connect
-
-Runtime settings 
-
-::::{.columns}
-
-:::{.column width=30%}
-
-![](slide_resources/runtime_settings.png)
-
-:::
-
-:::{.column width=70%} 
-
-::: {.r-stack}
-![](https://media.giphy.com/media/3o6Mbsras7qdAwgABW/giphy.gif){.fragment .fade-in-then-out fig-align="center" }
-
-![](https://media.giphy.com/media/lvlLuc2zhi39C/giphy.gif){.fragment .fade-in-then-out fig-align="center"}
-
-:::{.fragment}
-**Min processes** — Keep a process running on the server at all times?
-
-**Max processes** — Put a bound on the number of processes spawned?
-
-**Connections per process** — [A connection = a browser tab]{.teal}. How many connections will share the same process? Call this **n**
-
-**Load factor** — Much like *min processes*, how early do you want to start a new process for that **n + 1** connection?
-:::
-
-
-:::{.fragment}
-
-:::
-
-:::
-
-
-
-:::
-
-::::
-
-##  {.brackets-dark}
-
-::: section-title-dark
-Managing Content
-:::
-
-
-## Managing Content {.brackets-light}
+## Model Goal
 
 ::: incremental
--   How can I organize this content so stakeholders can find it?
--   How will I know if people are consuming my content?
+-   1000's of food establishments across the City of Chicago
 
+-   Only a handful of food inspectors currently employed
+
+-   It's important to identify establishments currently in violation
+
+-   **Q**: Can we help inspectors identify which establishments are at highet risk for failing an inspection?
+
+-   **A**: Use the historical (validated) inspections data to create a model that will predict fail likelihood!
 :::
 
-## How can I organize this content so stakeholders can find it?
+## Introduction to Tidymodels {.content-light}
 
-- [Tags in Connect](https://docs.posit.co/connect/admin/content-management/index.html#tags)
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/tidymodels.png?raw=true){.absolute top="200" right="50" width="260"}
 
-![](slide_resources/tag_schema.png){height=400 fig-align=center}
-
-- 🧰 [`connectwidgets`](https://rstudio.github.io/connectwidgets/) for content curation
-
-## Connectwidgets flow
-
-Incorporate into a stylized R Markdown or Quarto document or Shiny application.
-```{.r code-line-numbers="1-5|7-14|16-27"}
-# Establish a connection to the Connect Server
-client <- connect(
-  server  = Sys.getenv("CONNECT_SERVER"),
-  api_key = Sys.getenv("CONNECT_API_KEY")
-  )
-
-# Return a dataframe of content information to curate
-project_content <- client |> 
-  content() |> 
-  # filter helpers:
-  by_tag() |> 
-  by_owner() |> 
-  # or use your own dplyr filter
-  dplyr::filter()
-  
-# Use widgets to lay out your content
-### card
-project_content |> 
-  rsc_card()
-
-### grid
-project_content |> 
-  rsc_grid()
-
-### table
-project_content %>%
-  rsc_table()
-
-```
-
-:::{.callout-tip}
-Content returned by `connectwidgets::content` will be scoped to the API key provided.
-:::
-
-## Example
-<https://colorado.posit.co/rsc/chicago-food-r/>
-
-## How will I know if people are consuming my content?
-
-- 🧰 Posit Connect Server API 
-  - Reference <https://docs.posit.co/connect/api/>
-  - Cookbook <https://docs.posit.co/connect/cookbook/>
-  - Example reports and apps <https://solutions.posit.co/operations/connect-apis/>
-  - R package `connectapi` that is a wrapper around the API <https://pkgs.rstudio.com/connectapi/>
-
-  
-## Connect API endpoints
-
-*Most endpoints require an API Key*, and [**results will be scoped to the permissions of the key**]{.fuchsia}.
 <br>
 
-::::{.columns}
+✋ If you have used `tidymodels` before?
 
-:::{.column width=50%}
-**Helpful to publishers:**
+## Introduction to Tidymodels {.content-light}
 
-- List/Update content
-- Get content details
-- Set environment variables
-- Change permissions
-- Manage content tags
-- Manage content custom URL
-- Content usage ✨
+<br>
 
+Steps to create (most) models:
+
+::: incremental
+1.  Data - preprocessing?
+2.  Create a formula - what does the model do?
+3.  Define your model type - Linear regression, decision tree, xgboost, etc?
+4.  Train
+5.  Test
+6.  Predict
 :::
 
-:::{.column width=50%}
-**Helpful to admins:**
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/recipes.png?raw=true){.absolute top="100" right="300" width="150"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/parsnip.png?raw=true){.absolute top="100" right="450" width="150"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/workflows.png?raw=true){.absolute top="100" right="150" width="150"}
 
-- 👈 all that
-- Audit logs
-- User and group management
-- Job management
+## Introduction to Tidymodels {.content-light}
+
+<br>
+
+```{r}
+#| code-line-numbers: "3-5|7-8|10-11|13-14"
+
+library(tidymodels)
+
+# Create Recipe
+model_recipe <- recipes::recipe(what-to-predict ~ data-features, 
+                                data = your-data)
+
+# Define model using parsnip (e.x. linear regression)
+model_type <- parsnip::linear_reg()
+
+# Combine the two to create a workflow
+model_wflow <- workflows::workflow(model_recipe, model_type)
+
+# Fit workflow to data using parsnip
+model_fit <- parsnip::fit(model_wflow, your-data)
+```
+
+## Introduction to Tidymodels {.content-light}
+
+::: center
+<h2><br>**Activity Time!**</h2>
 :::
 
-::::
+::: {.callout-note icon="false"}
+## Activity
+
+👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
+
+**Complete Activity 1 only!**
+:::
+
+## Introduction to Vetiver {.content-light}
+
+![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){fig-align="center" width="830"}
+
+::: fragment
+...but first!
+:::
+
+## Introduction to Pins & Plumber {.content-light}
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/pins.png?raw=true){.absolute top="120" right="800" width="500"}
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/plumber.png?raw=true){.absolute top="120" right="300" width="500"}
+
+## 🧰 Pins
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/pins.png?raw=true){fig-align="center" width="120"}
+
+::: incremental
+-   Open source R (and Python) package.
+-   Publishes data, models, and other R objects, making it easy to share them across projects and with your colleagues.
+    -   {{< bi sign-turn-right-fill color=orange >}} **Interoperability --\>** You can share an object built in R with Python users (and vice versa)!
+-   For our workflow:
+    -   **How can we save our model so that others (or other content) can use it?**
+:::
+
+## 🧰 Plumber
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/plumber.png?raw=true){fig-align="center" width="120"}
+
+::: incremental
+-   Open source R package.
+-   Create a web Application Programming Interface (**API**) using only R code!
+    -   {{< bi sign-turn-right-fill color=orange >}} **Interoperability --\>** You can interact with a Plumber API using Python (or any other language/HTTP client).
+-   For our workflow:
+    -   **How can we serve our model as an API?**
+:::
+
+## Vetiver
+
+<br>
+
+We have two questions:
+
+1.  How can we **save** our model so that others can use it?
+2.  How can we **serve** our model as an API?
+
+::: {.fragment .fade-up}
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){fig-align="center" width="309"}
+:::
+
+## Vetiver
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){fig-align="center" width="154"}
+
+::: incremental
+-   Open source R (and Python) package.
+-   Deploy and maintain machine learning models --\> **MLOps**
+-   Provides tools to version, deploy, and monitor a trained model.
+:::
+
+## Introduction to Vetiver {.content-light}
+
+::: center
+<h2><br>**Activity Time!**</h2>
+:::
+
+::: {.callout-note icon="false"}
+## Activity
+
+👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
+
+**Complete Activities 2-5**
+:::
+
+## Food Inspections Model
+
+Prior to this workshop:
+
+-   An **xgboost classification model** was created using the `inspections_validated` data saved to our Postgres database
+
+    -   `materials/project/03_model/03_model_creation.qmd`
+
+    -   Published to Posit Connect and set to run once per week (...takes a while to run 😏)
+
+    -   {{< bi sign-turn-right-fill color=orange >}} How to run background/workbench jobs for long running analyses!
+
+        -   `materials/activities/activity-05_jobs.qmd`
+
+<br>
+
+-   **Goal**: *Return the likelihood that a business will fail an inspection*
+
+-   Saves the model as pin and servers the model as an API (**Vetiver**).
+
+## Food Inspections Model {.content-light}
+
+::: center
+<h2><br>**Activity Time!**</h2>
+:::
+
+::: {.callout-note icon="false"}
+## Activity
+
+👉 Try interacting with the Food Inspections Model API on Posit Connect
+
+-   🔴 add URL here
+:::
+
+## Review
+
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}

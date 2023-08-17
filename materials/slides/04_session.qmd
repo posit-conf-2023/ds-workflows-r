@@ -1,0 +1,292 @@
+---
+title: "Session 4"
+title-slide-attributes: 
+  data-background-color: white
+  data-background-image: _extensions/positconfslides/assets/backgrounds/content2-light.svg
+  data-background-size: contain
+format:
+  positconfslides-revealjs: 
+    chalkboard: true
+    slide-number: c/t
+    footer: "[https://conf23workflows.training.posit.co/](https://conf23workflows.training.posit.co/)"
+    code-copy: true
+    center-title-slide: false
+    code-link: true
+    code-overflow: wrap
+    code-annotations: hover
+    highlight-style: a11y
+    width: "1600"
+    height: "900"
+    filters:
+      - positconfslides
+execute: 
+  eval: true
+  echo: true
+---
+
+## Session Outline
+
+- Making Shiny resources: 
+  - bslib, shinyuieditor
+  - mastering shiny, gallery
+- Don't make a kitchen sink app
+  - Goal for a light weight presentation layer
+  - DB, pins, scheduled ETLs
+  - log4r
+  - shinyloadtest, profvis
+  - Connect runtime settings <activity / discussion>
+- Managing your content
+  - Connect Widgets + Connect API
+  - Monitor usage
+  
+- Environments management (renv)
+- Dev, test, prod workflows with git backed and CICD
+- hot swap urls
+- deploying content that uses a private package
+
+  
+## Let's talk Shiny
+
+![](https://raw.githubusercontent.com/rstudio/hex-stickers/580e9bada770756d25dbd3696159744d1e9c9251/SVG/shiny.svg){style="padding-right: 15px;" .absolute left=600 top=10 width=200}
+<br><br>
+
+::::{.columns}
+
+:::{.column width=50%}
+
+:::{.fragment}
+
+Whether you're here <br>
+in your Shiny journey:
+
+![](slide_resources/andriyko-podilnyk-RCfi7vgJjUY-unsplash.jpg) 
+<br>[Photo by <a href="https://unsplash.com/@andriyko?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Andriyko Podilnyk</a> on <a href="https://unsplash.com/photos/orange-tabby-kitten-in-grasses-RCfi7vgJjUY?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>]{.smallest}
+
+:::
+
+:::
+
+:::{.column width=50%}
+
+:::{.fragment}
+<br>
+Or here:
+
+![](slide_resources/francesco-ZxNKxnR32Ng-unsplash.jpg) 
+
+[Photo by <a href="https://unsplash.com/@detpho?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Francesco</a> on <a href="https://unsplash.com/photos/ZxNKxnR32Ng?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>]{.smallest}
+
+:::
+:::
+::::
+
+## 🧰 Shiny resources
+
+- Get started with Shiny (R or Python!) <https://shiny.posit.co/getstarted>
+- Gallery of examples <https://shiny.posit.co/r/gallery/>
+- **The authoritative reference, Mastering Shiny** <https://mastering-shiny.org>
+- Helper packages
+  - [`bslib`](https://rstudio.github.io/bslib/) - add themes, components, and layouts with ease 
+  - [`thematic`](https://rstudio.github.io/thematic/) - extends your Shiny theme to plots  
+  - [`shinyuieditor`](https://rstudio.github.io/shinyuieditor/index.html#trouble-installing/) - a visual tool to help create the UI portion of your Shiny app
+
+## Shiny in production
+<br>
+"But my app runs great on my laptop..."
+<br><br>
+
+:::{.fragment}
+Two sides to this coin:
+
+1. Optimize your app
+2. Tune your runtime settings 
+:::
+
+## Shiny in production --- Optimize your app
+
+<br>
+
+📣 Design principle: Make your app a lightweight presentation layer <br><br>
+
+
+::::{.columns}
+
+:::{.fragment}
+
+:::{.column width=45%}
+{{< bi sign-turn-right-fill color=orange >}} Performance workflow:
+
+:::{.smaller}
+- Add logging to app, either basic `message` statements or use [`log4r`](https://github.com/johnmyleswhite/log4r) package
+- use [`shinyloadtest`](https://rstudio.github.io/shinyloadtest/) to simulate app performance under load 
+- use [`profvis`](https://rstudio.github.io/profvis/) to profile your app to identify bottlenecks
+- Optimize app (in order of value-add):
+  - Move work upstream out of Shiny
+  - Make code faster 
+  - Use caching 
+  - Use async 
+
+:::
+
+:::
+
+:::{.column width=50%}
+
+:::{style="background: #F6F6F6; width: 600px; height: 400px; margin: 20px; padding: 20px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" }
+🧰 References: 
+
+- Joe Cheng's [Shiny in Production](https://youtu.be/Wy3TY0gOmJw) talk at 2019 rstudio::conf 
+- [Mastering Shiny, Performance](https://mastering-shiny.org/performance.html) chapter
+:::
+
+:::
+
+:::
+
+::::
+
+## Shiny on Connect
+
+Runtime settings 
+
+::::{.columns}
+
+:::{.column width=30%}
+
+![](slide_resources/runtime_settings.png)
+
+:::
+
+:::{.column width=70%} 
+
+::: {.r-stack}
+![](https://media.giphy.com/media/3o6Mbsras7qdAwgABW/giphy.gif){.fragment .fade-in-then-out fig-align="center" }
+
+![](https://media.giphy.com/media/lvlLuc2zhi39C/giphy.gif){.fragment .fade-in-then-out fig-align="center"}
+
+:::{.fragment}
+**Min processes** — Keep a process running on the server at all times?
+
+**Max processes** — Put a bound on the number of processes spawned?
+
+**Connections per process** — [A connection = a browser tab]{.teal}. How many connections will share the same process? Call this **n**
+
+**Load factor** — Much like *min processes*, how early do you want to start a new process for that **n + 1** connection?
+:::
+
+
+:::{.fragment}
+
+:::
+
+:::
+
+
+
+:::
+
+::::
+
+##  {.brackets-dark}
+
+::: section-title-dark
+Managing Content
+:::
+
+
+## Managing Content {.brackets-light}
+
+::: incremental
+-   How can I organize this content so stakeholders can find it?
+-   How will I know if people are consuming my content?
+
+:::
+
+## How can I organize this content so stakeholders can find it?
+
+- [Tags in Connect](https://docs.posit.co/connect/admin/content-management/index.html#tags)
+
+![](slide_resources/tag_schema.png){height=400 fig-align=center}
+
+- 🧰 [`connectwidgets`](https://rstudio.github.io/connectwidgets/) for content curation
+
+## Connectwidgets flow
+
+Incorporate into a stylized R Markdown or Quarto document or Shiny application.
+```{.r code-line-numbers="1-5|7-14|16-27"}
+# Establish a connection to the Connect Server
+client <- connect(
+  server  = Sys.getenv("CONNECT_SERVER"),
+  api_key = Sys.getenv("CONNECT_API_KEY")
+  )
+
+# Return a dataframe of content information to curate
+project_content <- client |> 
+  content() |> 
+  # filter helpers:
+  by_tag() |> 
+  by_owner() |> 
+  # or use your own dplyr filter
+  dplyr::filter()
+  
+# Use widgets to lay out your content
+### card
+project_content |> 
+  rsc_card()
+
+### grid
+project_content |> 
+  rsc_grid()
+
+### table
+project_content %>%
+  rsc_table()
+
+```
+
+:::{.callout-tip}
+Content returned by `connectwidgets::content` will be scoped to the API key provided.
+:::
+
+## Example
+<https://colorado.posit.co/rsc/chicago-food-r/>
+
+## How will I know if people are consuming my content?
+
+- 🧰 Posit Connect Server API 
+  - Reference <https://docs.posit.co/connect/api/>
+  - Cookbook <https://docs.posit.co/connect/cookbook/>
+  - Example reports and apps <https://solutions.posit.co/operations/connect-apis/>
+  - R package `connectapi` that is a wrapper around the API <https://pkgs.rstudio.com/connectapi/>
+
+  
+## Connect API endpoints
+
+*Most endpoints require an API Key*, and [**results will be scoped to the permissions of the key**]{.fuchsia}.
+<br>
+
+::::{.columns}
+
+:::{.column width=50%}
+**Helpful to publishers:**
+
+- List/Update content
+- Get content details
+- Set environment variables
+- Change permissions
+- Manage content tags
+- Manage content custom URL
+- Content usage ✨
+
+:::
+
+:::{.column width=50%}
+**Helpful to admins:**
+
+- 👈 all that
+- Audit logs
+- User and group management
+- Job management
+:::
+
+::::
