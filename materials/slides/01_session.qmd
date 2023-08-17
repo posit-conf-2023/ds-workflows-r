@@ -27,7 +27,7 @@ execute:
 
 ## Workshop approach
 
-We will use an [**end-to-end fictional project**]{.fuchsia} to demonstrate workflows and best practices using [**open source packages**]{.teal} and [**Posit professional tools**]{.teal}.
+We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate workflows and best practices using [**open source packages**]{.teal} and [**Posit professional tools**]{.teal}.
 
 :::{.fragment}
 
@@ -44,7 +44,9 @@ We will use an [**end-to-end fictional project**]{.fuchsia} to demonstrate workf
 
 
 
+## Chicago Food Inspections
 
+What is this project?
 
 ## About the Project
 
@@ -55,17 +57,14 @@ This workshop will use data from the City of Chicago Open Data Portal: <https://
 
 ```{r}
 #| echo: false
-head(pins::pin_read(pins::board_connect(), "katie.masiello/inspections_raw_test"),5) |> 
-  dplyr::select(dba_name, license_number, facility_type, risk, address, results, violations) |> 
-  dplyr::mutate(violations=stringr::str_trunc(violations,30))|> gt::gt()
+readRDS("slide_resources/inspections_preview.Rds") |> gt::gt()
 ```
 
 2.  📒 Business licenses: [https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses/r5kz-chrr](https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses/r5kz-chrr){.smaller}
 
 ```{r}
 #| echo: false
-head(pins::pin_read(pins::board_connect(), "katie.masiello/bus_data_raw_test"),5) |>
-  dplyr::select(license_number, doing_business_as_name, address, license_description, license_term_expiration_date) |> gt::gt()
+readRDS("slide_resources/bus_data_preview.Rds") |> gt::gt()
 ```
 :::
 
@@ -78,7 +77,11 @@ head(pins::pin_read(pins::board_connect(), "katie.masiello/bus_data_raw_test"),5
 -   🤖 Automate the pipeline
 -   ⚠️ Receive alerts if there are issues in the pipeline
 -   🔄 Project is easy to maintain and iterate upon
--   {{< bi share color=#2D8400 >}} Work is reusable by other teams, even if they don't use R (Lookin' at you {{< fa brands python >}})
+-   {{< bi share color=#2D8400 >}} Work is reusable by other teams, even if they don't use R (Lookin' at you ![](https://s3.dualstack.us-east-2.amazonaws.com/pythondotorg-assets/media/community/logos/python-logo-only.png){height=50 style="vertical-align:middle"})
+
+## Project Overview
+<!-- TODO: Consider draw.io for diagram -->
+![](slide_resources/ds-workflows-r.png){fig-align="center"}
 
 ##  {.brackets-dark}
 
@@ -86,7 +89,7 @@ head(pins::pin_read(pins::board_connect(), "katie.masiello/bus_data_raw_test"),5
 Let's Get Started!
 :::
 
-## First Questions {.brackets-light}
+## Getting Started {.brackets-light}
 
 ::: incremental
 -   What is this data?
@@ -94,18 +97,6 @@ Let's Get Started!
 -   How do I get data updates?
 :::
 
-:::{.fragment}
-:::{.center}
-<h2> <br>**Activity Time!**</h2>
-:::
-
-:::{.callout-note icon=false}
-## Activity
-👉 Open the file `materials/activities/activity-00_raw_data_exploration.qmd`
-
-You can render the document, but we recommend you interact run each code chunk as you work through it.
-:::
-:::
 
 
 ## What is this Data?
@@ -135,6 +126,29 @@ pointblank::scan_data(palmerpenguins::penguins)
 
 
 <iframe src="slide_resources/scan_penguins.html" width=100% height="650"></iframe>
+ 
+## 
+
+:::{.center}
+<h2> <br>**Activity Time!**</h2>
+:::
+
+:::{.callout-note icon=false}
+## Activity
+👉 Open the file `materials/activities/activity-00_raw_data_exploration.qmd`
+
+You can render the document, but we recommend you interact run each code chunk as you work through it.
+:::
+
+
+
+```{r}
+#| echo: false
+countdown::countdown(minutes=7,seconds=0, font_size = "4em")
+```
+
+
+
  
 ## Where should I put the data?
 
@@ -183,7 +197,8 @@ Specific resources:
 🧰 Deploy and schedule your notebook on Posit Connect
 :::
 
-:::{.fragment}
+## 
+
 :::{.center}
 <h2> <br>**Activity Time!**</h2>
 :::
@@ -192,10 +207,19 @@ Specific resources:
 ## Activity
 👉 Open the file `materials/activities/activity-01_publish_and_schedule_data_pull.Rmd`
 
-:::
+
 :::
 
-## Deployment Methods
+
+
+```{r}
+#| echo: false
+countdown::countdown(minutes=7,seconds=0)
+```
+
+
+
+## Deployment Methods to Posit Connect
 
 1. Push-button ![](slide_resources/publishIcon_2x.png){height="50" style="vertical-align:middle"} 
 2. Git-backed
@@ -220,6 +244,8 @@ Specific resources:
 
 :::{.fragment}
 <h3><br>📣 Breaking up the pieces of your project into uni-taskers keeps your end product lightweight, and your elements are easier to maintain and reuse.</h3>
+
+[*...This will be a running theme in this project*]{.smaller}
 :::
 
 :::
@@ -232,7 +258,7 @@ Specific resources:
 Now what?
 :::
 
-## Next Questions {.brackets-light}
+## Next Steps {.brackets-light}
 
 ::: incremental
 -   How can I ensure this is quality data? 🤔
@@ -423,3 +449,5 @@ agent <- df |>                                # <1>
 ## {.toc-people-dark}
 <br><br>
 [**Break Time ☕ **]{.larger}
+
+
