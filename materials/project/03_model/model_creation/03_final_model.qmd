@@ -1,0 +1,171 @@
+---
+title: 03_model_creation
+format: html
+editor: visual
+---
+
+## Set up Environment
+
+```{r}
+#| label: load-packages
+#| output: false
+#| warning: false
+#| message: false
+
+library(tidymodels) # For modeling
+library(tidyverse)  # For data analysis
+library(vetiver)    # ML ops
+library(pins)       # Saving model to Connect
+library(plumber)    # For serving model as an API
+library(arrow)      # for reading pinned data
+library(DBI)        # DB Connection
+library(RPostgres)  # DB Connection
+library(xgboost)    # For modeling
+library(rsconnect)  # For publishing
+
+tidymodels_prefer() # for handling package conflicts
+```
+
+## Read in Data
+
+```{r}
+#| label: read-data
+#| cache: true
+
+# Connect to postgres DB
+con <- dbConnect(RPostgres::Postgres(), 
+                 host = Sys.getenv("CONF23_DB_HOST"), 
+                 port = "5432", 
+                 dbname = "conf23_r", 
+                 user = Sys.getenv("CONF23_DB_USER"), 
+                 password = Sys.getenv("CONF23_DB_PASSWORD"))
+
+# Read validated food inspections data
+inspections_data <- 
+  tbl(con, "inspections_processed") |> 
+  collect()
+```
+## Split Data
+
+Before modeling, it's important to split the data into a training and testing dataset (0.75/0.25 split). We will also stratify by the `Results` variable to ensure the testing and training datasets have similar percentage of `Pass`/`Fail`.
+
+```{r}
+#| label: split-data
+
+set.seed(1234)
+
+# Define split
+inspections_split <- initial_split(inspections_data, strata = results, prop = 0.75)
+inspections_split
+
+# Create training and testing datasets
+inspections_train <- training(inspections_split)
+inspections_test <- testing(inspections_split)
+```
+
+## Create Model Recipe
+
+Before we do any actual modeling, we first create a recipe. A recipe is a description of the steps to be applied to a data set in order to prepare it for modeling. In the below recipe, we will do the following:
+
+-   Define our modeling goal, which is to predict `Results` based on `Facility Type`, `Risk`, `Latitude`, `Longitude`, `v_cumsum`, and `v_cumsum_cs`, and `days_since_last_inspection`.
+
+-   Modeling works better with binary predictors (1 or 0). Since `Facility Type` is nominal, we'll widen the column to multiple columns based on the various factors, (e.g., `Restaurant`), and a 1 or 0 as the value, by using the `step_dummy()` function.
+
+```{r}
+#| label: create-recipe
+
+# Create model recipe
+rec <- recipe(results ~ facility_type + risk + latitude + longitude + 
+                v_cumsum + v_cumsum_cs + days_since_last_inspection, 
+              data = inspections_train) |> 
+
+  # Convert facility type to binary columns
+  step_dummy(facility_type)
+
+
+rec
+```
+
+## Build xgboost model
+
+We first need to define some specifications for the xgboost model. There are lots of them, and we'll insert the `tune()` placeholder for now.
+
+For boosting, the general idea is that the tuning parameters are tweaked slightly in order to minimize the loss function. The loss function is a method for evaluating how well the algorithm models the dataset. A perfect model would have a loss of 0.
+
+![](https://bradleyboehmke.github.io/HOML/10-gradient-boosting_files/figure-html/gradient-descent-fig-1.png){fig-align="center" width="246"}
+
+During the boosting steps, the model assess the loss function for each combination of parameters and takes **steps** in the direction of the descending gradient until it hits the bottom most point. An important parameter in gradient descent is the size of the steps, which is set by the learning rate. Too big a learning rate and you may miss the minimum. Too small a learning rate, and the model make take forever to reach the minimum.
+
+![](https://bradleyboehmke.github.io/HOML/10-gradient-boosting_files/figure-html/learning-rate-fig-1.png){fig-align="center" width="442"}
+
+Some of the other parameters we'll let `tidymodels` tune for us:
+
+-   `min_n`: how many data points in a node that is required for the node to be split further. Consider this image, where each tree with 10 data points along the top is being split. But if the model had `min_n = 12`, then the model would not split any further and this would be a terminal node.
+
+![](http://blog.hackerearth.com/wp-content/uploads/2016/12/bigd.png){fig-align="center" width="256"}
+
+## Model Specifications
+
+```{r}
+#| label: model-specs
+
+# xgboost model specifications
+xgb_spec <- parsnip::boost_tree(
+  mode = "classification",
+  trees = 548,
+  min_n = 11,
+  mtry = 4,
+  learn_rate = 0.05
+) |> 
+  set_engine("xgboost")
+
+xgb_spec
+```
+
+## Create Workflow
+
+Now we can create a **workflow** with these specifications and our recipe:
+
+```{r}
+#| label: create-workflow
+
+xgb_wf <- workflow(rec, xgb_spec)
+
+xgb_wf
+```
+
+## Fit to Data
+
+Create the final workflow:
+
+```{r}
+#| label: create-final-xbg-model
+
+# Fit on train dataset and evaluate on testing set
+final_xgb <- last_fit(xgb_wf, inspections_split)
+
+collect_metrics(final_xgb)
+
+# View performance metrics
+collect_metrics(final_xgb)
+
+#Show ROC curve
+collect_predictions(final_xgb) |> 
+  roc_curve(results, .pred_FAIL) |> 
+  autoplot()
+```
+
+# Extract and Save Model with Vetiver
+
+```{r}
+#| label: create-vetiver-model
+
+# Extract final model
+inspections_wf_model <- extract_workflow(final_xgb) |>
+  vetiver_model("ryan/inspections-xgboost-model")
+
+
+# Save model as pin to Posit Connect
+board <- board_connect()
+vetiver_pin_write(board, inspections_wf_model)
+```
