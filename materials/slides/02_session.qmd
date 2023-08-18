@@ -95,7 +95,7 @@ THIS IS NOT A MODELING WORKSHOP!
 
 -   It's important to identify establishments currently in violation
 
--   **Q**: Can we help inspectors identify which establishments are at highet risk for failing an inspection?
+-   **Q**: Can we help inspectors identify which establishments are at highest risk for failing an inspection?
 
 -   **A**: Use the historical (validated) inspections data to create a model that will predict fail likelihood!
 :::
@@ -127,7 +127,7 @@ Steps to create (most) models:
 
 ## Introduction to Tidymodels {.content-light}
 
-<br>
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/recipes.png?raw=true){.absolute top="10" right="690" width="60"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/parsnip.png?raw=true){.absolute top="10" right="750" width="60"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/workflows.png?raw=true){.absolute top="10" right="630" width="60"}
 
 ```{r}
 #| code-line-numbers: "3-5|7-8|10-11|13-14"
@@ -150,6 +150,8 @@ model_fit <- parsnip::fit(model_wflow, your-data)
 
 ## Introduction to Tidymodels {.content-light}
 
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/recipes.png?raw=true){.absolute top="10" right="690" width="60"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/parsnip.png?raw=true){.absolute top="10" right="750" width="60"} ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/workflows.png?raw=true){.absolute top="10" right="630" width="60"}
+
 ::: center
 <h2><br>**Activity Time!**</h2>
 :::
@@ -162,15 +164,19 @@ model_fit <- parsnip::fit(model_wflow, your-data)
 **Complete Activity 1 only!**
 :::
 
-## Introduction to Vetiver {.content-light}
+::: callout-tip
+{{< bi sign-turn-right-fill color=orange >}} Want to learn more about Tidymodels? Check out the Tidymodels [Get Started](https://www.tidymodels.org/start/) page!
+:::
 
-![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){fig-align="center" width="830"}
+## Introduction to Vetiver
+
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){fig-align="center" width="429"}
 
 ::: fragment
 ...but first!
 :::
 
-## Introduction to Pins & Plumber {.content-light}
+## Introduction to Pins & Plumber
 
 ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/pins.png?raw=true){.absolute top="120" right="800" width="500"}
 
@@ -215,7 +221,7 @@ We have two questions:
 
 ## Vetiver
 
-![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){fig-align="center" width="154"}
+![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){fig-align="center"}
 
 ::: incremental
 -   Open source R (and Python) package.

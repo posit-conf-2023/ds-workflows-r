@@ -45,6 +45,7 @@ inspections_data <-
   tbl(con, "inspections_processed") |> 
   collect()
 ```
+
 ## Split Data
 
 Before modeling, it's important to split the data into a training and testing dataset (0.75/0.25 split). We will also stratify by the `Results` variable to ensure the testing and training datasets have similar percentage of `Pass`/`Fail`.

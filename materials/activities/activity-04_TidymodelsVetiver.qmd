@@ -118,7 +118,7 @@ Add the function from the `pins` package to register Posit Connect as our board,
 connect_board <- pins::____
 
 # Deploy to Posit Connect
-vetiver_pin_write(board = ____, vetiver_model = ____)
+vetiver_pin_write(board = ____, vetiver_model = "____")
 ```
 
 Now that the model is saved (or "pinned") to Posit Connect, you can easily read it into whatever piece of content your creating!
