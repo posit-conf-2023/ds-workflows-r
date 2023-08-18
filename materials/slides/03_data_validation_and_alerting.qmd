@@ -1,0 +1,219 @@
+---
+format:
+  positconfslides-revealjs: 
+    chalkboard: true
+    slide-number: c/t
+    footer: "[https://conf23workflows.training.posit.co/](https://conf23workflows.training.posit.co/)"
+    code-copy: true
+    center-title-slide: false
+    code-link: true
+    code-overflow: wrap
+    code-annotations: hover
+    highlight-style: a11y
+    width: "1600"
+    height: "900"
+    filters:
+      - positconfslides
+execute: 
+  eval: true
+  echo: true
+---
+
+## Data Validation and Alerting
+<h2>Starting the Workflow Pipeline</h2>
+![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){.absolute top="200" left="50" width="260"} ![](slide_resources/db.png){.absolute top="200" left="310" width="260"}
+
+
+
+## Next Steps {.brackets-light}
+
+::: incremental
+-   How can I ensure this is quality data? 🤔
+-   How will I know when it's not?
+
+:::
+
+
+## How can I ensure this is quality data?
+<br>
+🧰 `pointblank` for data validation 
+
+
+
+## The `pointblank` workflow
+
+
+
+![](https://rstudio.github.io/pointblank/reference/figures/data_quality_reporting_workflow.svg){height=300}
+
+:::{.smaller}
+
+```{.r}
+agent <- df |>                                # <1>
+  create_agent(
+    actions = action_levels(warn_at = 1)) |>  # <2>
+  col_vals_between(                           # <3>
+    vars(a), 1, 9,
+    na_pass = TRUE)  |>                       # <3>
+  col_vals_lt(
+    vars(c), 12,
+    preconditions = ~ . %>% dplyr::mutate(c = a + b))  |>  # <4> 
+  col_is_numeric(vars(a, b))  |>              # <3>
+  interrogate()                               # <5>
+```
+1. A local or database table
+2. Optionally define alert levels
+3. Define validations. There are 36 validation functions! 
+4. It's possible to validate against a transformed version of the input table 
+5. Interrogate to run the validation
+:::
+
+
+## Pointblank agent report
+
+
+![](https://rstudio.github.io/pointblank/reference/figures/agent_report.png)
+
+## Your Turn
+
+:::{.center}
+<h2> <br>**Activity Time!**</h2>
+:::
+
+:::{.callout-note icon=false}
+## Activity
+👉 Open the file `materials/activities/activity-02_data_validation.rmd`
+
+Activity objective: 
+<!-- TODO: get the extras out of the activity. make it just validation. identifying alert levels. write sundered data to database.  omit data dictionary.  -->
+
+:::
+
+
+## {{< bi sign-turn-right-fill color=orange >}} There's much more to `pointblank`
+
+<https://rstudio.github.io/pointblank/>
+
+
+:::::{.fragment .fade-in-then-out .absolute top=130}
+
+::::{.columns}
+
+:::{.column width=40%}
+- Is your data quality changing over time? Create a `multiagent` to summarize repeated validations.
+
+:::
+
+:::{.column width=50%}
+![](slide_resources/multiagent.png)
+
+:::
+
+::::
+
+:::::
+
+:::::{.fragment .fade-in-then-out .absolute top=130}
+
+::::{.columns}
+
+:::{.column width=40%}
+- [Is your data quality changing over time? Create a `multiagent` to summarize repeated validations.]{.lightgray} 
+- Standardize validations across your organization. Agents and informants can be saved as YAML ✨
+
+:::
+
+:::{.column width=0%}
+![](slide_resources/yaml.png){.absolute top=220 width=500}
+
+:::
+
+::::
+
+:::::
+
+:::::{.fragment .fade-in-then-out .absolute top=130}
+
+::::{.columns}
+
+:::{.column width=40%}
+- [Is your data quality changing over time? Create a `multiagent` to summarize repeated validations.]{.lightgray} 
+- [Standardize validations across your organization. Agents and informants can be saved as YAML ✨]{.lightgray}
+
+:::
+
+:::{.column width=50%}
+
+:::
+
+<h3><br>**In-depth `pointblank` test drive on Posit Cloud: <https://posit.cloud/project/3411822>**</h3>
+
+::::
+
+:::::
+
+
+
+
+## How will I know if my data has issues?
+
+:::{.columns}
+
+:::{.column width=25%}
+![](slide_resources/email_option.png){height=700 style="padding-left: 25px;"}
+:::
+
+:::{.column width=10%}
+[+]{.largest .middle}
+:::
+
+
+:::{.column width=25%}
+![](https://github.com/rstudio/blastula/raw/master/man/figures/logo.svg){.middle height=400}
+:::
+
+:::{.column width=10%}
+[=]{.largest .middle}
+:::
+
+:::{.column width=30%}
+
+[🧰 Customized, conditional emails]{.large .middle}
+
+:::
+
+:::
+
+## How `blastula` works with Connect
+
+![](slide_resources/blastula_process.png){.absolute top=130}
+
+:::{.absolute bottom=40 .smaller}
+**Key functions:**
+
+`blastula::render_connect_email`
+
+`blastula::attach_connect_email`
+
+`blastula::suppress_scheduled_email`
+:::
+
+## Your Turn {.content-light}
+
+:::{.center}
+<h2> <br>**Activity Time!**</h2>
+:::
+
+:::{.callout-note icon=false}
+## Activity
+👉 Open the file `materials/activities/activity-03_conditional_emails.rmd`
+
+:::
+
+## Other Alerting Approaches {.content2-light}
+
+{{< bi sign-turn-right-fill color=orange >}} Send alerts to a Slack channel or MS Teams, or via text message:
+<https://rviews.rstudio.com/2020/06/18/how-to-have-r-notify-you/>
+
+
+

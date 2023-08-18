@@ -195,6 +195,7 @@ countdown::countdown(minutes=7,seconds=0)
 
 📣 Push-button is good for rapid prototyping. Beyond that, you really should be using [**git-backed or programmatic deployment via CI/CD pipeline**]{.fuchsia} to keep your code in sync with your deployment. 
 
+<!-- TODO: find a place to have a git back deploy activity -->
 
 ## Scheduling
 
@@ -285,6 +286,8 @@ agent <- df |>                                # <1>
 ## Activity
 👉 Open the file `materials/activities/activity-02_data_validation.rmd`
 
+Activity objective: 
+<!-- TODO: get the extras out of the activity. make it just validation. identifying alert levels. write sundered data to database.  omit data dictionary.  -->
 
 :::
 
@@ -414,8 +417,5 @@ agent <- df |>                                # <1>
 {{< bi sign-turn-right-fill color=orange >}} Send alerts to a Slack channel or MS Teams, or via text message:
 <https://rviews.rstudio.com/2020/06/18/how-to-have-r-notify-you/>
 
-## {.toc-people-dark}
-<br><br>
-[**Break Time ☕ **]{.larger}
 
 

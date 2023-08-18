@@ -170,8 +170,8 @@ We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate work
 :::
 
 ## Asking Questions
-<!-- TODO: change to event code link -->
-<https://app.sli.do/event/uNcR36EKUoKRqby2VQxgk8>
+
+<https://slido.com> event code **#ds-workflows-r**
 
 :::{.columns}
 

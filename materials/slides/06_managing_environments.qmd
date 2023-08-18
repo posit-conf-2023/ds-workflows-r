@@ -1,0 +1,69 @@
+---
+title: "Session 3"
+title-slide-attributes: 
+  data-background-color: white
+  data-background-image: _extensions/positconfslides/assets/backgrounds/content2-light.svg
+  data-background-size: contain
+format:
+  positconfslides-revealjs: 
+    chalkboard: true
+    slide-number: c/t
+    footer: "[https://conf23workflows.training.posit.co/](https://conf23workflows.training.posit.co/)"
+    code-copy: true
+    center-title-slide: false
+    code-link: true
+    code-overflow: wrap
+    code-annotations: hover
+    highlight-style: a11y
+    width: "1600"
+    height: "900"
+    filters:
+      - positconfslides
+execute: 
+  eval: true
+  echo: true
+---
+
+## Session Outline
+
+  
+- Environments management (renv, and use PPM as a repository)
+- Dev, test, prod workflows with git backed and CICD
+- hot swap urls
+- deploying content that uses a private package
+- interoperability (maybe just note in the recap)
+  
+
+
+## Where we are
+
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}
+
+## How do we keep this all running smoothly?
+
+:::{.fragment}
+<br>
+Some surprises are good
+
+![](https://media.tenor.com/G79O8UU7664AAAAC/oprah-winfrey.gif)
+:::
+
+:::{.fragment}
+<br>
+But this is [*production*]{.fuchsia}, not showbiz.  <sigh>
+:::
+
+## How to avoid common pitfalls and look like a professional while doing it™
+
+- Manage your environment
+- Use a dev-test-prod workflow
+
+## Environments 
+
+> Think of your data science workbench as a kitchen:
+>
+> - The [**repository**]{.fuchsia} is the grocery store, a central place where everyone gets their packages.
+> - The [**library**]{.fuchsia} is the pantry, where you keep your own private set of packages.
+> - [**Installation**]{.fuchsia} is the shopping trip to stock your library with packages from the repository.
+
+

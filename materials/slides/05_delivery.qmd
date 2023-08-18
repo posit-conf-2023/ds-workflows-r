@@ -1,5 +1,5 @@
 ---
-title: "Session 3"
+title: "delivery"
 title-slide-attributes: 
   data-background-color: white
   data-background-image: _extensions/positconfslides/assets/backgrounds/content2-light.svg
@@ -39,11 +39,6 @@ execute:
   - Connect Widgets + Connect API
   - Monitor usage
   
-- Environments management (renv)
-- Dev, test, prod workflows with git backed and CICD
-- hot swap urls
-- deploying content that uses a private package
-
   
 ## Let's talk Shiny
 
@@ -181,8 +176,6 @@ Runtime settings
 
 :::
 
-
-
 :::
 
 ::::
@@ -251,6 +244,9 @@ Content returned by `connectwidgets::content` will be scoped to the API key prov
 ## Example
 <https://colorado.posit.co/rsc/chicago-food-r/>
 
+
+[TODO: Activity here?]{.larger} 
+
 ## How will I know if people are consuming my content?
 
 - 🧰 Posit Connect Server API 
@@ -290,3 +286,25 @@ Content returned by `connectwidgets::content` will be scoped to the API key prov
 :::
 
 ::::
+
+## 
+
+:::{.center}
+<h2> <br>**Activity Time!**</h2>
+:::
+
+:::{.callout-note icon=false}
+## Activity
+👉 Open the file `materials/activities/activity-XXXX`
+
+**Objective** Create a flexdashboard for the shiny app usage
+:::
+
+
+
+```{r}
+#| echo: false
+countdown::countdown(minutes=15,seconds=0, font_size = "4em")
+```
+
+
