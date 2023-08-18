@@ -1,9 +1,4 @@
 ---
-title: "Session 1"
-title-slide-attributes: 
-  data-background-color: white
-  data-background-image: _extensions/positconfslides/assets/backgrounds/content2-light.svg
-  data-background-size: contain
 format:
   positconfslides-revealjs: 
     chalkboard: true
@@ -24,78 +19,19 @@ execute:
   echo: true
 ---
 
-
-## Workshop approach
-
-We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate workflows and best practices using [**open source packages**]{.teal} and [**Posit professional tools**]{.teal}.
-
-:::{.fragment}
-
-<h2><br> Conventions </h2>
-
-|                                               |                                                                            |
-|-----------------------------------------------|----------------------------------------------------------------------------|
-| 🧰                                            | Add this to your toolbox.                                                  |
-| 📣                                            | I will stand on my soapbox and profess this until I am blue in the face.   |
-| {{< bi sign-turn-right-fill color=orange >}}  | Detour warning. We could get really into this, but there's not time today. |
-: {tbl-colwidths="[5,95]"}
-
-:::
+## Data Exploration and {.toc2-light}
+<h2>Starting the Workflow Pipeline</h2>
+![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){.absolute top="200" left="50" width="260"} ![](slide_resources/db.png){.absolute top="200" left="310" width="260"}
 
 
-
-## Chicago Food Inspections
-
-What is this project?
-
-## About the Project
-
-This workshop will use data from the City of Chicago Open Data Portal: <https://data.cityofchicago.org>.
-
-::: smaller
-1.  🍕 Food inspections: [https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5](https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5){.smaller}
-
-```{r}
-#| echo: false
-readRDS("slide_resources/inspections_preview.Rds") |> gt::gt()
-```
-
-2.  📒 Business licenses: [https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses/r5kz-chrr](https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses/r5kz-chrr){.smaller}
-
-```{r}
-#| echo: false
-readRDS("slide_resources/bus_data_preview.Rds") |> gt::gt()
-```
-:::
-
-## Project Objective
-
--   Provide users with a self-service tool that predicts the likelihood of a facility failing their next inspection
-
-<h2><br>Project Requirements</h2>
-
--   🤖 Automate the pipeline
--   ⚠️ Receive alerts if there are issues in the pipeline
--   🔄 Project is easy to maintain and iterate upon
--   {{< bi share color=#2D8400 >}} Work is reusable by other teams, even if they don't use R (Lookin' at you ![](https://s3.dualstack.us-east-2.amazonaws.com/pythondotorg-assets/media/community/logos/python-logo-only.png){height=50 style="vertical-align:middle"})
-
-## Project Overview
-<!-- TODO: Consider draw.io for diagram -->
-![](slide_resources/ds-workflows-r.png){fig-align="center"}
-
-##  {.brackets-dark}
-
-::: section-title-dark
-Let's Get Started!
-:::
 
 ## Getting Started {.brackets-light}
 
-::: incremental
+
 -   What is this data?
 -   Where should I put it?
--   How do I get data updates?
-:::
+-   How do I automate data updates?
+
 
 
 
@@ -138,6 +74,8 @@ pointblank::scan_data(palmerpenguins::penguins)
 👉 Open the file `materials/activities/activity-00_raw_data_exploration.qmd`
 
 You can render the document, but we recommend you interact run each code chunk as you work through it.
+
+Activity objective: explore our Chicago Food Inspections data to get familiar with our data
 :::
 
 
@@ -152,24 +90,54 @@ countdown::countdown(minutes=7,seconds=0, font_size = "4em")
  
 ## Where should I put the data?
 
-:::{.fragment}
+:::{.fragment .middle .r-fit-text}
 📣 Production data belongs in a database.
 :::
-<!-- TODO: Add a bp about efficient queries -->
-:::{.fragment}
-:::{.callout-tip icon=false}
-## {{< bi sign-turn-right-fill color=orange >}} Best practices in working with databases
 
-<https://solutions.posit.co/connections/db/> 
+## Database Connection Essentials, the single slide edition
 
-- `odbc` is an R package that provides a generic `DBI`-compliant interface to the ODBC driver installed on your system
-- `RPostgres`, `RMariaDB`, `RSQLite`, and `bigrquery` are database-specific R packages that implement the drivers themselves. In many cases, they are more performant (especially in writing data) and may have more translations available for query types
+:::{.incremental .smaller}
+- Database connections have 2 parts: 
+  - [A driver installed on your system (not R-specific)]{.teal}
+  - [A means to interact with the driver (e.g., R package)]{.teal}
+- `odbc` is an R package that provides a generic `DBI`-compliant interface to the ODBC driver installed on your system. *This is your Swiss Army Knife for database connections* and integrates with the "Connections" Pane in the RStudio IDE
+- `RPostgres`, `RMariaDB`, `RSQLite`, and `bigrquery` are database-specific R packages that implement the drivers themselves. *They combine the two parts of a connection into one.* In many cases, they are more performant (especially in writing data) and may have more translations available for query types
 - These will make the same connection
   ```r
   con <- DBI::dbConnect(RPostgres::postgres(), ...)
   con <- DBI::dbConnect(odbc::odbc(), driver = “Postgres”, ...)
   ```
+:::
+
+## Interacting with Databases, the single slide edition
+
 - use `dplyr` to query the database table in the same manner you would a local data frame
+  ```r
+  df <- dplyr::tbl(con, "table-name")
+  
+  ```
+- Do as much work as possible in the database
+  ```r
+  df  |> filter(...) |> mutate(...) |> group_by(...) |> summarise(...)
+  
+  ```
+
+- Use `collect()` to bring the table into memory. Do this as late as possible to save time and resources
+
+  ```r
+  df |> ... |> collect()
+  
+  ```
+
+
+
+## More on databases {.content-light}
+
+:::{.callout-tip icon=false}
+## {{< bi sign-turn-right-fill color=orange >}} Best practices in working with databases
+
+<https://solutions.posit.co/connections/db/> 
+
 
 Specific resources:
 
@@ -189,9 +157,8 @@ Specific resources:
 
 :::
 
-:::
 
-## How do I get data updates?
+## How do I automate data updates?
 
 :::{.fragment}
 🧰 Deploy and schedule your notebook on Posit Connect
@@ -207,6 +174,7 @@ Specific resources:
 ## Activity
 👉 Open the file `materials/activities/activity-01_publish_and_schedule_data_pull.Rmd`
 
+Activity objective: Download data from our raw source, write it to a database, then deploy and schedule this work on Posit Connect so it runs automatically. 
 
 :::
 
@@ -222,8 +190,8 @@ countdown::countdown(minutes=7,seconds=0)
 ## Deployment Methods to Posit Connect
 
 1. Push-button ![](slide_resources/publishIcon_2x.png){height="50" style="vertical-align:middle"} 
-2. Git-backed
-3. Programmatic 
+2. Git-backed {{< fa brands git-alt >}}
+3. Programmatic {{< fa gears >}}
 
 📣 Push-button is good for rapid prototyping. Beyond that, you really should be using [**git-backed or programmatic deployment via CI/CD pipeline**]{.fuchsia} to keep your code in sync with your deployment. 
 
