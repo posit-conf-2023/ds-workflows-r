@@ -173,7 +173,7 @@ print(paste("ℹ️ Alert Triggered?", alert_me))
 ```{r Data-scan-on-inspections-raw, eval=(test_mode != TRUE)}
 
 # 
-scan <- pointblank::scan_data(inspections_raw, sections = "OVMS")
+scan <- pointblank::scan_data(inspections_raw |> select(-violations), sections = "OVMS")
 scan
 
 
