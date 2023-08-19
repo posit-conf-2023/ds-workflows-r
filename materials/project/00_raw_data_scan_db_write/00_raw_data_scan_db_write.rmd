@@ -170,7 +170,7 @@ print(paste("ℹ️ Alert Triggered?", alert_me))
 
 # Generate data scan for reference
 
-```{r Data-scan-on-inspections-raw, eval=(test_mode == FALSE)}
+```{r Data-scan-on-inspections-raw, eval=(test_mode != TRUE)}
 
 # 
 scan <- pointblank::scan_data(inspections_raw, sections = "OVMS")
