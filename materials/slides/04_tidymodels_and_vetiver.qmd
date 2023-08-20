@@ -251,8 +251,6 @@ Prior to this workshop:
 
     -   `materials/project/03_model/03_model_creation.qmd`
 
-    -   Published to Posit Connect and set to run once per week (...takes a while to run 😏)
-
     -   {{< bi sign-turn-right-fill color=orange >}} How to run background/workbench jobs for long running analyses!
 
         -   `materials/activities/activity-05_jobs.qmd`
