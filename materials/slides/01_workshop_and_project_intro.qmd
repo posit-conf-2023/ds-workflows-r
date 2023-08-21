@@ -96,7 +96,6 @@ conf\@posit.co 844-448-1212
 :::
 :::
 
-
 ## What you will learn
 
 <!-- TODO: note the strings and glue. -->
@@ -118,12 +117,12 @@ conf\@posit.co 844-448-1212
 ## Agenda
 
 | Time          | Activity                                                                                            |
-|:----------------|:------------------------------------------------------|
+|:------------------------|:-----------------------------------------------|
 | 9:00 - 10:30  | Workshop Introduction (20 minutes) <br> Reading, Cleaning, Writing and Validating Data (70 minutes) |
 | 10:30 - 11:00 | *Coffee break* ☕                                                                                   |
 | 11:00 - 12:30 | Creating, Delivering, and Monitoring a model using Vetiver                                          |
 | 12:30 - 1:30  | *Lunch break* 🥪                                                                                    |
-| 1:30 - 3:00   | Reporting                                                                                           |
+| 1:30 - 3:00   | Delivery                                                                                            |
 | 3:00 - 3:30   | *Coffee break* ☕                                                                                   |
 | 3:30 - 5:00   | Advancing your Workflow                                                                             |
 
@@ -149,67 +148,68 @@ conf\@posit.co 844-448-1212
 ### 👨‍💻Put your sticky note on the back of your laptop screen 👩‍💻
 :::
 
-
-
-
 ## Workshop approach
 
 We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate workflows and best practices using [**open source packages**]{.teal} and [**Posit professional tools**]{.teal}.
 
-:::{.fragment}
+::: fragment
+<h2><br> Conventions</h2>
 
-<h2><br> Conventions </h2>
+|                                              |                                                                            |
+|----------------------------|--------------------------------------------|
+| 🧰                                           | Add this to your toolbox.                                                  |
+| 📣                                           | I will stand on my soapbox and profess this until I am blue in the face.   |
+| {{< bi sign-turn-right-fill color=orange >}} | Detour warning. We could get really into this, but there's not time today. |
 
-|                                               |                                                                            |
-|-----------------------------------------------|----------------------------------------------------------------------------|
-| 🧰                                            | Add this to your toolbox.                                                  |
-| 📣                                            | I will stand on my soapbox and profess this until I am blue in the face.   |
-| {{< bi sign-turn-right-fill color=orange >}}  | Detour warning. We could get really into this, but there's not time today. |
-: {tbl-colwidths="[5,95]"}
-
+: {tbl-colwidths="\[5,95\]"}
 :::
 
 ## Asking Questions
 
-<https://slido.com> event code **#ds-workflows-r**
+**Discord** - 🔴 add channel here
 
-:::{.columns}
-
-:::{.column width=50%}
+::: columns
+::: {.column width="50%"}
 <br>
 
 👉 **Submit questions and respond to polls here**
 
-
-
-::: {style="background: #cca2b2; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" .absolute top=400 left=100}
-
+::: {.absolute style="background: #cca2b2; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="400" left="100"}
 <h3>You are always welcome to raise your hand! 🙋</h3>
 :::
 
-
-:::{.fragment}
-
-::: {style="background: #A6CFD5; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" .absolute top=420 left=120}
-
-<h3>Go to slido now and tell us what you're excited about!</h3>
+::: fragment
+::: {.absolute style="background: #A6CFD5; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="420" left="120"}
+<h3>Go to Discord now and tell us what you're excited about!</h3>
+:::
+:::
 :::
 
+::: {.column width="50%"}
+<br> <br> <br>
+
+![](slide_resources/discord-logo-blue.png){width="100%" fig-align="center"}
+:::
 :::
 
+## Getting help (R Functions) {.content-light}
 
-:::
+Functions are the 🍞 and 🧈 of R programming!
 
-:::{.column width=50% }
+<br>
 
+::: fragment
+If you want to access any function's help page:
 
+```{r}
+#| eval: false
 
-![](slide_resources/QR Code for ds-workflows-R.png){width=100% fig-align="center"}
+# Method 1
+help(function_name_here)
 
-
-:::
-
-
+# Method 2
+?function_name_here
+```
 :::
 
 ##  {.brackets-dark}
@@ -218,24 +218,51 @@ We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate work
 🌮 Hungry to get started? 🌭
 :::
 
-
 ## Chicago Food Inspections Project
 
-What is this project?
+![](slide_resources/LOGO-CHICAGO-horizontal.png){.absolute top="10" right="50" width="350"}
 
-::: incremental
--   Over 15,000 food establishments across the City of Chicago
+[What is this project?]{.fuchsia}
 
--   Only a handful of food inspectors currently employed
-
--   It's important to identify establishments currently in violation
-
--   **Q**: Can we help inspectors identify which establishments are at highest risk for failing an inspection?
-
--   **A**: Use the historical (validated) inspections data to create a model that will predict fail likelihood!
+::: columns
+::: {.column width="70%"}
+::: {.fragment fragment-index="1"}
+-   Over **15,000** food establishments across the City of Chicago
 :::
 
-## Project Data 
+::: {.fragment fragment-index="2"}
+-   Only a handful of food inspectors currently employed
+:::
+
+::: {.fragment fragment-index="3"}
+::: {.callout-caution icon="false"}
+## The Question
+
+Can we help inspectors identify which establishments are at highest risk for failing an inspection?
+:::
+:::
+
+::: {.fragment fragment-index="4"}
+::: {.callout-tip icon="false"}
+## The Answer
+
+Use the historical (validated) inspections data to create a model that will predict fail likelihood!
+:::
+:::
+:::
+
+::: {.column width="30%"}
+::: {.fragment fragment-index="1"}
+![](https://images.unsplash.com/photo-1523053030199-19a46754261d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmVzdGF1cmFudCUyMGNoaWNhZ298ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60)
+:::
+
+::: {.fragment fragment-index="2"}
+![](https://plus.unsplash.com/premium_photo-1661937185702-e6f2a55096ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZCUyMGluc3BlY3RvcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60)
+:::
+:::
+:::
+
+## Project Data
 
 This workshop will use data from the City of Chicago Open Data Portal: <https://data.cityofchicago.org>.
 
@@ -255,6 +282,12 @@ readRDS("slide_resources/bus_data_preview.Rds") |> gt::gt()
 ```
 :::
 
+::: fragment
+::: {style="text-align: center"}
+🕐 Take 5 minutes and explore these two datasets
+:::
+:::
+
 ## Project Objective
 
 -   Provide users with a self-service tool that predicts the likelihood of a food establishment failing their next inspection
@@ -264,12 +297,13 @@ readRDS("slide_resources/bus_data_preview.Rds") |> gt::gt()
 -   🤖 Automate the pipeline
 -   ⚠️ Receive alerts if there are issues in the pipeline
 -   🔄 Project is easy to maintain and iterate upon
--   {{< bi share color=#2D8400 >}} Work is reusable by other teams, even if they don't use R (Lookin' at you ![](https://s3.dualstack.us-east-2.amazonaws.com/pythondotorg-assets/media/community/logos/python-logo-only.png){height=50 style="vertical-align:middle"})
+-   {{< bi share color=#2D8400 >}} Work is reusable by other teams, even if they don't use R (Lookin' at you ![](https://s3.dualstack.us-east-2.amazonaws.com/pythondotorg-assets/media/community/logos/python-logo-only.png){height="50" style="vertical-align:middle"})
 
 ## Project Overview
-<!-- TODO: Consider draw.io for diagram -->
-![](slide_resources/ds-workflows-r.png){fig-align="center"}
 
+<!-- TODO: Consider draw.io for diagram -->
+
+![](slide_resources/ds-workflows-r.png){fig-align="center"}
 
 ##  {.brackets-dark}
 
@@ -277,11 +311,9 @@ readRDS("slide_resources/bus_data_preview.Rds") |> gt::gt()
 Get Your Environment Set Up
 :::
 
-## Your Tools --- Workbench, Connect, Package Manager
+## Your Tools
 
-::: center
-![](https://solutions.posit.co/get-started/images/concept_map.jpeg){height="800px"}
-:::
+![](slide_resources/PST-overview.jpg){fig-align="center"}
 
 ## Access Your Tools
 
@@ -298,93 +330,68 @@ Get Your Environment Set Up
 -   Connect: <https://connect.conf23workflows.training.posit.co>
 -   Package Manager: <https://package-manager.conf23workflows.training.posit.com>
 
-
 ## Connect Setup // Step 1
 
-Visit:  <https://connect.conf23workflows.training.posit.co>
+Visit: <https://connect.conf23workflows.training.posit.co>
 
-::::{.columns}
-
-:::{.column width=60%}
-![](slide_resources/connect_sign_up_1.png){height=500}
-
-
+::: columns
+::: {.column width="60%"}
+![](slide_resources/connect_sign_up_1.png){height="500"}
 :::
 
-:::{.column width=40%}
-![](slide_resources/connect_sign_up_2.png){height=500}
+::: {.column width="40%"}
+![](slide_resources/connect_sign_up_2.png){height="500"}
+:::
 :::
 
-::::
-
-:::{.smaller}
-
-- Use any email you have access to (personal is preferred to avoid corporate spam filters)
-- Set your username as the prefix to your email
-- Choose any password
-
+::: smaller
+-   Use any email you have access to (personal is preferred to avoid corporate spam filters)
+-   Set your username as the prefix to your email
+-   Choose any password
 :::
 
 ## Connect Setup // Step 2
 
 ![](slide_resources/connect_sign_up_email.png)
 
-- Check your email for a confirmation email.
-- 👉 It will likely be in your [**spam folder**.]{.fuchsia}
-- The email will be from [**conf23workflows@training.rstudio.com**]{.fuchsia}
-
+-   Check your email for a confirmation email.
+-   👉 It will likely be in your [**spam folder**.]{.fuchsia}
+-   The email will be from [**conf23workflows\@training.rstudio.com**]{.fuchsia}
 
 ## Workbench Setup // Step 1
 
-Visit:  <https://workbench.conf23workflows.training.posit.co> 
+Visit: <https://workbench.conf23workflows.training.posit.co>
 
-
-::::{.columns}
-
-:::{.column width=50%}
-
-- Your account has already been created!
-- Log in with the prefix of the email that you used to sign up for this workshop. <br><br>For example:
-  - email: `edwardes.s@gmail.com`
-  - username: `edwardes.s`
-- We will provide you with your password.
-
-
+::: columns
+::: {.column width="50%"}
+-   Your account has already been created!
+-   Log in with the prefix of the email that you used to sign up for this workshop. <br><br>For example:
+    -   email: `edwardes.s@gmail.com`
+    -   username: `edwardes.s`
+-   We will provide you with your password.
 :::
 
-:::{.column width=50%}
-![](slide_resources/workbench_login.png){width=100%}
+::: {.column width="50%"}
+![](slide_resources/workbench_login.png){width="100%"}
 :::
-
-::::
-
-
+:::
 
 ## Workbench Setup // Step 2
 
-::::{.columns}
-
-:::{.column width=50% .smaller}
-
-1. Start a RStudio Pro session
-2. Navigate to the folder `ds-workflows-r`
-3. Open the `ds-workflows-r.Rproj` project
+::: columns
+::: {.column .smaller width="50%"}
+1.  Click `New Session`
+2.  Start a RStudio Pro session
+3.  Navigate to the folder `ds-workflows-r`
+4.  Open the `ds-workflows-r.Rproj` project
 
 ![](slide_resources/workbench_openproject.png){fig-align="center"}
-
 :::
 
-:::{.column width=50%}
+::: {.column width="50%"}
 ![](slide_resources/workbench_newsession.png){fig-align="center"}
-
 :::
-
-::::
-
-
-
-
-
+:::
 
 ##  {.brackets-dark}
 
