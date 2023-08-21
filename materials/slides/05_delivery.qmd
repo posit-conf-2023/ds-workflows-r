@@ -307,7 +307,12 @@ key provided.
 
 <https://colorado.posit.co/rsc/chicago-food-r/>
 
-[TODO: Activity here?]{.larger}
+::: {.callout-note icon="false"}
+## Activity
+
+👉 Open the file `materials/activities/activity-06_Connectwidgets.qmd`
+
+:::
 
 ## How will I know if people are consuming my content?
 
