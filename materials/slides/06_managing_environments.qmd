@@ -65,17 +65,6 @@ execute:
 
 Talk about PPM as the repository. Have private packages too. this makes it really easy to move from dev to prod.
 
-## Dev-Test-Prod
-
-Ensure your data products behave as expected and there are no surprises.
-
-![](slide_resources/devtestprod.png){fig-align="center" height="220"}
-
-|                                                           |                                                                |                                                   |
-|-------------------|-----------------------------------|-----------------|
-| Development                                               | Test                                                           | Production                                        |
-| The data product is developed and tested by the developer | One, or a few, stakeholders test the product for functionality | The product is made available to all stakeholders |
-| Posit Workbench                                           | Posit Connect                                                  | Posit Connect                                     |
 
 ## Environments
 
@@ -182,3 +171,14 @@ Follow along with me - Getting started with `renv`
 :::
 :::
 
+## Dev-Test-Prod
+
+Ensure your data products behave as expected and there are no surprises.
+
+![](slide_resources/devtestprod.png){fig-align="center" height="220"}
+
+|                                                           |                                                                |                                                   |
+|-------------------|-----------------------------------|-----------------|
+| Development                                               | Test                                                           | Production                                        |
+| The data product is developed and tested by the developer | One, or a few, stakeholders test the product for functionality | The product is made available to all stakeholders |
+| Posit Workbench                                           | Posit Connect                                                  | Posit Connect                                     |
