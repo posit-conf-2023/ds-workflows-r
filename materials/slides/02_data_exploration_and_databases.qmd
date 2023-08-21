@@ -71,7 +71,7 @@ pointblank::scan_data(palmerpenguins::penguins)
 
 :::{.callout-note icon=false}
 ## Activity
-👉 Open the file `materials/activities/activity-00_raw_data_exploration.qmd`
+👉 Open the file `materials/activities/activity-01_raw_data_exploration_db_write.qmd`
 
 You can render the document, but we recommend you interact run each code chunk as you work through it.
 
@@ -172,9 +172,9 @@ Specific resources:
 
 :::{.callout-note icon=false}
 ## Activity
-👉 Open the file `materials/activities/activity-01_publish_and_schedule_data_pull.Rmd`
+👉 Re-open the file `materials/activities/activity-01_raw_data_exploration_db_write.qmd`
 
-Activity objective: Download data from our raw source, write it to a database, then deploy and schedule this work on Posit Connect so it runs automatically. 
+Activity objective: Write production data to database, then deploy and schedule this work on Posit Connect so it runs automatically. 
 
 :::
 
