@@ -1,0 +1,289 @@
+---
+title: "Raw Data Exploration and Write of Production data to database"
+description: "Conduct ad hoc exploration of the data, first exposure to `pointblank`, and writing data to database"
+toc: true
+toc-depth: 4
+editor_options: 
+  chunk_output_type: console
+execute: 
+  eval: false
+---
+
+## Introduction
+
+This workshop will use data from the City of Chicago Open Data Portal: <https://data.cityofchicago.org>. The following datasets will be used for the project:
+
+1.  🍕Food inspections: <https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5>
+2.  📒Business license data: <https://data.cityofchicago.org/Community-Economic-Development/Business-Licenses/r5kz-chrr>
+
+For this activity, we will explore the Food Inspections dataset. You may find it interesting to explore the final project's data exploration notebook to see a more robust exploration than what is provided in this Activity. See `/materials/project/00_raw_data_scan_db_write.rmd`
+
+## Goals
+
+The goals of this activity are to:
+
+-   get familiar with the Food Inspections dataset
+-   gain experience using `pointblank::scan_data` to summarize data
+
+This will give you the first clues of appropriate data cleaning and validations that might be relevant for this project.
+
+✏️ There will be placeholders (`____`) in the code cells below that you will need to fill in!
+
+## Setup
+
+### Load required packages for importing and exploring the data
+
+```{r}
+#| label: Load packages
+
+library(tidyverse)
+library(pointblank)
+library(tidyverse)
+library(janitor)
+library(DBI)
+library(odbc)
+library(RPostgres)
+library(glue)
+
+```
+
+### Download raw data
+
+The City of Chicago data portal provides access to their datasets via the Socrata Open Data (SODA) API. Consulting the documentation provides us with some examples of how to use SODA: <https://dev.socrata.com/foundry/data.cityofchicago.org/4ijn-s7e5>.
+
+We will query the SODA API directly and download the full dataset as a `.csv` using `readr::read_csv()`.[^1]
+
+[^1]: There is a R package called `RSocrata` to interact with SODA, however, in our initial testing, the column schemas were better-preserved using `readr` as opposed to using the `RSocrata` package
+
+Note we are using an environment variable called SOCRATA_APP_TOKEN. This has been preconfigured for you for the purposes of this workshop.
+
+```{r}
+#| label: Download raw inspections data from City of Chicago
+
+inspections_raw <- 
+  readr::read_csv(paste0("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv?$$app_token=",Sys.getenv("SOCRATA_APP_TOKEN")))
+```
+
+Feel free to use the code chunk below to explore the raw data. Maybe try `str`, `summary`?
+
+```{r}
+#| label: your space
+
+inspections_raw
+
+
+
+```
+
+## Task 1 - Scan the data
+
+🔄 Task
+
+Use the `pointblank` package to gather basic information about the Food Inspections data so we can
+
+-   Understand what the data is
+-   Get a sense for how much cleaning is required
+-   Plan our approach for data validation
+
+✅ Solution
+
+::: callout-tip
+## The `pointblank` package
+
+::: columns
+::: {.column width="20%"}
+![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){style="padding-right: 15px;"}
+:::
+
+::: {.column width="75%"}
+<br> `pointblank` provides data quality assessment and metadata reporting for data frames and database tables.
+
+**Reference**: <https://github.com/rstudio/pointblank>
+:::
+:::
+:::
+
+The `pointblank::scan_data()` function provides a HTML report of the input data to help you understand your data. It contains 6 sections:
+
+-   **Overview (O)**: Table dimensions, duplicate row counts, column types, and reproducibility information
+-   **Variables (V)**: A summary for each table variable and further statistics and summaries depending on the variable type
+-   **Interactions (I)**: A matrix plot that shows interactions between variables
+-   **Correlations (C)**: A set of correlation matrix plots for numerical variables
+-   **Missing Values (M)**: A summary figure that shows the degree of missingness across variables
+-   **Sample (S)**: A table that provides the head and tail rows of the dataset
+
+The scan can take a little while to run on a large dataset, but you can also omit sections that are not needed.
+
+First run this example on a small data frame, such as `penguins` from the `palmerpenguins` package 🐧:
+
+```{r}
+#| label: Data scan on penguins
+
+pointblank::scan_data(palmerpenguins::penguins) 
+
+```
+
+⚠️ The "Correlations" and "Interactions" sections take the longest to run, especially on a larger data set like our Food Inspection data. These sections aren't relevant for this data anyhow, so this time, run the `data_scan` on `inpsections_raw`, but omit "Correlations" and "Interactions."
+
+```{r}
+#| label: Data scan on inspections_raw
+
+scan <- pointblank::scan_data(____, sections = "____")
+scan
+
+```
+
+## Task 2 - Explore the data scan
+
+🔄 Task
+
+Explore the data scan and share your observations with your neighbor or in slido. <https://slido.com> event code `#ds-workflows-r` or ![](../../materials/slides/slide_resources/QR%20Code%20for%20ds-workflows-R.png)
+
+
+1.  What is the most common value for `DBA NAME` and `AKA Name` (hint: Toggle details)
+2.  What `License #` has the most inspections?
+3.  Explore the `Facility Type`. Does the number of distinct values surprise you?
+4.  What can we the Missing Values diagram tell us about potential data quality issues?
+
+How will this inform our data cleaning and validation?
+
+✅ Solution
+
+Use this space if you'd like to do your own code-based exploration.  Maybe see why there is so much variation in `Facility Type`?
+
+```{r}
+#| label: Explore variation in the Facility Type
+
+# What variations are there for "Restaurant" 
+inspections_raw |> 
+  filter(grepl("REST", `Facility Type`)) |> 
+  group_by(`Facility Type`) |> 
+  tally() |> 
+  arrange(desc(n)) |> print(n=20)
+
+```
+
+
+```{r}
+#| label: your space for exploring
+
+
+
+```
+
+Some conclusions from exploration:
+
+-   We've got some very messy data, particularly in `FACILITY TYPE`
+-   We are going to want the `FACILITY TYPE` to be as clean as possible so we can filter out the establishments we don't care about for this analysis (e.g., hotels, caterers, etc.). 
+-   Share your own observations in Slido
+
+
+🛑 Stop here for now. Put your "I'm good" sticky up to let us know you're done with this Task and we will proceed to the database section momentarily.
+
+## Task 3 - Write raw data to database
+
+🔄 Task
+
+-   Create a database connection using the database connection details defined for you by your IT Admin (Workshop Instructors)
+-   Write an abbreviated version of the raw data, `inspections_raw` to the database with your name appended to the table name, i.e.,
+    -   `inspections_raw_masiello` 
+
+✅ Solution
+
+The `RPostgres` package is DBI-compliant and is built specifically for PosgreSQL DB. Performance may be faster (particularly for writing data!) than using the generic odbc package. It's perfectly reasonable to use the odbc package instead, and if we do, if we instead use the generic `odbc::odbc()` backend, the database will appear in the Connections pane. 
+
+Make both connections using the skeleton code below and compare.
+
+```{r}
+#| label: Connect to the Postgres database
+
+# Using the `RPostgres` package  
+con <- dbConnect(RPostgres::Postgres(), 
+                 host = Sys.getenv("CONF23_DB_HOST"), 
+                 port = "5432", 
+                 dbname = "conf23_r", 
+                 user = Sys.getenv("CONF23_DB_USER"), 
+                 password = Sys.getenv("CONF23_DB_PASSWORD"))
+
+# Using the `odbc` package. Notice the connection appears now in the RStudio Connections pane.
+con_alternative <- dbConnect(odbc::odbc(),
+                  Driver = "postgresql",
+                  Server = Sys.getenv("CONF23_DB_HOST"),
+                  Port = "5432",
+                  Database = "conf23_r",
+                  UID = Sys.getenv("CONF23_DB_USER"),
+                  PWD = Sys.getenv("CONF23_DB_PASSWORD"),
+                  timeout = 10)
+
+```
+
+For the sake of time, we don't want to write all ~260k rows of the inspections data to the database, so first, we will take a small sample and append our names to the data frame to provide unique names.
+
+```{r}
+#| label: Write raw data to database
+
+# specify username to append to the database table
+my_name <- Sys.getenv("USER")
+
+# Take a random sample of only 1% of the data for the sake of reducing the time for processing (est. ~2.6k rows)
+inspections_raw_subset <- inspections_raw |> sample_frac(0.01)
+
+# write inspections raw subset data. There are time stamps in here for monitoring the write.
+start_time <- Sys.time()
+dbWriteTable(con, 
+             paste0("inspections_raw_subset_",my_name), 
+             inspections_raw_subset, 
+             overwrite = TRUE)
+end_time <- Sys.time()
+
+duration <- end_time - start_time
+
+print(paste("ℹ️ Info: Writing raw inspection data to database took", round(duration[[1]], 2),  units(duration)))
+
+# As a check, count how many rows were written to the db
+# use dplyr::tbl to connect to the database table we just wrote
+insp_db <- tbl(____, ___)
+# There are many ways to count database rows.  If you just view `insp_db` what do you see?
+insp_db
+# In the output, do you see:
+# Source:   table<inspections_raw_subsetkatie.masiello> [?? x 17] 
+
+# If we pulled the database into local memory, we could see (and count) all the rows, but we want to avoid this for performance and resource sake. Try a dplyr aggregation command, like `tally` to give an easy answer without pulling the database into memory.
+insp_db_rowcount <- insp_db |> tally() 
+
+#Close the database connection 
+dbDisconnect(con)
+
+```
+
+At this point, we have a good sense of the data, we've moved it to a database, and can move on from ad hoc exploration into a repeatable workflow 🎉
+
+To make this database write repeatable and updating for us on a schedule, we are going to publish this notebook to Posit Connect and put it on a schedule to run for us.  
+
+🛑 Stop here for now. Put your "I'm good" sticky up to let us know you're done with this Task and we will proceed to the database section momentarily.
+
+
+## Task 4 - Publish and schedule on Posit Connect
+
+🔄 Task
+
+- Use push-button publishing to publish this document, with source code, to Connect
+- Schedule it to run on a timescale that seems appropriate for the data update cycle
+
+Notes: 
+- Recall we specified our database connection details with environment variables. Typically when you publish content to Connect, you will also need to supply the environment variables using the "Vars" pane in Connect. For this workshop, these environment variables have already been stored on the Connect server for you so you won't need to do this step for this activity.
+
+✅ Solution
+
+The Connect User Guide provides instructions for publishing: <https://docs.posit.co/connect/user/publishing/#publishing-general>
+
+# Add Logging information for our scheduled report
+```{r logging, echo=FALSE}
+
+glue("Report run {blastula::add_readable_time()}")
+
+glue("{nrow(inspections_raw)} rows of inspection data downloaded. 
+     {nrow(inspections_raw_subset)} rows of inspection data written to database.")
+
+
+```
