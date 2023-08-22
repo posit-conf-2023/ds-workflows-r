@@ -4,9 +4,11 @@ description: "Experiment with running background and workbench jobs within Posit
 toc: true
 toc-depth: 4
 editor_options: 
-  chunk_output_type: console
+  markdown:
+    canonical: true 
 execute: 
   eval: false
+editor: visual
 ---
 
 ![](images/logo-workbench-full-color.svg){fig-align="center"}

@@ -29,18 +29,17 @@ editor:
 
 ## Session Outline
 
--   Making Shiny resources:
-    -   bslib, shinyuieditor
-    -   mastering shiny, gallery
--   Don't make a kitchen sink app
+-   Shiny resources
+-   Shiny in Production
     -   Goal for a light weight presentation layer
-    -   DB, pins, scheduled ETLs
-    -   log4r
-    -   shinyloadtest, profvis
-    -   Connect runtime settings <activity / discussion>
--   Managing your content
-    -   Connect Widgets + Connect API
+    -   Posit Connect runtime settings
+-   Managing and Monitoring your content
+    -   `connectwidgets` + Connect API
     -   Monitor usage
+    
+## Review
+
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}
 
 ## Let's talk Shiny
 
@@ -167,6 +166,16 @@ Two sides to this coin:
     
   })
 ```
+
+## Activity
+
+::: {.callout-note icon="false"}
+## Activity
+
+👉 Open the file `materials/activities/activity-06_shiny.qmd`
+
+**Complete Activity 1 only!**
+:::
 
 ## Shiny on Connect
 
