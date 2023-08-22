@@ -22,7 +22,7 @@ inspections_per_week_this_year <- pin_read(board, "katie.masiello/inspections_pe
 
 
 # Get API info --------------------------------------------
-api_url <- "https://colorado.posit.co/rsc/content/74a10e63-87de-47fc-879a-adca0903ad57"
+api_url <- "https://connect.conf23workflows.training.posit.co/food-inspections-api/"
 endpoint <- vetiver_endpoint(paste0(api_url, "/predict"))
 
 
