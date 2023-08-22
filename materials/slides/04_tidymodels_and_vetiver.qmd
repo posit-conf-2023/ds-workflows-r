@@ -130,7 +130,6 @@ Use the historical (validated) inspections data to create a model that will pred
 :::
 :::
 
-
 ## Introduction to Tidymodels {.content-light}
 
 ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/tidymodels.png?raw=true){.absolute top="200" right="50" width="260"}
@@ -199,13 +198,26 @@ model_fit <- parsnip::fit(model_wflow, your-data)
 {{< bi sign-turn-right-fill color=orange >}} Want to learn more about Tidymodels? Check out the Tidymodels [Get Started](https://www.tidymodels.org/start/) page!
 :::
 
-## Introduction to Vetiver
+## We have a model...now what 🤷 ?
 
-![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){fig-align="center" width="429"}
+<br>
 
-::: fragment
-...but first!
+We have two questions:
+
+1.  How can we **save** our model so others can use it?
+2.  How can we **serve** our model so others can interact with it?
+
+::: {.fragment .fade-up}
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){fig-align="center" width="309"}
 :::
+
+## Vetiver
+
+![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){fig-align="center" width="722"}
+
+-   Open source R (and Python) package.
+-   Deploy and maintain machine learning models --\> **MLOps**
+-   Provides tools to version, deploy, and monitor a trained model.
 
 ## Introduction to Pins & Plumber
 
@@ -225,6 +237,16 @@ model_fit <- parsnip::fit(model_wflow, your-data)
     -   **How can we save our model so that others (or other content) can use it?**
 :::
 
+## Activity
+
+::: {.callout-note icon="false"}
+## Activity
+
+👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
+
+**Complete Activity 2 only!**
+:::
+
 ## 🧰 Plumber
 
 ![](https://github.com/rstudio/hex-stickers/blob/main/PNG/plumber.png?raw=true){fig-align="center" width="120"}
@@ -237,41 +259,34 @@ model_fit <- parsnip::fit(model_wflow, your-data)
     -   **How can we serve our model as an API?**
 :::
 
-## Vetiver
-
-<br>
-
-We have two questions:
-
-1.  How can we **save** our model so that others can use it?
-2.  How can we **serve** our model as an API?
-
-::: {.fragment .fade-up}
-![](https://github.com/rstudio/hex-stickers/blob/main/PNG/vetiver.png?raw=true){fig-align="center" width="309"}
-:::
-
-## Vetiver
-
-![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){fig-align="center"}
-
-::: incremental
--   Open source R (and Python) package.
--   Deploy and maintain machine learning models --\> **MLOps**
--   Provides tools to version, deploy, and monitor a trained model.
-:::
-
-## Introduction to Vetiver {.content-light}
-
-::: center
-<h2><br>**Activity Time!**</h2>
-:::
+## Activity
 
 ::: {.callout-note icon="false"}
 ## Activity
 
 👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
 
-**Complete Activities 2-5**
+**Complete Activity 3-4 only!**
+:::
+
+## Version and Monitor your models
+
+<br>
+
+::: incremental
+-   Data changes over time
+-   Models change over time
+-   **How can I ensure I'm using the best model for the job?**
+:::
+
+::: fragment
+::: {.callout-note icon="false"}
+## Activity
+
+👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
+
+**Complete Activities 5**
+:::
 :::
 
 ## Food Inspections Model
@@ -288,23 +303,21 @@ Prior to this workshop:
 
 <br>
 
--   **Goal**: *Return the likelihood that a business will fail an inspection*
-
--   Saves the model as pin and servers the model as an API (**Vetiver**).
+-   **Model Goal**: *Return the likelihood that a business will fail an inspection*
 
 ## Food Inspections Model {.content-light}
-
-::: center
-<h2><br>**Activity Time!**</h2>
-:::
 
 ::: {.callout-note icon="false"}
 ## Activity
 
 👉 Try interacting with the Food Inspections Model API on Posit Connect
 
--   🔴 add URL here
+-   <https://connect.conf23workflows.training.posit.co/food-inspections-api/>
 :::
+
+## Example Prediction
+
+![](slide_resources/FI-api-docs-example.png){fig-align="center"}
 
 ## Review
 

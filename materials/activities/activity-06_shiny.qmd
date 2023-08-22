@@ -1,0 +1,82 @@
+---
+title: "Shiny"
+description: "Create a Shiny app that talks to the Food Inspections API"
+toc: true
+toc-depth: 4
+editor_options: 
+  markdown:
+    canonical: true 
+execute: 
+  eval: false
+editor: visual
+---
+
+## Setup
+
+```{r}
+#| label: load-packages
+
+library(shiny)
+library(tidyverse)
+library(vetiver)
+```
+
+## Activity 1 - Review how to call Food Inspections API
+
+In a moment, we will open up a Shiny application that will make interactive calls to the [Food Inspections API](https://connect.conf23workflows.training.posit.co/food-inspections-api/). Before we do that, let's review how to call the food inspections API by defining an endpoint, creating "new" data, and submitting a query to the API.
+
+🔄 Tasks
+
+-   Define the food inspections API endpoint.
+
+-   Predict the likelihood that a food establishment will fail an inspections by querying the API (with mock data)
+
+### Define API endpoint
+
+Run the code below to define the endpoint of our API!
+
+```{r}
+# API URL
+api_url <- "https://connect.conf23workflows.training.posit.co/food-inspections-api"
+
+# Add predict
+endpoint <- vetiver_endpoint(paste0(api_url, "/predict"))
+
+endpoint
+```
+
+### Create mock data
+
+Simulate a food establishment. Here is some information regarding the various features that will need to be added:
+
+-   `facility_type`: string (example: "RESTAURANT")
+
+-   `risk`: number (1 is high risk, 2 is medium risk, 3 is low risk)
+
+-   `latitude`: number (example: 41.90)
+
+-   `longitude`: number (example: -87.63)
+
+-   `v_cumsum`: integer (cumulative number of violations - example: 30)
+
+-   `v_cumsum_cs`: integer (cumulative number of critical and serious violations - example: 10)
+
+-   `days_since_last_inspection`: number (example: 200)
+
+```{r}
+# Create mock data as a tibble
+mock_establishment <- tibble(facility_type = "___",
+                             risk = ___,
+                             latitude = ___,
+                             longitude = ___,
+                             v_cumsum = ___,
+                             v_cumsum_cs = ___,
+                             days_since_last_inspection = ___)
+```
+
+Query the API using mock data:
+
+```{r}
+# Query the API and extract FAIL likliehood
+predict(endpoint, mock_establishment)$.pred_FAIL
+```
