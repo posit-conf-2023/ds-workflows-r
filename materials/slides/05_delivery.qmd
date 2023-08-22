@@ -36,7 +36,7 @@ editor:
 -   Managing and Monitoring your content
     -   `connectwidgets` + Connect API
     -   Monitor usage
-    
+
 ## Review
 
 ![](slide_resources/workflow_diagram.jpg){fig-align="center"}
@@ -319,8 +319,7 @@ key provided.
 ::: {.callout-note icon="false"}
 ## Activity
 
-👉 Open the file `materials/activities/activity-06_Connectwidgets.qmd`
-
+👉 Open the file `materials/activities/activity-07_Connectwidgets.qmd`
 :::
 
 ## How will I know if people are consuming my content?

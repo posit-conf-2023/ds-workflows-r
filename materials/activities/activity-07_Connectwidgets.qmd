@@ -138,18 +138,16 @@ After filtering for content on Posit Connect, we can use `connectwidgets` to org
 
 🔄 Tasks
 
--   Use the `rsc_card()`, `rsc_grid()`, and `rsc_table()` function to create widgets of **your** Posit Connect published content.
+-   Use the `rsc_card()` and `rsc_table()` function to create widgets of **your** Posit Connect published content.
 
 ```{r}
 # card
 my_content |> 
   ____
+```
 
-# grid
-project_content |> 
-  ____
-
+```{r}
 ### table
-project_content %>%
+my_content %>%
   ____
 ```
