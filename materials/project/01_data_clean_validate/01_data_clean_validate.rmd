@@ -598,11 +598,21 @@ board |> pin_write(model_inputs,
                    coffee shop, bakery, or wrigley field rooftop ⚾")
 
 
+# pin inspections_filtered for use in workshop activities
+board |> pin_write(inspections_filtered,
+                   name = paste0(user_name,"/inspections_filtered"),
+                   description = "Unvalidated inspection data, filtered to only
+                   include facility types of interest and inspection results 
+                   that are pass, fail, or pass w conditions. For use in 
+                   workshop activity on data validation.")
+
+
 # prune saved versions to last 28 days
 pin_versions_prune(board, paste0(user_name,"/inspections_processed"), days = 28)
 pin_versions_prune(board, paste0(user_name,"/inspections_model_inputs"), days = 28)
 pin_versions_prune(board, paste0(user_name,"/inspections_per_week"), days = 28)
 pin_versions_prune(board, paste0(user_name,"/inspections_per_week_by_facility"), days = 28)
+pin_versions_prune(board, paste0(user_name,"/inspections_filtered"), days = 28)
 
 
 ```
