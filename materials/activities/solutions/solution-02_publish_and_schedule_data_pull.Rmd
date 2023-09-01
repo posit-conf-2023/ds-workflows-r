@@ -66,7 +66,7 @@ library(RPostgres)
 library(glue)
 
 # Set eval=FALSE so incompleted activity will still render
-knitr::opts_chunk$set(eval = FALSE)
+# knitr::opts_chunk$set(eval = FALSE)
 ```
 
 ## Task 1 - Download raw data and add informational logs
@@ -170,9 +170,9 @@ and append our names to the data frame to provide unique names.
 
 ```{r make-raw-data-subset}
 
-my_name <- "katie.masiello"
+my_username <- "katie.masiello"
 
-my_df_name <- paste0("inspections_raw_subset_", my_name)
+my_df_name <- paste0("inspections_raw_subset_", my_username)
 
 # Take a sample of only 1% of the data for the sake of reducing the time for processing (est. ~2.6k rows)
 inspections_raw_subset <- inspections_raw |> sample_frac(0.01)
@@ -212,9 +212,9 @@ print(paste("ℹ️ Info: Writing raw inspection data to database took", round(d
 
 Explore some typical database commands such as
 
--    `DBI::dbListTables()` to get a list of the tables in the database
+-   `DBI::dbListTables()` to get a list of the tables in the database
 
--    `dplyr::tbl()` to interact with the database table you just wrote
+-   `dplyr::tbl()` to interact with the database table you just wrote
 
 -   Count the number of rows you wrote to the database in the table
     `inspections_raw_<your_name>`
@@ -279,9 +279,11 @@ Some suggestions include:
 Hint: The `glue` package is helpful for combining text and variables. Or
 just use `paste`.
 
-✅ SolutionAdd Logging information for our scheduled report
+✅ Solution
 
-```{r logging, echo=FALSE}
+```{r logging}
+
+# Add some logging information here
 
 glue("Report run {blastula::add_readable_time()}")
 
@@ -313,5 +315,8 @@ do this step for this activity.
 
 ✅ Solution
 
-The Connect User Guide provides instructions for publishing:
+Let's do this task together as a group.
+
+For refererence, the Connect User Guide provides instructions for
+publishing:
 <https://docs.posit.co/connect/user/publishing/#publishing-general>

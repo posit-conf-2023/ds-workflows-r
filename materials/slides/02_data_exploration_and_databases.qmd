@@ -20,22 +20,27 @@ execute:
 ---
 
 ## Data Exploration and {.toc2-light}
-<h2>Starting the Workflow Pipeline</h2>
+<h2>Working with Databases</h2>
 ![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){.absolute top="200" left="50" width="260"} ![](slide_resources/db.png){.absolute top="200" left="310" width="260"}
 
+
+## Project overview
+
+
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}
 
 
 ## Getting Started {.brackets-light}
 
 
--   What is this data?
--   Where should I put it?
--   How do I make this part of an automated pipeline?
+-   Ad-hoc data exploration
+-   Writing production data to a database 
+-   Automating the process 
 
 
 
 
-## What is this Data?
+## What is this Data? {.content2-light}
 
 
 Our first introduction to `pointblank`
@@ -159,7 +164,7 @@ Specific resources:
 :::
 
 
-## How do I make this part of an automated pipeline?
+## How do I automate this process?
 
 :::{.fragment}
 🧰 Deploy and schedule your notebook on Posit Connect
@@ -208,16 +213,8 @@ countdown::countdown(minutes=7,seconds=0)
 
 
 
-##  {.brackets-dark}
 
-::: section-title-dark
-Now what?
-:::
+## Review
 
-## {.brackets-light}
-
-::: section-title
-Data validation ✅ <br>and alerting ⚠️
-:::
-
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}
 
