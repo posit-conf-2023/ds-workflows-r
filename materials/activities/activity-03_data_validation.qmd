@@ -1,131 +1,131 @@
 ---
-title: "activity-02_data_validation"
-description: "A notebook that performs data validation usingg `pointblank`"
-output:
-  html_document:
-    toc: yes
-    toc_float: yes
+title: "activity-03_data_validation.qmd"
+description: "This notebook performs data validation using `pointblank`"
+toc: true
+toc-depth: 4
+editor: visual
+editor_options: 
+  markdown:
+    wrap: 72
+    canonical: true
+execute: 
+  eval: false
 ---
- 
-<!-- TODO: Make these more DIY Code friendly.e.g., write your own validations. -->
- 
-# Activity Notes
+
+## Goals
+
+The goals of this activity are to:
+
+-   Use the `pointblank` package to perform data validations
+
+-   Define thresholds in data validation to be used for alerting
+
+-   Create an informant data dictionary
+
+✏️ There will be placeholders (`____`) in the code cells below that you
+will need to fill in!
+
+## Activity Notes
+
 <!-- TODO: expand on this -->
-This notebook is a simplified version of the deployed notebook used for the project solution.  `01_data_clean_validate.rmd`
 
-- No business data
-- Just validation, no alerting yet
-- A few less validations
-- Skipped final mutations and cleanings that we do before training model
-- Omit summarization of data that is presented in an email
-- Omit write to database
+This notebook is a simplified version of the deployed notebook used for
+the project solution. This notebook is simplified to ????????
+`01_data_clean_validate.rmd`
 
-## Overview of cleaning and processing steps
+-   No business data
+-   Just validation, no alerting yet
+-   A few less validations
+-   Skipped final mutations and cleanings that we do before training
+    model
+-   Omit summarization of data that is presented in an email
+-   Omit write to database
 
-1. Pull data from database (`inspections_raw`)
-1. Filter inspection data to only types we are interested in (`inspections_filtered`)
-1. Validate and pass only passing data (`inspections_validated`)
+Using filtered data that is cleaned up and filtered for only what is
+relevant, meaning Facility Types of interest:
 
-# Load packages
+-   Restaurants
+
+-   Grocery Stores
+
+-   Bakeries
+
+-   Coffee Shops
+
+-   Wrigley Field Rooftop (because that sounds pretty fun)
+
+We also will filter for only inspection entries where the results were:
+
+-   Pass
+
+-   Fail
+
+-   Pass w/ conditions
+
+## Setup
+
+### Load required packages for data validation
+
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
 
 library(tidyverse)
-library(DBI)
-library(odbc)
+library(pins)
 library(pointblank)
-library(glue)
 
 ```
 
-
-
-# Activity prework - Pull raw data from database
-🔄 Task
-
-- Download the raw inspection data from the database
+### Read data from pin
 
 ✅ Solution
 
-```{r DB-connection}
-# This time we will use the odbc package to make the connection. The benefit of this is that we will see the connection in the Connections pane in RStudio.
+## [pointblank](https://github.com/rstudio/pointblank) is an R package that provides data quality assessment and metadata reporting for data frames and database tables.
 
-con <- dbConnect(odbc::odbc(),
-                  Driver = "postgresql",
-                  Server = Sys.getenv("CONF23_DB_HOST"),
-                  Port = "5432",
-                  Database = "conf23_r",
-                  UID = Sys.getenv("CONF23_DB_USER"),
-                  PWD = Sys.getenv("CONF23_DB_PASSWORD"),
-                  timeout = 10)
+![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){fig-align="center"
+width="212"}
 
+The `pointblank::scan_data()` function provides a HTML report of the
+input data to help you understand your data. It contains 6 sections:
 
+-   
+
+```{r read-data-from-pin}
+
+board <- board_connect()
+
+inspections_filtered <- board |> 
+  pin_read("katie.masiello/inspections_filtered")
 ```
 
-```{r Pull-raw-data}
+## Task 1 -
 
-inspections_raw <- 
-  tbl(con, "inspections_raw") |> 
-  # the `collect()` statement brings the database table into local memory.
-  # In practice we'd collect as late as possible, but to avoid the abstraction
-  # of working in a database table in this workshop, we will bring local
-  # (tip: pointblank can run against a database table so you don't have to collect this early!)
-  collect() |>
-  # convert inspection_date to date format
-  mutate(inspection_date = lubridate::mdy(inspection_date)) 
-
-
-dbDisconnect(con)
-```
-
-# Activity prework -  Perform inspections data filtering and cleaning
 🔄 Task
 
-- Perform some cleanup on Facility Type
-- Filter `inspections_raw` to only Restaurants, Grocery Stores, Bakeries, Coffee Shops, and the Wrigley Field Rooftop (because that sounds pretty fun)
-- Filter for only records where the result was a Pass, Fail, or Pass w Conditions
-- Discuss with your neightbor and share thoughts in Slido: What data should be filtered out versus what would you want to run through validation
+Use the `pointblank` package to
+
+-   create an agent
+-   define validations
+-   interrogate the table
 
 ✅ Solution
 
-```{r Thin-out-inspections-data-pre-validation}
+Activity 1 - First Validation of Data for Size, Shape, and Format of
+Data
 
-inspections_filtered <- 
-  inspections_raw |> 
-  # Clean facility_type
-  mutate(facility_type = case_when(
-    # Using regex to account for abbreviations and mis-spellings of "RESTAURANT"
-    grepl("RE?STA?U?R?A?N?T?", `facility_type`) ~ "RESTAURANT",
-    grepl("GROCERY", facility_type) ~ "GROCERY STORE", 
-    # Again, use regex in case Bakery is mis-spelled
-    grepl("BA?KE?R?Y?", `facility_type`) ~ "BAKERY",
-    # This regex will account for variations in how many spaces between the words
-    grepl("COFFEE *SHOP", `facility_type`) ~ "COFFEE SHOP", 
-    grepl("WRIGLEY", `facility_type`) ~ "WRIGLEY FIELD ROOFTOP",
-    .default = paste("OTHER")
-    )) |> 
-  
-  # filter out inspections not at a restaurant, grocery store, bakery, coffee shop, or Wrigley
-  filter(facility_type != "OTHER") |> 
-  
-   # Filter for only Pass, Fail, Pass with conditions (Removes entries such as "Out of business", "Business not located", etc.)
-  filter(!results %in% c("PASS", "FAIL", "PASS W/ CONDITIONS")) 
-
-
-
-```
-
-# Activity 1 -  First Validation of Data for Size, Shape, and Format of Data
 🔄 Task
 
-Validate that: 
+Validate that:
 
-- the data has the expected columns
-- the column formats are as expected
-- there are at least 100k rows of data (an arbitrary value, but if it's less than this, we're missing a lot of data)
+-   the data has the expected columns
+-   the column formats are as expected
+-   there are at least 100k rows of data (an arbitrary value, but if
+    it's less than this, we're missing a lot of data)
 
 ✅ Solution
 
-This is our first validation. It just confirms the overall size and format of the data frame. If the validation fails here, a warning is thrown and the validation will not proceed.
+This is our first validation. It just confirms the overall size and
+format of the data frame. If the validation fails here, a warning is
+thrown and the validation will not proceed.
+
 ```{r data-fram-size-and-format-validation}
 
 
@@ -180,23 +180,27 @@ agent_df_integrity
 alert_me <- !(all_passed(agent_df_integrity))
 ```
 
-# Activity 2 -  Second validation for data integrity
+# Activity 2 - Second validation for data integrity
+
 🔄 Task
 
-Validate that the data itself 
+Validate that the data itself
 
-- does not have null/NA values
-- has valid entries for Inspection Date, 
-- has no repeated Inspection IDs 
-- License Number is within a valid range
-- Latitude and Longitude are within a bounding box surrounding Chicago
-- Zip Code follows the expected standard
+-   does not have null/NA values
+-   has valid entries for Inspection Date,
+-   has no repeated Inspection IDs
+-   License Number is within a valid range
+-   Latitude and Longitude are within a bounding box surrounding Chicago
+-   Zip Code follows the expected standard
 
-Bonus: Only run this validation if there was not an alert in the previous validation
+Bonus: Only run this validation if there was not an alert in the
+previous validation
 
 ✅ Solution
 
-Here's a logical statement we can use to stop processing this file if the previous validation failed.
+Here's a logical statement we can use to stop processing this file if
+the previous validation failed.
+
 ```{r optional-knit_exit-if-alert-is-true}
 if (alert_me == TRUE){
   glue("Validation of inspection data set integrity failed. No additional validations were run, and processed data was NOT written to the database")}
@@ -206,8 +210,9 @@ if (alert_me == TRUE){knitr::knit_exit()}
 # if alert_me is FALSE, all is good and let's go!
 ```
 
+As long as the the validation on Data Frame integrity passes, the
+following additional validations will run.
 
-As long as the the validation on Data Frame integrity passes, the following additional validations will run. 
 ```{r data-integrity-validation}
 
 
@@ -244,15 +249,16 @@ agent_main
 
 ```
 
+# Activity 3 - Remove the failed data from the data set
 
-# Activity 3 -  Remove the failed data from the data set
 🔄 Task
 
-Pointblank has identified all of the rows that passed and failed validation. Now remove those that failed so the data that is passed downstream is squeaky clean.
+Pointblank has identified all of the rows that passed and failed
+validation. Now remove those that failed so the data that is passed
+downstream is squeaky clean.
 
-✅ Solution
-We will "sunder" (sunder | ˈsəndər |verb | split apart) the data using `pointblank::get_sundered_data()`.
-
+✅ Solution We will "sunder" (sunder \| ˈsəndər \|verb \| split apart)
+the data using `pointblank::get_sundered_data()`.
 
 ```{r sunder-data}
 
@@ -264,19 +270,30 @@ inspections_fail_validation <- get_sundered_data(agent_main, type = "fail")
 
 ```
 
+# Activity 4 - Provide a data dictionary (aka Informant) to explain the data
 
-# Activity 4 -  Provide a data dictionary (aka Informant) to explain the data
 🔄 Task
 
-Data should never be used blindly. Proper documentation is essential. Pointblank can generate an `informant` table that can provide both static and dynamically-rendered details about your data.
+Data should never be used blindly. Proper documentation is essential.
+Pointblank can generate an `informant` table that can provide both
+static and dynamically-rendered details about your data.
 
-- Explore the table below.
+-   Explore the table below.
 
 ✅ Solution
 
-Table information can be synthesized in an information management workflow, giving us a snapshot of a data table we care to collect information on. The pointblank informant is fed a series of `info_*()` functions to define bits of information about a table. This info text can pertain to individual columns, the table as a whole, and whatever additional information makes sense for your organization. We can even glean little snippets of information (like column stats or sample values) from the target table with info_snippet() and the `snip_*()` functions and mix them into the data dictionary wherever they’re needed.
+Table information can be synthesized in an information management
+workflow, giving us a snapshot of a data table we care to collect
+information on. The pointblank informant is fed a series of `info_*()`
+functions to define bits of information about a table. This info text
+can pertain to individual columns, the table as a whole, and whatever
+additional information makes sense for your organization. We can even
+glean little snippets of information (like column stats or sample
+values) from the target table with info_snippet() and the `snip_*()`
+functions and mix them into the data dictionary wherever they're needed.
 
-Informant table / Data Dictionary 
+Informant table / Data Dictionary
+
 ```{r data-dictionary}
 
 create_informant(
@@ -365,4 +382,3 @@ purposes of licensing by the Department of Business Affairs and Consumer Protect
 
 
 ```
-
