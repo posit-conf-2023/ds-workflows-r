@@ -1,11 +1,10 @@
 ---
-title: "activity-01_publish_and_schedule_data_pull"
+title: "activity-02_publish_and_schedule_data_pull"
 description: This document pulls our raw data and saves it to the database. Publish this to Connect and schedule it to run at an appropriate interval
 output:
   html_document:
     toc: yes
     toc_float: yes
-    code_folding: hide
 editor: visual
 editor_options: 
   markdown:
@@ -169,9 +168,9 @@ and append our names to the data frame to provide unique names.
 
 ```{r make-raw-data-subset}
 
-my_name <- ____
+my_username <- ____
 
-my_df_name <- paste0("inspections_raw_subset_", my_name)
+my_df_name <- paste0("inspections_raw_subset_", my_username)
 
 # Take a sample of only 1% of the data for the sake of reducing the time for processing (est. ~2.6k rows)
 inspections_raw_subset <- inspections_raw |> ____
@@ -208,9 +207,9 @@ print(paste("ℹ️ Info: Writing raw inspection data to database took", ____))
 
 Explore some typical database commands such as
 
--    `DBI::dbListTables()` to get a list of the tables in the database
+-   `DBI::dbListTables()` to get a list of the tables in the database
 
--    `dplyr::tbl()` to interact with the database table you just wrote
+-   `dplyr::tbl()` to interact with the database table you just wrote
 
 -   Count the number of rows you wrote to the database in the table
     `inspections_raw_<your_name>`
@@ -305,5 +304,8 @@ do this step for this activity.
 
 ✅ Solution
 
-The Connect User Guide provides instructions for publishing:
+Let's do this task together as a group.
+
+For refererence, the Connect User Guide provides instructions for
+publishing:
 <https://docs.posit.co/connect/user/publishing/#publishing-general>
