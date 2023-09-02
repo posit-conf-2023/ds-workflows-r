@@ -15,17 +15,17 @@ format:
     filters:
       - positconfslides
 execute: 
-  eval: true
+  eval: false
   echo: true
 ---
 
-## Data Validation and Alerting{.toc-light}
-<h2>Starting the Workflow Pipeline</h2>
-![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){.absolute top="200" left="50" width="260"} ![](slide_resources/db.png){.absolute top="200" left="310" width="260"}
+## Data Validation and Alerting{.toc2-light}
+
+![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){.absolute top="200" left="50" width="260"} ![](https://github.com/rstudio/blastula/raw/master/man/figures/logo.svg){.absolute top="200" left="310" width="260"}
 
 
 
-## Next Steps {.brackets-light}
+## Essential Questions {.brackets-light}
 
 ::: incremental
 -   How can I ensure this is quality data? 🤔
@@ -39,40 +39,109 @@ execute:
 🧰 `pointblank` for data validation 
 
 
-
-## The `pointblank` workflow
-
+## The `pointblank` data quality workflow 
 
 
-![](https://rstudio.github.io/pointblank/reference/figures/data_quality_reporting_workflow.svg){height=300}
+![](slide_resources/pb_flow_create_agent.png)
 
-:::{.smaller}
-
-```{.r}
-agent <- df |>                                # <1>
-  create_agent(
-    actions = action_levels(warn_at = 1)) |>  # <2>
-  col_vals_between(                           # <3>
-    vars(a), 1, 9,
-    na_pass = TRUE)  |>                       # <3>
-  col_vals_lt(
-    vars(c), 12,
-    preconditions = ~ . %>% dplyr::mutate(c = a + b))  |>  # <4> 
-  col_is_numeric(vars(a, b))  |>              # <3>
-  interrogate()                               # <5>
-```
-1. A local or database table
-2. Optionally define alert levels
-3. Define validations. There are 36 validation functions! 
-4. It's possible to validate against a transformed version of the input table 
-5. Interrogate to run the validation
-:::
+## The `pointblank` data quality workflow  
 
 
-## Pointblank agent report
+![](slide_resources/pb_flow_create_agent_b.png)
 
 
-![](https://rstudio.github.io/pointblank/reference/figures/agent_report.png)
+## The `pointblank` data quality workflow 
+
+
+![](slide_resources/pb_flow_validation_plan.png)
+
+
+
+## The `pointblank` data quality workflow  
+
+
+![](slide_resources/pb_flow_interrogate.png)
+
+
+## The `pointblank` data quality workflow  
+
+
+![](slide_resources/pb_flow_post_interrogate.png)
+
+
+## The `pointblank` data quality workflow  
+
+
+![](slide_resources/pb_flow_post_interrogate_b.png)
+
+## Data validation example
+
+::::{.r-stack}
+
+![](slide_resources/pb_validation_plan.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_validation_plan_b.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_validation_plan_c.png){.fragment .fade-in-then-out}
+
+::::
+
+## Agent Interrogation
+
+::::{.r-stack}
+
+![](slide_resources/pb_interrogation1.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_interrogation2.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_interrogation3.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_interrogation4.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_interrogation5a.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_interrogation5b.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_interrogation5c.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_interrogation6.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_interrogation7.png){.fragment .fade-in-then-out}
+
+::::
+
+
+
+
+## Agent Validation Report
+
+::::{.r-stack}
+
+![](slide_resources/pb_validation_result.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_validation_result_b.png){.fragment .fade-in-then-out}
+
+![](slide_resources/pb_validation_result_c.png){.fragment .fade-in-then-out}
+
+
+::::
+
+
+
+
+## Pointblank data validation report
+
+::::{.r-stack}
+
+![](slide_resources/pb_validation_report.png){.fragment .fade-in-then-out}
+
+
+![](slide_resources/pb_validation_report_b.png){.fragment .fade-in-then-out}
+
+::::
+
+
+
 
 ## Your Turn
 
@@ -82,7 +151,7 @@ agent <- df |>                                # <1>
 
 :::{.callout-note icon=false}
 ## Activity
-👉 Open the file `materials/activities/activity-02_data_validation.rmd`
+👉 Open the file `materials/activities/activity-03_data_validation.qmd`
 
 Activity objective: 
 <!-- TODO: get the extras out of the activity. make it just validation. identifying alert levels. write sundered data to database.  omit data dictionary.  -->
