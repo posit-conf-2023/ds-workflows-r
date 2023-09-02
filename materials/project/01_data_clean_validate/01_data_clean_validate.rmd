@@ -13,6 +13,8 @@ editor_options:
   chunk_output_type: console
 ---
 
+`r if(test_mode == TRUE) { "<h3>❗❗Report generated in test mode. Simulated data used for speed in processing❗❗</h3>\n" }`
+
 # Load packages
 
 ```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
@@ -29,7 +31,8 @@ library(glue)
 library(gt)
 library(arrow) # we might drop this if we decide not to write the pin in arrow format
 
-
+# set TEST_MODE=TRUE to preview the alert email. Logic is written such that if TEST_MODE is any value other than TRUE (including not set), it behaves as if it is FALSE.
+test_mode <- Sys.getenv("TEST_MODE")
 
 ```
 
@@ -159,7 +162,12 @@ agent_df_integrity <-
   interrogate()
 agent_df_integrity
 
-alert_me <- !(all_passed(agent_df_integrity))
+if(test_mode !=TRUE){
+  alert_me <- !(all_passed(agent_df_integrity))
+} else{
+  alert_me <- TRUE
+}
+
 ```
 
 ```{r send-email-alert-for-validation-fail-and-stop-processing-this-file, eval=alert_me, results="asis"}
