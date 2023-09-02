@@ -13,7 +13,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-`r if(test_mode == TRUE) { "<h3>❗❗Report generated in test mode. Simulated data used for speed in processing❗❗</h3>\n" }`
+`r if(Sys.getenv("TEST_MODE") == TRUE) { "<h3>❗❗Report generated in test mode. Simulated data used for speed in processing❗❗</h3>\n" }`
 
 # Load packages
 
