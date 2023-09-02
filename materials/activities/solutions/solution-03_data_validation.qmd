@@ -9,7 +9,7 @@ editor_options:
     wrap: 72
     canonical: true
 execute: 
-  eval: false
+  eval: true
 ---
 
 ## Goals
@@ -66,7 +66,7 @@ First we create an **agent.**
 ```{r}
 #| label: create agent for small_table
 
-agent <- pointblank::create_agent(____)
+agent <- pointblank::create_agent(small_table)
 agent
 ```
 
@@ -87,8 +87,9 @@ agent <- agent |>
   # are column `f` values in the set of c("high", "med", "low")
   col_vals_in_set(f, c("high", "med", "low")) |> 
   # Now add your own!
-  ____ |> 
-  ____
+  # are there any NA or NULL values
+  col_vals_not_null(vars(a, b, c, d, e, f))
+
 
 agent
 
@@ -140,10 +141,11 @@ agent_with_actions <- create_agent(small_table) |>
                    actions = action_levels(notify_at = 0.10)) |> 
   # are column `f` values in the set of c("high", "med", "low")
   col_vals_in_set(f, c("high", "med", "low"),
-                  actions = action_levels(warn_at = 1, stop_at = 0.3)) |> 
+                  actions = action_levels(warn_at = 0.1, stop_at = 0.3)) |> 
   # Now add your own!
-  ____ |> 
-  ____ |> 
+  # are there any NA or NULL values
+  col_vals_not_null(vars(a, b, c, d, e, f),
+                    actions = action_levels(warn_at = 0.2)) |> 
   
   interrogate()
 
@@ -155,9 +157,9 @@ agent_with_actions
 
 🔄 Task
 
-Pointblank has identified all of the rows of `small_table` that passed
-and failed validation. Now remove those that failed so the data that is
-passed downstream is squeaky clean.
+The intel provided in `agent_with_actions` tells us all of the rows of
+`small_table` that passed and failed validation. Now remove those that
+failed so the data that is passed downstream is squeaky clean.
 
 ✅ Solution
 
@@ -172,12 +174,12 @@ to work with intel gathered from the validation. For this task, we will
 #| label: sunder data
 
 # Passed data
-small_table_validated <- get_sundered_data(agent = ____,
-                                           type = ____)
+small_table_validated <- get_sundered_data(agent = agent_with_actions,
+                                           type = "pass")
 
 # Failed data
-small_table_failed <- get_sundered_data(agent = ____,
-                                        type = ____)
+small_table_failed <- get_sundered_data(agent = agent_with_actions,
+                                        type = "fail")
 
 ```
 
@@ -230,7 +232,7 @@ syntax is supported!
 create_informant(
   tbl = small_table_validated) |> 
   info_tabular(
-    description = "____"
+    description = "Data Dictionary for validated `small_table` data"
     ) |> 
   info_section(
     section_name = "further information",
@@ -248,7 +250,10 @@ create_informant(
     fn = ~ . %>% dplyr::pull(date_time) %>% max(na.rm = TRUE)
     ) |>
   # Add your own information to make this table more meaningful.
-  ____ |> 
+  info_columns(
+    columns = vars(a, c, d),
+    `Info:` = "the number of times an attempt was made."
+  ) |> 
   # Using `incorporate` will run any calculations defined within the table
   incorporate()
 
