@@ -177,8 +177,9 @@ if(test_mode !=TRUE){
 
 if (alert_me == TRUE){
   # send an email alert
-  render_connect_email(input = "email-01_data_integrity_alert.Rmd") |> 
-    attach_connect_email(subject = "⚠️Inspections Project: 
+  email_alert <- render_connect_email(input = "email-01_data_integrity_alert.Rmd") 
+  
+  attach_connect_email(email_alert, subject = "⚠️Inspections Project: 
                          Validation of Inspections dataset found integrity issue")
   
   # logging
