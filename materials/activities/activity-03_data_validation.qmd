@@ -66,7 +66,8 @@ We also will filter for only inspection entries where the results were:
 
 ### Load required packages for data validation
 
-```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+```{r}
+#| label: Load packages
 
 library(tidyverse)
 library(pins)
@@ -76,31 +77,43 @@ library(pointblank)
 
 ### Read data from pin
 
-✅ Solution
+::: callout-note
+## [pins](https://pins.rstudio.com/) is a package for R and Python that makes it easy to share objects (e.g., data frames, models) across projects and team members.
+:::
 
-## [pointblank](https://github.com/rstudio/pointblank) is an R package that provides data quality assessment and metadata reporting for data frames and database tables.
+![](https://pins.rstudio.com/logo.png){fig-align="center" width="212"}
 
-![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){fig-align="center"
-width="212"}
+📌 Objects in R and Python can be "pinned" to a "board" so that they are
+easily shared
 
-The `pointblank::scan_data()` function provides a HTML report of the
-input data to help you understand your data. It contains 6 sections:
+📌 The board is like a virtual corkboard, your object is pinned with a
+virtual thumbtack
 
--   
+📣 Pin intermediate data and objects, not your source of truth. Pins are
+not a substitute for a database
+
+📌 When the board is Posit Connect, the same access controls for content
+can be applied
+
+📌 We will talk more about pins during the Modeling section of this
+workshop!
 
 ```{r read-data-from-pin}
 
-board <- board_connect()
+# Define the virtual corkboard. Do not add any arguments to this code; run as-is.
+board <- pins::board_connect()
 
+# Read the existing pin with the data we'll use for this exercise.
 inspections_filtered <- board |> 
-  pin_read("katie.masiello/inspections_filtered")
+  pins::pin_read("katie.masiello/inspections_filtered")
 ```
 
-## Task 1 -
+## Task 1 - Data validation on a simple table
 
 🔄 Task
 
-Use the `pointblank` package to
+Use the `pointblank` package to validate a simple table, provided by
+`pointblank::small_table`
 
 -   create an agent
 -   define validations
@@ -108,177 +121,147 @@ Use the `pointblank` package to
 
 ✅ Solution
 
-Activity 1 - First Validation of Data for Size, Shape, and Format of
-Data
+Let's inspect `small_table`. We see a few different types of columns.
+Rows 9 and 10 are exact duplicates. The `c` column contains two `NA`
+values. This will serve us well for some validation exercises.
+
+```{r}
+#| label: inspect small_table
+
+small_table
+
+```
+
+First we create an **agent.**
+
+```{r}
+#| label: create agent for small_table
+
+agent <- pointblank::create_agent(____)
+agent
+```
+
+On it's own, the agent is not very informative. It's waiting for
+validations to be defined and an interrogation action to be performed.
+
+Now we define our **data validation functions**. A few have been started
+for you as examples. Create your own and explore! Refer to the package
+documentation for the validation function reference:
+<https://rstudio.github.io/pointblank/reference/index.html#validation-expectation-and-test-functions>
+
+```{r}
+#| label: define validations for small_table
+
+agent <- agent |> 
+  # are column `a` values between 1 and 5?
+  col_vals_between(a, 1, 5) |> 
+  # are column `f` values in the set of c("high", "med", "low")
+  col_vals_in_set(f, c("high", "med", "low")) |> 
+  # Now add your own!
+  ____ |> 
+  ____
+
+agent
+
+```
+
+If we look at the output of `agent`, it shows our validation plan, but
+the action is yet to come when we **interrogate**.
+
+```{r}
+#| label: interrogate the small_table agent
+
+agent |> interrogate()
+
+```
+
+Explore the validation report. Can you:
+
+1.  Identify what fail percentage each validation had?
+2.  Identify how many rows failed each validation?
+3.  View the CSV extracts of failed data?
+
+## Task 2 - Add Action Levels
 
 🔄 Task
 
-Validate that:
-
--   the data has the expected columns
--   the column formats are as expected
--   there are at least 100k rows of data (an arbitrary value, but if
-    it's less than this, we're missing a lot of data)
+Iterate on your agent created for `small_table` and add action levels.
+Action levels behave like tags. You can decide what threshold you want
+to put for `notify`, `warn`, and `stop`. At a minimum, the tag will
+provide a visual indicator of threshold exceedance in the validation
+table. You can also use these tags post-interrogation to take actions.
 
 ✅ Solution
 
-This is our first validation. It just confirms the overall size and
-format of the data frame. If the validation fails here, a warning is
-thrown and the validation will not proceed.
+The action levels can be set as an **integer**, representing the
+threshold number of failing units , or a **fraction**, representing the
+fraction of failing units.
 
-```{r data-fram-size-and-format-validation}
+Use
+`actions = action_levels(warn_at = ____, stop_at = ____, notify_at = ____)`
+to add action levels to one, some, or all of your validations and rerun
+the interrogation to see the output. Some samples have been provided.
 
+```{r}
+#| label: validation of small_table with action levels
 
-# Define a column schema so we can check inputted data is as expected
-# troubleshooting tip, if the validation fails, look at the x_list$col_types and $col_names to see the discrepancy
-schema_inspections <- col_schema(inspection_id = "numeric",
-                               dba_name = "character",
-                               aka_name = "character",
-                               license_number = "numeric",
-                               facility_type = "character",
-                               risk = "character",
-                               address = "character",
-                               city = "character",
-                               state = "character",
-                               zip = "numeric",
-                               inspection_date = "Date",
-                               inspection_type = "character",
-                               results = "character",
-                               violations = "character",
-                               latitude = "numeric",
-                               longitude = "numeric",
-                               location = "character"
-                               )
-
-
-#### VALIDATION 1: Data set integrity validations. All of these trigger a warning under fail conditions.
-agent_df_integrity <- 
-  create_agent(inspections_filtered, 
-               label = "Inital validation of the inspections data set to confirm overall schema and size. If there are issues with this validation, further processing stops and an alert is triggered.") |> 
-  # verify column schema 
-  col_schema_match(schema_inspections, 
-                   label = "Is the column schema as expected?", 
-                   actions = action_levels(warn_at = 1)) |> 
-  #Check that expected columns exist. 
-  # To do this, we modify the input df and call it a "precondition." The modification is made using a unique pointblank function `tt_tbl_colnames` that turns the column names of our input df into a data frame perfectly formatted to pointblank's preferences. That table is then compared to the set of schema_inspection names. See other cool transforms named `tt_*`
-  col_vals_in_set(columns = value, 
-                  set = names(schema_inspections), 
-                  preconditions = ~. %>% tt_tbl_colnames, 
-                  label = "Are the expected columns in the data set?", 
-                  actions = action_levels(warn_at = 0.01) ) |> 
-  # verify there are A LOT of rows of data to be sure import didn't mess up. 
-  # If we didn't get a full set of data, we don't want to proceed. 
-  col_vals_gte(columns = n, 
-               value = 25000L, # an arbitrary high-ish number
-               preconditions = ~. %>% tally,
-               label = "Are there more than 25k rows in the data?", 
-               actions = action_levels(warn_at = 1)) |>
+agent_with_actions <- create_agent(small_table) |> 
+  # are column `a` values between 1 and 5?
+  col_vals_between(a, 1, 5,
+                   actions = action_levels(notify_at = 0.10)) |> 
+  # are column `f` values in the set of c("high", "med", "low")
+  col_vals_in_set(f, c("high", "med", "low"),
+                  actions = action_levels(warn_at = 1, stop_at = 0.3)) |> 
+  # Now add your own!
+  ____ |> 
+  ____ |> 
+  
   interrogate()
-agent_df_integrity
 
-# We'll make a variable `alert_me` which will be a logical TRUE/FALSE. We'll talk about *how* to alert in the next activity, so just hold this in the back of your mind for now.
-alert_me <- !(all_passed(agent_df_integrity))
+agent_with_actions
+
 ```
 
-# Activity 2 - Second validation for data integrity
+## Task 3 - Remove failing data from the dataset
 
 🔄 Task
 
-Validate that the data itself
-
--   does not have null/NA values
--   has valid entries for Inspection Date,
--   has no repeated Inspection IDs
--   License Number is within a valid range
--   Latitude and Longitude are within a bounding box surrounding Chicago
--   Zip Code follows the expected standard
-
-Bonus: Only run this validation if there was not an alert in the
-previous validation
+Pointblank has identified all of the rows of `small_table` that passed
+and failed validation. Now remove those that failed so the data that is
+passed downstream is squeaky clean.
 
 ✅ Solution
 
-Here's a logical statement we can use to stop processing this file if
-the previous validation failed.
+`pointblank` provides a number of [post-interrogation
+functions](https://rstudio.github.io/pointblank/reference/index.html#post-interrogation)
+to work with intel gathered from the validation. For this task, we will
+"sunder" the data using `pointblank::get_sundered_data()`.
 
-```{r optional-knit_exit-if-alert-is-true}
-if (alert_me == TRUE){
-  glue("Validation of inspection data set integrity failed. No additional validations were run, and processed data was NOT written to the database")}
+> **💡 sunder** /sun·der / ˈsən-dər / *verb* \| to split apart
 
-# 🧰 stop processing this file
-if (alert_me == TRUE){knitr::knit_exit()} 
-# if alert_me is FALSE, all is good and let's go!
-```
-
-As long as the the validation on Data Frame integrity passes, the
-following additional validations will run.
-
-```{r data-integrity-validation}
-
-
-#### VALIDATION 2: Data integrity validations. Failing rows from this validation will be stripped out. 
-agent_main <-  
-  create_agent(inspections_filtered, label = "Validation of inspections data") |> 
-  # No null values
-  col_vals_not_null(columns = inspection_id) |> 
-  col_vals_not_null(columns = dba_name) |> 
-  col_vals_not_null(columns = address) |> 
-  col_vals_not_null(columns = latitude) |>
-  col_vals_not_null(columns = longitude) |>
-  col_vals_not_null(columns = inspection_date) |> 
-  col_vals_not_null(columns = inspection_type) |> 
-  col_vals_not_null(columns = results) |> 
-  # verify inspection date is valid
-  col_vals_lte(columns = inspection_date, today(),
-               label = "Is inspection date in the past?") |> 
-  # verify Inspection ID is unique
-  rows_distinct(columns = vars(inspection_id), 
-                label = "Is the Inspection ID unique?", 
-                actions = action_levels(warn_at = 0.001)) |> 
-  # verify license number is valid
-  col_vals_between(columns = license_number, 1, 99999999, 
-                   label = "Is the License Number a valid entry?") |>
-  # verify lat and long bounds (set na_pass = TRUE to ignore NAs)
-  col_vals_between(columns = latitude, left = 41.5001, right = 42.3772, na_pass = TRUE) |> 
-  col_vals_between(columns = longitude, left = -88.2959, right = -87.316, na_pass = TRUE) |> 
-  # verify w col_vals_within_spec for postal_code / aka zip
-  col_vals_within_spec(columns = zip, spec = "postal[USA]", na_pass = TRUE) |> 
-  interrogate() 
-
-agent_main
-
-```
-
-# Activity 3 - Remove the failed data from the data set
-
-🔄 Task
-
-Pointblank has identified all of the rows that passed and failed
-validation. Now remove those that failed so the data that is passed
-downstream is squeaky clean.
-
-✅ Solution We will "sunder" (sunder \| ˈsəndər \|verb \| split apart)
-the data using `pointblank::get_sundered_data()`.
-
-```{r sunder-data}
+```{r}
+#| label: sunder data
 
 # Passed data
-inspections_validated <- get_sundered_data(agent_main, type = "pass")
+small_table_validated <- get_sundered_data(agent = ____,
+                                           type = ____)
 
 # Failed data
-inspections_fail_validation <- get_sundered_data(agent_main, type = "fail")
+small_table_failed <- get_sundered_data(agent = ____,
+                                        type = ____)
 
 ```
 
-# Activity 4 - Provide a data dictionary (aka Informant) to explain the data
+## Task 4 - Provide a data dictionary (aka Informant) to explain the data
 
 🔄 Task
 
 Data should never be used blindly. Proper documentation is essential.
-Pointblank can generate an `informant` table that can provide both
-static and dynamically-rendered details about your data.
+Pointblank can generate an `informant` table (OR or data dictionary)
+that can provide both static and dynamically-rendered details about your
+data.
 
--   Explore the table below.
+Create a data dictionary for `small_table_validated`.
 
 ✅ Solution
 
@@ -289,95 +272,55 @@ functions to define bits of information about a table. This info text
 can pertain to individual columns, the table as a whole, and whatever
 additional information makes sense for your organization. We can even
 glean little snippets of information (like column stats or sample
-values) from the target table with info_snippet() and the `snip_*()`
+values) from the target table with `info_snippet()` and the `snip_*()`
 functions and mix them into the data dictionary wherever they're needed.
 
-Informant table / Data Dictionary
+First let's see the bare bones informant table that `pointblank` can
+create.
 
-```{r data-dictionary}
+```{r}
+#| label: basic informant for small_table_validated
 
 create_informant(
-  tbl = inspections_validated,
-  label = "Data Dictionary - Validated Data from Chicago Food Inspection Dataset") |> 
+  tbl = small_table_validated
+)
+
+```
+
+The bare table already gives a summary of the table size, shape, and
+column schema. But Now let's add to this with some `info_*()` functions
+to make it more useful. Reference the Informative Functions section of
+the `pointblank` documentation:
+<https://rstudio.github.io/pointblank/reference/index.html#information-functions>.
+A few sections have been provided as examples. Notice that markdown
+syntax is supported!
+
+```{r}
+#| label: create data dictionary 
+
+create_informant(
+  tbl = small_table_validated) |> 
   info_tabular(
-    description = "This table defines the columns in the validated dataset from City of Chicago Food Inspection dataset"
-  ) |> 
+    description = "____"
+    ) |> 
   info_section(
     section_name = "further information",
-    `source` = "Data from City of Chicago, <https://www.cityofchicago.org>",
-    `🔄 updates` = "Original data source updated every Friday. This table last updated {Sys.Date()}.",
-    `ℹ️ note` = "This example material using data that has been modified for use from its original source, <https://www.cityofchicago.org>, the official website of the City of Chicago.  The City of Chicago makes no claims as to the content, accuracy, timeliness, or completeness of any of the data provided at this site.  The data provided at this site is subject to change at any time.  It is understood that the data provided at this site is being used at one's own risk."
-  ) |> 
+    `source` = "Data set provided as part of the `pointblank` package."
+    ) |> 
   info_columns(
-    columns = inspection_id,
-    `ℹ️` = "A unique record number."
-  ) |> 
-  info_columns(
-    columns = dba_name,
-    `ℹ️` = "'Doing Business As.' This is legal name of the establishment."
-  ) |> 
-  info_columns(
-    columns = aka_name,
-      `ℹ️` = "'Also Known As.' This is the name the public would know the establishment as."
-  ) |> 
-  info_columns(
-    columns = license_number,
-      `ℹ️` = "This is a unique number assigned to the establishment for the 
-purposes of licensing by the Department of Business Affairs and Consumer Protection."
-  ) |>  
-  info_columns(
-    columns = facility_type,
-      `ℹ️` =
-      "Cleaned and validated data includes only establishments described by one of the following: \n - **Bakery** \n - **Coffee Shop** \n - **Grocery Store** \n - **Restaurant** \n - **Wrigley Field Rooftop**"
-  )  |>
-  info_columns(
-    columns = risk,
-      `ℹ️` = "Risk category of facility. Each establishment is categorized as to its risk of adversely affecting the public's health, with 1 being the highest and 3 the lowest. The frequency of inspection is tied to this risk, with risk 1 establishments inspected most frequently and risk 3 least frequently."
-  ) |>  
-  info_columns(
-    columns = address,
-      `ℹ️` = "Street address, city, state and zip code of facility: This is the complete address where the facility is located."
-  ) |>  
-  info_columns(
-    columns = city,
-      `ℹ️` = "City of the facility."
-  ) |>  
-  info_columns(
-    columns = state,
-      `ℹ️` = "State of the facility."
-  ) |>  
-  info_columns(
-    columns = zip,
-      `ℹ️` = "Zip Code of the facility."
-  ) |>  
-  info_columns(
-    columns = inspection_date,
-      `ℹ️` = "This is the date the inspection occurred. A particular establishment is likely to have multiple inspections which are denoted by different inspection dates."
-  ) |>  
-  info_columns(
-    columns = inspection_type,
-      `ℹ️` = "An inspection can be one of the following types: \n - **canvass**: the most common type of inspection performed at a frequency relative to the risk of the establishment \n - **consultation**: when the inspection is done at the request of the owner prior to the opening of the establishment \n - **complaint**: when  the inspection is done in response to a complaint against the establishment \n - **license**: when the inspection is done as a requirement for the establishment to receive its license to operate \n - **suspect food poisoning**: 🤢when the inspection is done in response to one or more persons claiming to have gotten ill as a result of eating at the establishment (a specific type of complaint-based inspection) \n - **task-force inspection**: when an inspection of a bar or tavern is done. \n Re-inspections can occur for most types of these inspections and are indicated as such."
-  ) |>  
-  info_columns(
-    columns = results,
-      `ℹ️` = "An inspection can pass, pass with conditions or fail. Establishments receiving a 'pass' were found to have no critical or serious violations (violation number 1-14 and 15-29, respectively). Establishments receiving a 'pass with conditions' were found to have critical or serious violations, but these were corrected during the inspection. Establishments receiving a 'fail' were found to have critical or serious violations that were not correctable during the inspection. An establishment receiving a 'fail' does not necessarily mean the establishment's licensed is suspended."
-  ) |>  
-  info_columns(
-    columns = violations,
-      `ℹ️` = "An establishment can receive one or more of 45 distinct violations (violation numbers 1-44 and 70). For each violation number listed for a given establishment, the requirement the establishment must meet in order for it to NOT receive a violation is noted, followed by a specific description of the findings that caused the violation to be issued."
-  ) |>  
-  info_columns(
-    columns = latitude,
-      `ℹ️` = "The Latitude of the facility."
-  ) |>
-  info_columns(
-    columns = longitude,
-      `ℹ️` = "The Longitude of the facility."
-  ) |>
-  info_columns(
-    columns = location,
-      `ℹ️` = "The Latitude and Longitude of the facility."
-  ) |>
+    columns = date_time,
+    `Info:` = "The date and time of the **observation.**",
+    # Let's add a calculated value. This `latest_date` value is defined in the snippet in the next section
+    `Latest Date:` = "The latest date is {latest_date}."
+    ) |> 
+  info_snippet(
+    snippet_name = "latest_date",
+    # caution: pointblank hasn't learned the native pipe yet in internal functions Use %>%.
+    fn = ~ . %>% dplyr::pull(date_time) %>% max(na.rm = TRUE)
+    ) |>
+  # Add your own information to make this table more meaningful.
+  ____ |> 
+  # Using `incorporate` will run any calculations defined within the table
   incorporate()
 
 
