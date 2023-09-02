@@ -37,12 +37,67 @@ library(pointblank)
 
 ```
 
-## Task 1 - Data validation on a simple table
+### Read data from pin
+
+We are going to start with a data set called `inspections_filtered`.
+This data is an extract from the original `inspections_raw` data set,
+which has been filtered to only include records of interest.
+Specifically, it only includes inspection records that were marked as
+"Pass", "Fail", or "Pass w/ Conditions" from the following Facility
+Types:
+
+\- Restaurants
+
+\- Grocery Stores
+
+\- Bakeries
+
+\- Coffee Shops
+
+\- Wrigley Field Rooftop (because that sounds pretty fun)
+
+This data has been saved for you as a pin.
+
+::: callout-note
+## [pins](https://pins.rstudio.com/) is a package for R and Python that makes it easy to share objects (e.g., data frames, models) across projects and team members.
+:::
+
+![](https://pins.rstudio.com/logo.png){fig-align="center" width="212"}
+
+📌 Objects in R and Python can be "pinned" to a "board" so that they are
+easily shared
+
+📌 The board is like a virtual corkboard, your object is pinned with a
+virtual thumbtack
+
+📣 Pin intermediate data and objects, not your source of truth. Pins are
+not a substitute for a database
+
+📌 When the board is Posit Connect, the same access controls for content
+can be applied
+
+📌 We will talk more about pins during the Modeling section of this
+workshop!
+
+```{r read-data-from-pin}
+
+# Define the virtual corkboard. Do not add any arguments to this code; run as-is.
+board <- pins::board_connect()
+
+# Read the existing pin with the data we'll use for this exercise.
+inspections_filtered <- board |> 
+  pins::pin_read("katie.masiello/inspections_filtered")
+
+inspections_filtered
+
+```
+
+## Task 1 - Data validation on `inspections_filtered`
 
 🔄 Task
 
-Use the `pointblank` package to validate a simple table, provided by
-`pointblank::small_table`
+Use the `pointblank` package to validate our `inspections_filtered`
+dataset
 
 -   create an agent
 -   define validations
@@ -50,27 +105,16 @@ Use the `pointblank` package to validate a simple table, provided by
 
 ✅ Solution
 
-Let's inspect `small_table`. We see a few different types of columns.
-Rows 9 and 10 are exact duplicates. The `c` column contains two `NA`
-values. This will serve us well for some validation exercises.
+The first step in the `pointblank` workflow is to create an **agent.**
 
 ```{r}
-#| label: inspect small_table
-
-small_table
-
-```
-
-First we create an **agent.**
-
-```{r}
-#| label: create agent for small_table
+#| label: create agent for inspections_filtered
 
 agent <- pointblank::create_agent(____)
 agent
 ```
 
-On it's own, the agent is not very informative. It's waiting for
+On its own, the agent is not very informative. It's waiting for
 validations to be defined and an interrogation action to be performed.
 
 Now we define our **data validation functions**. A few have been started
@@ -79,13 +123,17 @@ documentation for the validation function reference:
 <https://rstudio.github.io/pointblank/reference/index.html#validation-expectation-and-test-functions>
 
 ```{r}
-#| label: define validations for small_table
+#| label: define validations for inspections_filtered
 
 agent <- agent |> 
-  # are column `a` values between 1 and 5?
-  col_vals_between(a, 1, 5) |> 
-  # are column `f` values in the set of c("high", "med", "low")
-  col_vals_in_set(f, c("high", "med", "low")) |> 
+  # verify inspection ID is between two arbitrary numbers so we can see some failed records
+  col_vals_between(columns = inspection_id, 50000, 1000000, 
+                   label = "Is the Inspection ID a valid entry?") |> 
+  # verify license number is greater than 1000
+  col_vals_gt(columns = license_number, 1000) |> 
+  # verify inspection date is valid
+  col_vals_lte(columns = inspection_date, today(),
+               label = "Is inspection date in the past?") |> 
   # Now add your own!
   ____ |> 
   ____
@@ -98,7 +146,7 @@ If we look at the output of `agent`, it shows our validation plan, but
 the action is yet to come when we **interrogate**.
 
 ```{r}
-#| label: interrogate the small_table agent
+#| label: interrogate the inspections_filtered agent
 
 agent |> interrogate()
 
@@ -132,16 +180,21 @@ to add action levels to one, some, or all of your validations and rerun
 the interrogation to see the output. Some samples have been provided.
 
 ```{r}
-#| label: validation of small_table with action levels
+#| label: validation of inspections_filtered with action levels
 
-agent_with_actions <- create_agent(small_table) |> 
-  # are column `a` values between 1 and 5?
-  col_vals_between(a, 1, 5,
-                   actions = action_levels(notify_at = 0.10)) |> 
-  # are column `f` values in the set of c("high", "med", "low")
-  col_vals_in_set(f, c("high", "med", "low"),
-                  actions = action_levels(warn_at = 1, stop_at = 0.3)) |> 
-  # Now add your own!
+agent_with_actions <- create_agent(inspections_filtered) |> 
+  # verify inspection ID is between two arbitrary numbers so we can see some failed records
+  col_vals_between(columns = inspection_id, 50000, 1000000, 
+                   label = "Is the Inspection ID a valid entry?",
+                   actions = action_levels(warn_at = 0.1, stop_at = 0.3)) |> 
+  # verify license number is greater than 1000
+  col_vals_gt(columns = license_number, 1000,
+              actions = action_levels(warn_at = 0.015)) |> 
+  # verify inspection date is valid
+  col_vals_lte(columns = inspection_date, today(),
+               label = "Is inspection date in the past?",
+               actions = action_levels(notify_at = 0.10)) |> 
+  # Now add your own using the validations you defined above!
   ____ |> 
   ____ |> 
   
@@ -155,15 +208,14 @@ agent_with_actions
 
 🔄 Task
 
-Pointblank has identified all of the rows of `small_table` that passed
-and failed validation. Now remove those that failed so the data that is
-passed downstream is squeaky clean.
+Pointblank has identified all of the rows of `inspections_filtered` that
+passed and failed validation. Now remove those that failed so the data
+that is passed downstream to our modeling step is squeaky clean.
 
 ✅ Solution
 
-`pointblank` provides a number of [post-interrogation
-functions](https://rstudio.github.io/pointblank/reference/index.html#post-interrogation)
-to work with intel gathered from the validation. For this task, we will
+Pointblank provides a number of [post-interrogation functions](#0) to
+work with intel gathered from the validation. For this task, we will
 "sunder" the data using `pointblank::get_sundered_data()`.
 
 > **💡 sunder** /sun·der / ˈsən-dər / *verb* \| to split apart
@@ -172,11 +224,11 @@ to work with intel gathered from the validation. For this task, we will
 #| label: sunder data
 
 # Passed data
-small_table_validated <- get_sundered_data(agent = ____,
+inspections_validated <- get_sundered_data(agent = ____,
                                            type = ____)
 
 # Failed data
-small_table_failed <- get_sundered_data(agent = ____,
+inspections_failed_validation <- get_sundered_data(agent = ____,
                                         type = ____)
 
 ```
@@ -190,7 +242,7 @@ Pointblank can generate an `informant` table (OR or data dictionary)
 that can provide both static and dynamically-rendered details about your
 data.
 
-Create a data dictionary for `small_table_validated`.
+Create a data dictionary for `inspections_validated`.
 
 ✅ Solution
 
@@ -208,10 +260,10 @@ First let's see the bare bones informant table that `pointblank` can
 create.
 
 ```{r}
-#| label: basic informant for small_table_validated
+#| label: basic informant for inspections_validated
 
 create_informant(
-  tbl = small_table_validated
+  tbl = inspections_validated
 )
 
 ```
@@ -228,27 +280,20 @@ syntax is supported!
 #| label: create data dictionary 
 
 create_informant(
-  tbl = small_table_validated) |> 
+  tbl = inspections_validated) |> 
   info_tabular(
     description = "____"
     ) |> 
   info_section(
     section_name = "further information",
-    `source` = "Data set provided as part of the `pointblank` package."
-    ) |> 
+    `source` = "Data from City of Chicago, <https://www.cityofchicago.org>",
+    `🔄 updates` = 
+      "Original data source updated every *Friday*. This table last updated {Sys.Date()}.") |> 
   info_columns(
-    columns = date_time,
-    `Info:` = "The date and time of the **observation.**",
-    # Let's add a calculated value. This `latest_date` value is defined in the snippet in the next section
-    `Latest Date:` = "The latest date is {latest_date}."
-    ) |> 
-  info_snippet(
-    snippet_name = "latest_date",
-    # caution: pointblank hasn't learned the native pipe yet in internal functions Use %>%.
-    fn = ~ . %>% dplyr::pull(date_time) %>% max(na.rm = TRUE)
-    ) |>
+    columns = inspection_date,
+    `Info:` = "The date of the **inspection.**") |>
   # Add your own information to make this table more meaningful.
-  ____ |> 
+  ____ |>
   # Using `incorporate` will run any calculations defined within the table
   incorporate()
 
