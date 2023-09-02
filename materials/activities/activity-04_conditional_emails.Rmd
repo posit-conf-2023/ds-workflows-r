@@ -1,37 +1,51 @@
 ---
-title: "activity-03_conditional_emails"
+title: "activity-04_conditional_emails.Rmd"
 description: "A notebook that will send conditional emails using `blastula`"
 output:
   html_document:
     toc: yes
     toc_float: yes
+editor: visual
+editor_options: 
+  markdown:
+    wrap: 72
+    canonical: true
 ---
- 
-<!-- TODO: Make these more DIY Code friendly.e.g., write your own validations. -->
- 
-# Activity Notes
+
+## Goals
+
+The goals of this activity are to:
+
+-   Use `blastula` to create html-rich, customized emails
+
+-   <!-- TODO: expand on this -->
+
+## Activity Notes
+
 <!-- TODO: expand on this -->
-This notebook is a simplified version of the deployed notebook used for the project solution. 
 
-# Task 1 - Define a condition for email alert 
+Mention quarto and email?
+
+## Task 1 - Define a condition for email alert
+
 🔄 Task
 
-- 
+-   
 
 ✅ Solution
 
+## Task 2 - Create an email
 
-# Task 2 - Create an email
 🔄 Task
 
-- 
+-   
 
 ✅ Solution
 
+## Task 3 - Use blastula to attach the email and send under conditions
 
-# Task 3 - Use blastula to attach the email and send under conditions
 🔄 Task
 
--  
+-   
 
 ✅ Solution
