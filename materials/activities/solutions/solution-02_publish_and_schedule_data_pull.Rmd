@@ -317,6 +317,6 @@ do this step for this activity.
 
 Let's do this task together as a group.
 
-For refererence, the Connect User Guide provides instructions for
+For reference, the Connect User Guide provides instructions for
 publishing:
 <https://docs.posit.co/connect/user/publishing/#publishing-general>
