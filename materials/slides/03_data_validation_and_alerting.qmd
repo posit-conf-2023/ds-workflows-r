@@ -354,6 +354,19 @@ Activity objective: Use `pointblank` to validate data, remove non-compliant reco
 
 ![](slide_resources/conditional_email_example.png)
 
+## Work within the limitations of email clients
+
+⚠️ Common Pitfalls
+
+- There is no interactive runtime for an email
+- Javascript-dependent content will generally not render when emailed -- not due to a limitation of blastula, but as result of how email clients process HTML
+
+🧰 Best practices for embedding objects:
+
+- ggplot2 output can be included in the email output directly 
+- Create nicely formatted tables with the `gt` package. Just remember, no interactivity!
+- If you'd like to include a rendering of a widget (e.g., a dial or info box), use the `webshot2` package to take a capture of the widget and embed it as an image
+- If your email recipient wants more information or interactivity, direct them to a report or dashboard deployed to Connect
 
 ## Your Turn 
 

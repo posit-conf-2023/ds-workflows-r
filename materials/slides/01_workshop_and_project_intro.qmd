@@ -22,7 +22,6 @@ format:
       - positconfslides
 execute: 
   echo: true
-  cache: true
 ---
 
 ##  {.brackets-dark}

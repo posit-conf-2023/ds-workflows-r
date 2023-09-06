@@ -79,7 +79,8 @@ can be applied
 📌 We will talk more about pins during the Modeling section of this
 workshop!
 
-```{r read-data-from-pin}
+```{r}
+#| label: read data from pin
 
 # Define the virtual corkboard. Do not add any arguments to this code; run as-is.
 board <- pins::board_connect()
@@ -299,3 +300,5 @@ create_informant(
 
 
 ```
+
+<!--# TODO: Question for Ryan- do you want them to pin_write the validated data for the experience here?   -->
