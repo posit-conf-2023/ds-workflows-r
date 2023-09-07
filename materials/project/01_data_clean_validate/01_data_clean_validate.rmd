@@ -1,0 +1,665 @@
+---
+title: "01_Data Clean and Validate"
+description: "Scheduled document to clean and validate data, then write output to a pin"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    code_folding: hide
+resource_files:
+- "email-01_data_integrity_alert.Rmd"
+- "email-01_data_summary.Rmd"
+editor_options: 
+  chunk_output_type: console
+---
+
+`r if(Sys.getenv("TEST_MODE") == TRUE) { "<h3>❗❗Report generated in test mode. Simulated data used for speed in processing❗❗</h3>\n" }`
+
+# Load packages
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(janitor)
+library(DBI)
+library(odbc)
+library(RPostgres)
+library(pins)
+library(pointblank)
+library(blastula)
+library(glue)
+library(gt)
+library(arrow) # we might drop this if we decide not to write the pin in arrow format
+
+# set TEST_MODE=TRUE to preview the alert email. Logic is written such that if TEST_MODE is any value other than TRUE (including not set), it behaves as if it is FALSE.
+test_mode <- Sys.getenv("TEST_MODE")
+
+```
+
+# Overview
+
+1.  Pull data from database (`inspections_raw`)
+2.  Filter inspection data to only types we are interested in (`inspections_filtered`)
+3.  Validate and pass only passing data (`inspections_validated`)
+4.  Run a few transforms, mutations, cleanups and finalize dataset processing (`inspections_processed`)
+5.  Write pins
+
+# Pull data from Database
+
+```{r DB-connection}
+
+
+con <- dbConnect(RPostgres::Postgres(), 
+                 host = Sys.getenv("CONF23_DB_HOST"), 
+                 port = "5432", 
+                 dbname = "conf23_r", 
+                 user = Sys.getenv("CONF23_DB_USER"), 
+                 password = Sys.getenv("CONF23_DB_PASSWORD"))
+
+
+```
+
+```{r Pull-raw-data}
+
+# DATASET 1: Food inspections data, with some time logging for reference
+inspections_raw <- 
+  tbl(con, "inspections_raw") |> 
+  collect() |> 
+  # convert inspection_date to date format
+  mutate(inspection_date = lubridate::mdy(inspection_date)) 
+
+
+# DATASET 2: Business data
+bus_data_raw <- tbl(con, "bus_data_raw") |>
+  # Filter only relevant facility types. Do this before we collect into local memory
+  filter(license_description %in% c(
+                                    "RETAIL FOOD - SEASONAL LAKEFRONT FOOD ESTABLISHMENT",
+                                    "RETAIL FOOD ESTABLISHMENT",
+                                    "WRIGLEY FIELD")) |> 
+  collect() |> 
+  mutate(license_term_expiration_date = lubridate::mdy(license_term_expiration_date)) |> 
+  # Add column to determine if license is still valid
+  mutate(license_valid = case_when(license_term_expiration_date > lubridate::today() ~ "TRUE", .default = "FALSE")) 
+
+```
+
+# Perform inspections data filtering and cleaning.
+
+```{r Thin-out-inspections-data-pre-validation}
+
+
+inspections_filtered <- 
+  inspections_raw |> 
+  # Clean facility_type
+  mutate(facility_type = case_when(
+    grepl("RE?STA?U?R?A?N?T?", `facility_type`) ~ "RESTAURANT",
+    grepl("GROCERY", facility_type) ~ "GROCERY STORE", 
+    grepl("BA?KE?R?Y?", `facility_type`) ~ "BAKERY",
+    grepl("COFFEE *SHOP", `facility_type`) ~ "COFFEE SHOP", 
+    grepl("WRIGLEY", `facility_type`) ~ "WRIGLEY FIELD ROOFTOP",
+    .default = paste("OTHER")
+    )) |> 
+  
+  # filter out inspections not at a restaurant, grocery store, bakery, coffee shop, or Wrigley
+  filter(facility_type != "OTHER") |> 
+  
+   # Filter for only Pass, Fail, Pass with conditions
+  filter(results %in% c("PASS", "FAIL", "PASS W/ CONDITIONS")) 
+
+
+```
+
+# Inspections data validation
+
+Perform data validation. The first validation just confirms the overall size and format of the data frame. If the validation fails here, a warning is thrown and the validation will not proceed.
+
+```{r data-fram-size-and-format-validation}
+
+
+# Define a column schema so we can check inputted data is as expected
+# Fun fact, also use .tbl argument in col_schema to compare the dataframe to an ideal table.
+# troubleshooting, if this fails, look at the x_list$col_types and $col_names to see the discrepancy
+schema_inspections <- col_schema(inspection_id = "numeric",
+                               dba_name = "character",
+                               aka_name = "character",
+                               license_number = "numeric",
+                               facility_type = "character",
+                               risk = "character",
+                               address = "character",
+                               city = "character",
+                               state = "character",
+                               zip = "numeric",
+                               inspection_date = "Date",
+                               inspection_type = "character",
+                               results = "character",
+                               violations = "character",
+                               latitude = "numeric",
+                               longitude = "numeric",
+                               location = "character"
+                               )
+
+
+#### VALIDATION 1: Data set integrity validations. All of these trigger a warning under fail conditions.
+agent_df_integrity <- 
+  create_agent(inspections_filtered, label = "Inital validation of the inspections data set to confirm overall schema and size. If there are issues with this validation, further processing stops and an alert is triggered.") |> 
+  # verify column schema 
+  # troubleshooting, if this fails, look at the x_list$col_types and $col_names to see the discrepancy
+  col_schema_match(schema_inspections, 
+                   label = "Is the column schema as expected?", 
+                   actions = action_levels(warn_at = 1)) |> 
+  #Check that expected columns exist. We make a table in the preconditions using a table transform that is made up of the column names of our inspections table. Then compare those values to the set of schema_inspection names.
+  col_vals_in_set(columns = value, 
+                  set = names(schema_inspections), 
+                  preconditions = ~. %>% tt_tbl_colnames, 
+                  label = "Are the expected columns in the data set?", 
+                  actions = action_levels(warn_at = 0.01) ) |> 
+  # verify there are A LOT of rows of data to be sure import didn't mess up. 
+  col_vals_gte(columns = n, 
+               value = 100000L, # an arbitrary high-ish number
+               preconditions = ~. %>% tally,
+               label = "Are there more than 100k rows in the data?", 
+               actions = action_levels(warn_at = 1)) |>
+  interrogate()
+agent_df_integrity
+
+if(test_mode !=TRUE){
+  alert_me <- !(all_passed(agent_df_integrity))
+} else{
+  alert_me <- TRUE
+}
+
+```
+
+```{r send-email-alert-for-validation-fail-and-stop-processing-this-file, eval=alert_me, results="asis"}
+
+
+# note, `results: asis` to make the email html render
+
+if (alert_me == TRUE){
+  # send an email alert
+  email_alert <- render_connect_email(input = "email-01_data_integrity_alert.Rmd") 
+  
+  attach_connect_email(email_alert, subject = "⚠️Inspections Project: 
+                         Validation of Inspections dataset found integrity issue")
+  
+  # logging
+  glue("Report run {blastula::add_readable_time()}")
+  glue("Validation of inspection data set integrity failed. An email alert was generated, and is shown below. {email_alert$html_html}")
+}
+if (alert_me == TRUE){
+  # stop processing this file
+  knitr::knit_exit()
+} 
+
+```
+
+# Data validation
+
+As long as the the validation on Data Frame integrity passes, the following additional validations will run
+
+```{r data-integrity-validation}
+
+
+#### VALIDATION 2: Data integrity validations. Failing rows from this validation will be stripped out. We can monitor these over time if we create a multi_agent too.
+agent_main <-  
+  create_agent(inspections_filtered, label = "Validation of inspections data") |> 
+  # No null values
+  col_vals_not_null(columns = inspection_id) |> 
+  col_vals_not_null(columns = dba_name) |> 
+  col_vals_not_null(columns = address) |> 
+  col_vals_not_null(columns = latitude) |>
+  col_vals_not_null(columns = longitude) |>
+  col_vals_not_null(columns = inspection_date) |> 
+  col_vals_not_null(columns = inspection_type) |> 
+  col_vals_not_null(columns = results) |> 
+  # verify inspection date is valid
+  col_vals_lte(columns = inspection_date, today(),
+               label = "Is inspection date in the past?") |> 
+  # verify Inspection ID is unique
+  rows_distinct(columns = vars(inspection_id), 
+                label = "Is the Inspection ID unique?", 
+                actions = action_levels(warn_at = 0.001)) |> 
+  # verify inspection ID is valid
+  col_vals_between(columns = inspection_id, 1000, 99999999, 
+                   label = "Is the Inspection ID a valid entry?") |>  
+  # verify license number is valid
+  col_vals_between(columns = license_number, 1, 99999999, 
+                   label = "Is the License Number a valid entry?") |>
+  # verify lat and long bounds (set na_pass = TRUE to ignore NAs)
+  col_vals_between(columns = latitude, left = 41.5001, right = 42.3772, na_pass = TRUE) |> 
+  col_vals_between(columns = longitude, left = -88.2959, right = -87.316, na_pass = TRUE) |> 
+  # verify w col_vals_within_spec for postal_code / aka zip
+  col_vals_within_spec(columns = zip, spec = "postal[USA]", na_pass = TRUE) |> 
+
+  interrogate() 
+
+agent_main
+
+```
+
+# Sunder the data to remove failed rows
+
+```{r sunder-data}
+
+
+inspections_validated <- get_sundered_data(agent_main, type = "pass")
+inspections_fail_validation <- get_sundered_data(agent_main, type = "fail")
+
+```
+
+# Final data transformation and processing
+
+```{r transform-data-to-processed-form}
+
+
+inspections_processed <- 
+  inspections_validated |>
+  
+  # round the lat / long to 6 decimal places 
+  mutate(latitude = round(latitude, 6)) |> 
+  mutate(longitude = round(longitude, 6)) |> 
+  mutate(location = paste0("(", latitude, ", ",longitude,")")) |> 
+  
+  # Convert "Pass w/ Conditions" to Fail (since it is a failure, but was corrected
+  #  before the food inspector left)
+  mutate(results = if_else(results == "PASS W/ CONDITIONS", "FAIL", results)) |> 
+  
+  # Refactor risk
+  mutate(risk = case_when(
+    risk == "RISK 1 (HIGH)" ~ 1,
+    risk == "RISK 2 (MEDIUM)" ~ 2,
+    risk == "RISK 3 (LOW)" ~ 3
+  )) |> 
+  
+  # Calculate the days since last inspection. If never inspected before, we set it to 0, assuming the first inspection was at facility inception
+  arrange(desc(inspection_date)) |> 
+  group_by(license_number) |> 
+  mutate(prev_inspection_date = lead(inspection_date, n=1, default=NA)) |>
+  mutate(days_since_last_inspection = as.numeric(inspection_date - prev_inspection_date)) |> 
+  mutate(days_since_last_inspection = if_else(is.na(days_since_last_inspection), 0, days_since_last_inspection)) |> 
+  
+  # Extract violations (v_list) and total violation numbers (v_num)
+  rowwise() |> 
+  mutate(v_list = case_when(
+    is.na(violations) ~ NA,
+    !is.na(violations) ~ str_extract_all(violations, 
+                                         "(^\\d{1,2}|\\|\\s*\\d{1,2})"))) |> 
+  mutate(v_list = case_when(
+    is.null(v_list) ~ NA,
+    !is.null(v_list) ~ list(str_replace_all(v_list, "\\|\\s*", "")))) |> 
+  mutate(v_num = length(v_list)) |> 
+
+  # Detect number of critical/serious violations (#'s 1 to 29)
+  mutate(v_num_cs = sum(1:29 %in% unlist(v_list))) |> 
+
+  # Calculate cumsum violation number
+  group_by(license_number) |> 
+  arrange(inspection_date) |> 
+  mutate(v_total = sum(v_num)) |> 
+  mutate(v_cumsum = cumsum(v_num)) |> 
+  mutate(v_cumsum_cs = cumsum(v_num_cs)) |> 
+  
+  # Calcuate total pass and fail inspections
+  mutate(times_inspected_total = n()) |> 
+  mutate(times_passed_total = sum(results == "PASS")) |> 
+  mutate(times_failed_total = sum(results == "FAIL")) |> 
+  ungroup(license_number)  
+```
+
+# Summarize info
+
+Report on summary info. How many new inspections happened since last update? How many total inspections?
+
+```{r summary-info}
+
+
+board <- board_connect()
+user_name <- "katie.masiello"
+
+
+if(board |> pin_exists("katie.masiello/inspections_processed") == FALSE){
+  last_inspection <- NULL
+  new_inspections <- inspections_processed
+  last_inspection_date <- new_inspections |> arrange(inspection_date) |> slice(1) |> pull(inspection_date)
+}else{
+
+last_inspection <- board |> pin_read(paste0(user_name,"/inspections_processed"))
+last_inspection_date <- last_inspection |> 
+  arrange(desc(inspection_date)) |> 
+  slice(1) |> 
+  pull(inspection_date)
+
+new_inspections <- inspections_processed |> 
+  filter(!inspection_id %in% last_inspection$inspection_id) |>
+  select(inspection_date, dba_name, facility_type, results, v_num, v_num_cs)
+
+new_inspections |> gt() |> 
+  tab_header(
+    title = md(glue("**New Inspections Data Added Since {last_inspection_date}**")),
+    subtitle = md("Inspections data for Restaurant, Grocery Store, Coffee Shop, Bakery, or Wrigley Field Rooftop ⚾")) |>
+  tab_source_note(source_note = md(glue("**New records added: {nrow(new_inspections)} <br> Total inspection records: {nrow(inspections_processed)}**"))) |> 
+  opt_interactive()
+}
+
+# TODO: Add this to a package
+food_emoji <- function(n=1) {
+  emojis <- c("🥪", "🍕", "🍲", "🥘", "🥡", "🫘", "🧆", "🍛", "🍤",
+              "🍜", "🫒", "🥓", "🥚", "🥑", "🥐", "🥔", "🥗", "🍽",
+              "🥠", "🍱", "🍳", "🥞", "🧇", "🥯", "🍩", "🍗", "🌯",
+              "☕","🧋", "🥤", "🍮", "🥧", "🧁", "🍪", "🍨", "🥟",
+              "🍣", "🍝", "🍚", "🫕", "🥙", "🫔", "🌮", "🌭", "🍟",
+              "🍔", "🥨", "🥖", "🥜") 
+  sample(emojis, n)
+  
+}
+
+send_summary <- if(nrow(new_inspections) > 0){TRUE}else{FALSE}
+ 
+if(send_summary){
+
+summary_email <- render_connect_email(input = "email-01_data_summary.Rmd") 
+
+attach_connect_email(summary_email, subject = glue("ℹ️️Inspections Project: 
+                       {food_emoji()} {nrow(new_inspections)} records added to dataset"))
+
+}else{suppress_scheduled_email()}
+
+```
+
+# Summarize inspections per week 
+
+```{r inspections-per-week}
+
+inspections_per_week_by_facility <- inspections_processed |> 
+  select(facility_type, inspection_date, results) |> 
+  group_by(facility_type, year(inspection_date), week(inspection_date)) |> 
+  summarize(inspections_this_week = n(), 
+            pass_this_week = sum(results == "PASS"), 
+            fail_this_week = sum(results == "FAIL"))
+
+inspections_per_week <- inspections_processed |> 
+  select(inspection_date, results) |> 
+  group_by(year(inspection_date), week(inspection_date)) |> 
+  summarize(inspections_this_week = n(), 
+            pass_this_week = sum(results == "PASS"), 
+            fail_this_week = sum(results == "FAIL"))
+
+
+```
+
+
+
+# Data Dictionary
+```{r data-dictionary}
+
+create_informant(
+  tbl = inspections_processed,
+  label = "Data Dictionary - Validated Data from Chicago Food Inspection Dataset, Processed for Model Training") |> 
+  info_tabular(
+    description = "This table defines the columns in the processed dataset from City of Chicago Food Inspection dataset. It has been validated and processed for use as a model training dataset."
+  ) |> 
+  info_section(
+    section_name = "further information",
+    `source` = "Data from City of Chicago, <https://www.cityofchicago.org>",
+    `🔄 updates` = "Original data source updated every Friday. This table last updated {Sys.Date()}.",
+    `ℹ️ note` = "This example material using data that has been modified for use from its original source, <https://www.cityofchicago.org>, the official website of the City of Chicago.  The City of Chicago makes no claims as to the content, accuracy, timeliness, or completeness of any of the data provided at this site.  The data provided at this site is subject to change at any time.  It is understood that the data provided at this site is being used at one's own risk."
+  ) |> 
+  info_columns(
+    columns = inspection_id,
+    `ℹ️` = "A unique record number."
+  ) |> 
+  info_columns(
+    columns = dba_name,
+    `ℹ️` = "'Doing Business As.' This is legal name of the establishment."
+  ) |> 
+  info_columns(
+    columns = aka_name,
+      `ℹ️` = "'Also Known As.' This is the name the public would know the establishment as."
+  ) |> 
+  info_columns(
+    columns = license_number,
+      `ℹ️` = "This is a unique number assigned to the establishment for the 
+purposes of licensing by the Department of Business Affairs and Consumer Protection."
+  ) |>  
+  info_columns(
+    columns = facility_type,
+      `ℹ️` =
+      "Cleaned and validated data includes only establishments described by one of the following: \n - **Bakery** \n - **Coffee Shop** \n - **Grocery Store** \n - **Restaurant** \n - **Wrigley Field Rooftop**"
+  )  |>
+  info_columns(
+    columns = risk,
+      `ℹ️` = "Risk category of facility. Each establishment is categorized as to its risk of adversely affecting the public's health, with 1 being the highest and 3 the lowest. The frequency of inspection is tied to this risk, with risk 1 establishments inspected most frequently and risk 3 least frequently."
+  ) |>  
+  info_columns(
+    columns = address,
+      `ℹ️` = "Street address, city, state and zip code of facility: This is the complete address where the facility is located."
+  ) |>  
+  info_columns(
+    columns = city,
+      `ℹ️` = "City of the facility."
+  ) |>  
+  info_columns(
+    columns = state,
+      `ℹ️` = "State of the facility."
+  ) |>  
+  info_columns(
+    columns = zip,
+      `ℹ️` = "Zip Code of the facility."
+  ) |>  
+  info_columns(
+    columns = inspection_date,
+      `ℹ️` = "This is the date the inspection occurred. A particular establishment is likely to have multiple inspections which are denoted by different inspection dates."
+  ) |>  
+  info_columns(
+    columns = inspection_type,
+      `ℹ️` = "An inspection can be one of the following types: \n - **canvass**: the most common type of inspection performed at a frequency relative to the risk of the establishment \n - **consultation**: when the inspection is done at the request of the owner prior to the opening of the establishment \n - **complaint**: when  the inspection is done in response to a complaint against the establishment \n - **license**: when the inspection is done as a requirement for the establishment to receive its license to operate \n - **suspect food poisoning**: 🤢when the inspection is done in response to one or more persons claiming to have gotten ill as a result of eating at the establishment (a specific type of complaint-based inspection) \n - **task-force inspection**: when an inspection of a bar or tavern is done. \n Re-inspections can occur for most types of these inspections and are indicated as such."
+  ) |>  
+  info_columns(
+    columns = results,
+      `ℹ️` = "An inspection can pass, pass with conditions or fail. Establishments receiving a 'pass' were found to have no critical or serious violations (violation number 1-14 and 15-29, respectively). Establishments receiving a 'pass with conditions' were found to have critical or serious violations, but these were corrected during the inspection. Establishments receiving a 'fail' were found to have critical or serious violations that were not correctable during the inspection. An establishment receiving a 'fail' does not necessarily mean the establishment's licensed is suspended."
+  ) |>  
+  info_columns(
+    columns = violations,
+      `ℹ️` = "An establishment can receive one or more of 45 distinct violations (violation numbers 1-44 and 70). For each violation number listed for a given establishment, the requirement the establishment must meet in order for it to NOT receive a violation is noted, followed by a specific description of the findings that caused the violation to be issued."
+  ) |>  
+  info_columns(
+    columns = latitude,
+      `ℹ️` = "The Latitude of the facility."
+  ) |>
+  info_columns(
+    columns = longitude,
+      `ℹ️` = "The Longitude of the facility."
+  ) |>
+  info_columns(
+    columns = location,
+      `ℹ️` = "The Latitude and Longitude of the facility."
+  ) |>
+  info_columns(
+    columns = prev_inspection_date,
+      `ℹ️` = "The data of the previous inspection record. A NA value indicates there are no prior records."
+  ) |>  
+  info_columns(
+    columns = days_since_last_inspection,
+      `ℹ️` = "The difference between `inspection_date` and `prev_inspection_date"
+  ) |>
+    info_columns(
+    columns = v_list,
+      `ℹ️` = "Violations identified in the `violations` column, in list form."
+  ) |>
+    info_columns(
+    columns = v_num,
+      `ℹ️` = "The number of items in `v_list`, corresponding to the number of violations found in a particular inspection."
+  ) |>
+    info_columns(
+    columns = v_num_cs,
+      `ℹ️` = "The number of violations that are of \"critical\" type, indicated as violation numbers 1-29."
+  ) |>
+    info_columns(
+    columns = v_total,
+      `ℹ️` = "The total violations across all inspection records for a given license number."
+  ) |>
+    info_columns(
+    columns = v_cumsum,
+      `ℹ️` = "The cumulative total of violations for a given license number."
+  ) |>
+    info_columns(
+    columns = days_since_last_inspection,
+      `ℹ️` = "The difference between `inspection_date` and `prev_inspection_date"
+  ) |>
+    info_columns(
+    columns = v_cumsum_cs,
+      `ℹ️` = "The cumulative total of critical violations for a given license number."
+  ) |>
+      info_columns(
+    columns = times_inspected_total,
+      `ℹ️` = "Total number of times a facility with a given license number has been inspected."
+  ) |>
+      info_columns(
+    columns = times_passed_total,
+      `ℹ️` = "The total number of times a facility has passed an inspection."
+  ) |>
+      info_columns(
+    columns = times_failed_total,
+      `ℹ️` = "The total number of times a facility has failed an inspection."
+  ) |>
+  
+  
+  incorporate()
+
+
+```
+
+
+```
+
+
+# Make table of potential model inputs
+
+## Restaurants that have an active license, based on business license data
+
+Make and pin a reference table of restaurants that have an active business license. They may not have a corresponding entry in the inspections set. (1 record per license number)
+
+```{r make-reference-table-restaurants-w-active-license}
+
+
+
+restaurants_active_license <- 
+  bus_data_raw |> 
+  # Filter out if license is expired
+  filter(license_valid == TRUE) |> 
+  group_by(license_number) |> 
+  arrange(desc(license_term_expiration_date)) |> 
+  # Keep only the most recent entry for a particular license number
+  slice(1) |> 
+  select(-business_activity) |> 
+  ungroup()
+
+active_license_numbers <- restaurants_active_license |> pull(license_number)
+
+```
+
+## Restaurants that have inspection history and have a current active license
+
+This data will be our model inputs. (1 record per license number)
+
+```{r create-model-inputs}
+#| label: Create model inputs - Active restaurants that have inspection history
+
+model_inputs <- inspections_processed |> 
+  filter(license_number %in% active_license_numbers) |> 
+  select(dba_name, license_number, facility_type, risk, address, city, zip, inspection_date, latitude, longitude, v_cumsum, v_cumsum_cs, times_inspected_total, times_passed_total, times_failed_total, aka_name) |> 
+  group_by(license_number) |> 
+  arrange(desc(inspection_date)) |> 
+  slice(1) |> 
+  ungroup() |> 
+  rename(prev_inspection_date = inspection_date) |> 
+  mutate(days_since_last_inspection = as.numeric(today() - prev_inspection_date))
+  
+
+```
+
+# Pin processed data
+
+```{r pin-processed-data-and-restaurants-w-active-licenses}
+#| label: Pin processed data and restaurant reference data
+
+board |> pin_write(inspections_per_week_by_facility,
+                   name = paste0(user_name, "/inspections_per_week_by_facility"),
+                   description = "Number of facility inspections per week, broken out by Bakery, Grocery Store, Wrigley Field Rooftop, or Restaurant")
+
+board |> pin_write(inspections_per_week,
+                   name = paste0(user_name, "/inspections_per_week"),
+                   description = "Number of inspections per week of type Bakery, Grocery Store, Wrigley Field Rooftop, or Restaurant.  See pin `inspections_per_week_by_facility` for by-facility breakdown.")
+
+board |> pin_write(inspections_processed,
+                   name = paste0(user_name,"/inspections_processed"), 
+                   description = "Cleaned, validated, and processed inspection data 
+                   for inputting into model.",
+                   type="arrow")
+
+
+board |> pin_write(model_inputs, 
+                   name = paste0(user_name,"/inspections_model_inputs"),
+                   description = "Reference df with the list of restaurants that 
+                   can be submitted to the model. 
+                   From inspection dataset, reduced to facilities that have an 
+                   active license and are either a restaurant, grocery store, 
+                   coffee shop, bakery, or wrigley field rooftop ⚾")
+
+
+# pin inspections_filtered and inspections_validated for use in workshop activities
+board |> pin_write(inspections_filtered,
+                   name = paste0(user_name,"/inspections_filtered"),
+                   description = "Unvalidated inspection data, filtered to only
+                   include facility types of interest and inspection results 
+                   that are pass, fail, or pass w conditions. For use in 
+                   workshop activity on data validation.")
+
+board |> pin_write(inspections_validated,
+                   name = paste0(user_name,"/inspections_validated"),
+                   description = "Validated inspection data, filtered to only
+                   include facility types of interest and inspection results 
+                   that are pass, fail, or pass w conditions. For use in 
+                   workshop activity on creating custom emails with blastula.")
+
+
+# prune saved versions to last 28 days
+pin_versions_prune(board, paste0(user_name,"/inspections_processed"), days = 28)
+pin_versions_prune(board, paste0(user_name,"/inspections_model_inputs"), days = 28)
+pin_versions_prune(board, paste0(user_name,"/inspections_per_week"), days = 28)
+pin_versions_prune(board, paste0(user_name,"/inspections_per_week_by_facility"), days = 28)
+pin_versions_prune(board, paste0(user_name,"/inspections_filtered"), days = 14)
+pin_versions_prune(board, paste0(user_name,"/inspections_filtered"), days = 14)
+
+
+```
+
+# Write data to database
+```{r write-validated-data-to-db}
+# write validated and processed data
+start_time <- Sys.time()
+dbWriteTable(con, "inspections_processed", (inspections_processed |> select(-v_list)), overwrite = TRUE)
+end_time <- Sys.time()
+duration <- end_time - start_time
+print(paste("ℹ️ Info: Writing validated and processed inspection data to database took", round(duration[[1]], 2),  units(duration)))
+
+
+dbDisconnect(con)
+
+```
+
+
+# Logging information
+
+```{r logging, results="asis"}
+
+
+glue("Report run {blastula::add_readable_time()}")
+
+glue("Inspection data was validated and sundered. {nrow(inspections_fail_validation)} rows that failed validation were removed. Restaurant reference data for model and cleaned, validated and processed inspection data written to pin.")
+if(send_summary == TRUE){glue("An email summary of new records added to dataset was generated, and is shown below. {summary_email$html_html}")}else{
+{glue("Because no new records were added to the database, an email summary was not sent.")}
+}
+
+
+```

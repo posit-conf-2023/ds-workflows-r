@@ -1,0 +1,13 @@
+name: 04_inspector_shiny_app
+title: 04_inspector_shiny_app
+username: ryan
+account: ryan
+server: colorado.posit.co
+hostUrl: https://colorado.posit.co/rsc/__api__
+appId: 17522
+bundleId: 78173
+url: https://colorado.posit.co/rsc/content/24b06cdb-56c6-4ae3-ba5d-25556ffbedd3/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: app_testing.R

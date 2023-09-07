@@ -1,0 +1,198 @@
+---
+title: "00_Raw data download and write to DB and scan data"
+description: Scheduled document to write raw data to database and write the data scan
+  for reference
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    code_folding: hide
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(janitor)
+library(DBI)
+library(odbc)
+library(RPostgres)
+library(blastula)
+library(pointblank)
+library(glue)
+library(pins)
+
+# set TEST_MODE=TRUE for faster processing and to preview the alert email. TEST_MODE will read smaller data frames from a pin and not write data to DB. Logic is written such that if TEST_MODE is any value other than TRUE (including not set), it behaves as if it is FALSE.
+test_mode <- Sys.getenv("TEST_MODE")
+```
+
+
+`r if(test_mode == TRUE) { "<h3>❗❗Report generated in test mode. Simulated data used for speed in processing❗❗</h3>\n" }`
+
+
+`r if(Sys.getenv('SOCRATA_APP_TOKEN') == '') { "<h3>Heads up! Environment Variable SOCRATA_APP_TOKEN is not set. Queries to the data source may be throttled without this. Contact project owner for app token.</h3>\n" }`
+
+
+
+# Download data from Chicago Data Portal
+
+```{r Download-data-from-Chicago-Data-Portal}
+
+
+# notes for test mode - 
+# inspections_raw_test <- inspections_raw |> slice_sample(prop = 0.05)
+# bus_data_raw_test <- bus_data_raw |> slice_sample(prop = 0.05)
+
+
+start_time <- Sys.time()
+if(test_mode == TRUE){
+  inspections_raw <- pin_read(board_connect(), "katie.masiello/inspections_raw_test")
+}else{
+inspections_raw <- readr::read_csv(paste0("https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv?$$app_token=",Sys.getenv("SOCRATA_APP_TOKEN"))) |> 
+  #clean column names so they are postgres-compliant (no special characters or spaces) and less annoying to type
+  clean_names() |> 
+  #convert data to uppercase for uniformity
+  mutate(across(where(is.character), toupper)) }
+end_time <- Sys.time()
+duration <- end_time - start_time
+print(paste("ℹ️ Info: Downloading Inspection data took", round(duration[[1]], 2),  units(duration)))
+
+
+# DATASET 2: Business data
+start_time <- Sys.time()
+if(test_mode == TRUE){
+  bus_data_raw <- pin_read(board_connect(), "katie.masiello/bus_data_raw_test")
+}else{
+bus_data_raw <- readr::read_csv("https://data.cityofchicago.org/api/views/r5kz-chrr/rows.csv") |> 
+  #clean column names so they are postgres-compliant (no special characters or spaces) and less annoying to type
+  clean_names() |> 
+  #Drop unnecessary columns. We only want to use this table to cross reference Licence Number to business name, location, 
+  select(license_number, 
+         legal_name, 
+         doing_business_as_name, 
+         license_term_expiration_date,
+         address, 
+         city, 
+         state, 
+         zip_code, 
+         license_description, 
+         business_activity,
+         latitude, 
+         longitude, 
+         location) |> 
+  #convert data to uppercase for uniformity
+  mutate(across(where(is.character), toupper)) }
+end_time <- Sys.time()
+duration <- end_time - start_time
+print(paste("ℹ️ Info: Downloading Business License data took", round(duration[[1]], 2),  units(duration)))
+
+
+```
+
+
+# Load data into database
+```{r Write-raw-data-to-database}
+
+
+# The `RPostgres` package is DBI-compliant and is built specifically for PosgreSQL DB. Performance may be faster (particularly for writing data!) than using the generic odbc package. It's perfectly reasonable to use the odbc package instead, and if we do, if we instead use the generic `odbc::odbc()` backend, the database will appear in the Connections pane. 
+con <- dbConnect(RPostgres::Postgres(), 
+                 host = Sys.getenv("CONF23_DB_HOST"), 
+                 port = "5432", 
+                 dbname = "conf23_r", 
+                 user = Sys.getenv("CONF23_DB_USER"), 
+                 password = Sys.getenv("CONF23_DB_PASSWORD"))
+
+# con_alternative <- dbConnect(odbc::odbc(),
+#                   Driver = "postgresql",
+#                   Server = Sys.getenv("CONF23_DB_HOST"),
+#                   Port = "5432",
+#                   Database = "conf23_r",
+#                   UID = Sys.getenv("CONF23_DB_USER"),
+#                   PWD = Sys.getenv("CONF23_DB_PASSWORD"),
+#                   timeout = 10)
+
+# write inspections raw data
+if(test_mode != TRUE){
+  start_time <- Sys.time()
+  dbWriteTable(con, "inspections_raw", inspections_raw, overwrite = TRUE)
+  end_time <- Sys.time()
+  duration <- end_time - start_time
+  print(paste("ℹ️ Info: Writing raw inspection data to database took", round(duration[[1]], 2),  units(duration)))
+}
+
+
+# write business license raw data
+if(test_mode != TRUE){
+  starts_time <- Sys.time()
+  dbWriteTable(con, "bus_data_raw", bus_data_raw, overwrite = TRUE)
+  end_time <- Sys.time()
+  duration <- end_time - start_time
+  print(paste("ℹ️ Info: Writing raw business license data to database took", round(duration[[1]], 2),  units(duration)))
+}
+
+
+insp_db <- tbl(con, "inspections_raw")
+insp_db_rowcount <- insp_db |> tally() |> pull(n) |> as.numeric()
+
+bus_db <- tbl(con, "bus_data_raw")
+bus_db_rowcount <- bus_db |>  tally() |> pull(n) |> as.numeric()
+
+
+dbDisconnect(con)
+```
+
+
+## Alert me if there's an issue with the data download, otherwise don't send an email
+
+```{r Alert-if-data-download-has-issues}
+
+
+if(test_mode == TRUE){
+  alert_me = TRUE
+}else{
+  alert_me <- (insp_db_rowcount < 100000 | bus_db_rowcount < 100000)}
+
+if (alert_me == TRUE){
+  email_alert <- render_connect_email(input = "email-00_db_load_alert.Rmd")
+  
+  attach_connect_email(email_alert,
+                       subject = "⚠️Inspections Project: DB Raw Data Load Issue")
+} else {
+  suppress_scheduled_email()
+}
+
+print(paste("ℹ️ Alert Triggered?", alert_me))
+
+
+```
+
+
+# Generate data scan for reference
+
+```{r Data-scan-on-inspections-raw, eval=(test_mode != TRUE)}
+
+# 
+scan <- pointblank::scan_data(inspections_raw |> select(-violations), sections = "OVMS")
+scan
+
+
+```
+
+
+# Logging information
+```{r logging, echo=FALSE, results="asis"}
+
+
+# note: the `results: asis` option will render the email html output for viewing.
+
+glue("Report run {blastula::add_readable_time()}")
+
+if(alert_me == TRUE){
+  glue("An alert was triggered due to an unexpectedly low number of rows in the raw dataset. An email alert was generated, and is shown below. {email_alert$html_html}")
+} else {
+  glue("Raw data written successfully to database.")
+}
+
+```
+

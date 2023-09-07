@@ -1,0 +1,146 @@
+---
+title: "Shiny"
+description: "Create and publish a Shiny app that queries the Food Inspections API"
+toc: true
+toc-depth: 4
+editor_options: 
+  markdown:
+    canonical: true 
+execute: 
+  eval: false
+editor: visual
+---
+
+## Setup
+
+```{r}
+#| label: load-packages
+
+library(tidyverse)
+library(vetiver)
+```
+
+## Activity 1 - Review Food Inspections API
+
+In a moment, we will open up a Shiny application that will make interactive calls to the [Food Inspections API](https://connect.conf23workflows.training.posit.co/food-inspections-api/). Before we do that, let's review how to call the food inspections API by defining an endpoint, creating "new" data, and submitting a query to the API.
+
+🔄 Tasks
+
+-   Define the food inspections API endpoint.
+
+-   Predict the likelihood that a food establishment will fail an inspections by querying the API (with mock data)
+
+### Define API endpoint
+
+Run the code below to define the endpoint of our API!
+
+```{r}
+# Don't edit this code, just run it!
+# API URL
+api_url <- "https://connect.conf23workflows.training.posit.co/food-inspections-api"
+
+# Add predict
+endpoint <- vetiver_endpoint(paste0(api_url, "/predict"))
+
+endpoint
+```
+
+### Create mock data
+
+Simulate a food establishment. Here is some example information regarding the various features that will need to be added:
+
+-   `facility_type`: string (example: "RESTAURANT")
+
+-   `risk`: number (1 is high risk, 2 is medium risk, 3 is low risk)
+
+-   `latitude`: number (example: 41.90)
+
+-   `longitude`: number (example: -87.63)
+
+-   `v_cumsum`: integer (cumulative number of violations - example: 30)
+
+-   `v_cumsum_cs`: integer (cumulative number of critical and serious violations - example: 10)
+
+-   `days_since_last_inspection`: number (example: 200)
+
+```{r}
+# Create mock data as a tibble. Fill in the blanks.
+mock_establishment <- tibble(facility_type = "___",
+                             risk = ___,
+                             latitude = ___,
+                             longitude = ___,
+                             v_cumsum = ___,
+                             v_cumsum_cs = ___,
+                             days_since_last_inspection = ___)
+```
+
+Query the API using mock data:
+
+```{r}
+# Query the API and extract FAIL likliehood
+predict(endpoint, mock_establishment)$.pred_FAIL
+```
+
+## Activity 2 - Create the Shiny App
+
+Navigate to the `ds-workflows-r/materials/activities/activity-06_shiny/` directory, and open the file called `app.R`.
+
+This application does two things:
+
+1.  Take in user inputs for a food establishment and,
+2.  Make a prediction by calling the food inspections API
+
+This app does not currently work, but you are going to fix that!
+
+🔄 **Tasks**
+
+-   Add the correct `inputId` to the `mock_establishment` starting on line 63.
+
+-   Run the app!
+
+### Add correct `inputId`
+
+Starting on line 63, you should see some code that looks like this:
+
+```{r}
+
+mock_establishment <- reactive({
+    tibble(facility_type = input$___,
+           risk = input$___,
+           latitude = input$___,
+           longitude = input$___,
+           v_cumsum = input$___,
+           v_cumsum_cs = input$___,
+           days_since_last_inspection = input$___)
+
+```
+
+To fill in the blanks, you'll need to find the corresponding input ID (`inputId`) in the User Interface. For example, the `inputId` for the facility type input is `facility_type` which you can see as the first argument on line 14:
+
+```{r}
+selectInput("facility_type",
+            "Facility Type:",
+            choices = c("RESTAURANT", "BAKERY", "GROCERY STORE", "COFFEE SHOP")),
+```
+
+Fill in the rest of the blanks with their corresponding `inputId` in the `app.R` file
+
+### Run the App!
+
+With the `app.R` file open, you should see a `Run App` button at the top of your screen. Click it and try interacting with the app!
+
+This is a pretty basic app, and if you are familiar with Shiny, feel free to make some cosmetic enhancements!
+
+## Activity 3 - Publish the Shiny app to Posit Connect
+
+🔄 **Tasks**
+
+-   Publish the shiny application to Posit Connect!
+
+### Publish to Posit Connect
+
+Similar to how you published a Quarto document, go ahead and publish the Shiny application you just created to Posit Connect. Here are the steps to guide you:
+
+1.  Have the `app.R` file open
+2.  Click the publishing button ![](../slides/slide_resources/publishIcon_2x.png){height="20" style="vertical-align:middle"}
+3.  Follow the pop-up window instructions to publish to Posit Connect!

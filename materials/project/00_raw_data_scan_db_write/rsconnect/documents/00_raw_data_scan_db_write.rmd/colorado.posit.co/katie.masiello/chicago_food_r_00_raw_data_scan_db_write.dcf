@@ -1,0 +1,13 @@
+name: chicago_food_r_00_raw_data_scan_db_write
+title: Chicago Food R 00_raw_data_scan_db_write
+username: katie.masiello
+account: katie.masiello
+server: colorado.posit.co
+hostUrl: https://colorado.posit.co/rsc/__api__
+appId: 17426
+bundleId: 78508
+url: https://colorado.posit.co/rsc/content/a1c5873a-1712-4b5b-bbab-56a3f02e78f6/
+when: 1692044383.00765
+lastSyncTime: 1692044383.00766
+asMultiple: FALSE
+asStatic: FALSE

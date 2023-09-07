@@ -1,1 +1,11 @@
-Add materials for your workshop in this folder. You can then remove this README, and rename this folder if you prefer.
+## `activities`
+
+Contains exercises and exploration
+
+## `slides`
+
+Contains presentation materials for the workshop
+
+## `project` 
+
+Contains the end to end project files

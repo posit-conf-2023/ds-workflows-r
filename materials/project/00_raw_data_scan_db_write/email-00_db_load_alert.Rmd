@@ -1,0 +1,19 @@
+---
+title: Email alert for issues with raw data load in database
+output: blastula::blastula_email
+---
+
+## ⚠️ There was an issue with the food inspection project raw data load. 
+
+Fewer rows were written to the database than expected.  The number of records are: 
+
+```{r, echo=FALSE}
+
+df <- tibble::tibble("Raw Data Written" = c("Food Inspections", "Business Licenses"), "Number of Rows" = c(insp_db_rowcount,bus_db_rowcount))
+
+df |> 
+  gt::gt() |> 
+  gt::fmt_number(columns = "Number of Rows",
+             use_seps = TRUE,
+             decimals = 0)
+```
