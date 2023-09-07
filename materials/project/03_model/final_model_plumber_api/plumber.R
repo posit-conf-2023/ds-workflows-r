@@ -13,7 +13,7 @@ if (FALSE) {
     library(xgboost)
 }
 b <- board_connect(auth = "envvar")
-v <- vetiver_pin_read(b, "ryan/inspections-xgboost-model")
+v <- vetiver_pin_read(b, "ryan.admin/inspections-xgboost-model")
 
 #* @plumber
 function(pr) {
