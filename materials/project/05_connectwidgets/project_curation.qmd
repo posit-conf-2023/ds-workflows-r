@@ -111,7 +111,7 @@ project_r %>%
 
 ```{r}
 project_r %>% 
-  filter(str_detect(tolower(title), "03|model")) %>%
+  filter(str_detect(tolower(title), "03|xgboost")) %>%
   filter(content_category != "pin") |> 
   arrange(title) %>%
   rsc_card()
