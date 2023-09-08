@@ -1,9 +1,4 @@
 ---
-title: "delivery"
-title-slide-attributes: 
-  data-background-color: white
-  data-background-image: _extensions/positconfslides/assets/backgrounds/content2-light.svg
-  data-background-size: contain
 format:
   positconfslides-revealjs: 
     chalkboard: true
@@ -27,19 +22,27 @@ editor:
     wrap: 72
 ---
 
-## Session Outline
+## Effective Delivery of Insights{.toc2-light}
 
--   Shiny resources
--   Shiny in Production
-    -   Goal for a light weight presentation layer
-    -   Posit Connect runtime settings
--   Managing and Monitoring your content
-    -   `connectwidgets` + Connect API
-    -   Monitor usage
+![](https://github.com/rstudio/hex-stickers/blob/main/PNG/shiny.png?raw=true){.absolute top="170" left="180" width="260"}
+![](https://pkgs.rstudio.com/connectapi/reference/figures/logo.svg){.absolute top="395" left="50" width="260"}
+![](https://rstudio.github.io/connectwidgets/reference/figures/logo.png){.absolute top="395" left="310" width="260"}
+
+
+
 
 ## Review
 
 ![](slide_resources/workflow_diagram.jpg){fig-align="center"}
+
+## Key Topics {.brackets-light}
+
+<br>
+
+- Using Shiny to deliver interactive content
+- Principles of Shiny in production
+- Managing and monitoring production content
+
 
 ## Let's talk Shiny
 
@@ -324,15 +327,24 @@ key provided.
 
 ## How will I know if people are consuming my content?
 
--   🧰 Posit Connect Server API
-    -   Reference <https://docs.posit.co/connect/api/>
-    -   Cookbook <https://docs.posit.co/connect/cookbook/>
-    -   Example reports and apps
-        <https://solutions.posit.co/operations/connect-apis/>
-    -   R package `connectapi` that is a wrapper around the API
-        <https://pkgs.rstudio.com/connectapi/>
 
-## Connect API endpoints
+:::{.fragment}
+
+<br>
+
+🧰 Usage monitoring with the Posit Connect Server API
+:::
+
+:::{.fragment}
+- Interact remotely with the Connect Server API using HTTP requests directly via:
+  - `curl` - Linux tool for making HTTP calls
+  - `httr` - R HTTP library
+  - `requests` - Python HTTP library
+- Or use [`connectapi`](https://pkgs.rstudio.com/connectapi/) R package, which provides a wrapper around HTTP requests
+
+:::
+
+## Connect Server API endpoints
 
 *Most endpoints require an API Key*, and [**results will be scoped to
 the permissions of the key**]{.fuchsia}. <br>
@@ -347,7 +359,7 @@ the permissions of the key**]{.fuchsia}. <br>
 -   Change permissions
 -   Manage content tags
 -   Manage content custom URL
--   Content usage ✨
+-   [✨ Content usage ✨]{.teal}
 :::
 
 ::: {.column width="50%"}
@@ -360,21 +372,21 @@ the permissions of the key**]{.fuchsia}. <br>
 :::
 :::
 
-## 
+## Example Content Usage Report
 
-::: center
-<h2><br>**Activity Time!**</h2>
-:::
+![](slide_resources/usage-report.png){height=800}
 
-::: {.callout-note icon="false"}
-## Activity
+{{< bi sign-turn-right-fill color=orange >}} See more examples: 
+<https://solutions.posit.co/operations/connect-apis/>
 
-👉 Open the file `materials/activities/activity-XXXX`
 
-**Objective** Create a flexdashboard for the shiny app usage
-:::
+## Connect Server API Resources
 
-```{r}
-#| echo: false
-countdown::countdown(minutes=15,seconds=0, font_size = "4em")
-```
+
+  -   Reference <https://docs.posit.co/connect/api/>
+  -   Cookbook <https://docs.posit.co/connect/cookbook/>
+  -   Example reports and apps
+      <https://solutions.posit.co/operations/connect-apis/>
+  -   R package `connectapi` that is a wrapper around the API
+      <https://pkgs.rstudio.com/connectapi/>
+      
