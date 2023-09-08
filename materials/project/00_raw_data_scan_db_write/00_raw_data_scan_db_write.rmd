@@ -16,7 +16,6 @@ editor_options:
 library(tidyverse)
 library(janitor)
 library(DBI)
-library(odbc)
 library(RPostgres)
 library(blastula)
 library(pointblank)
@@ -95,7 +94,8 @@ print(paste("ℹ️ Info: Downloading Business License data took", round(duratio
 ```{r Write-raw-data-to-database}
 
 
-# The `RPostgres` package is DBI-compliant and is built specifically for PosgreSQL DB. Performance may be faster (particularly for writing data!) than using the generic odbc package. It's perfectly reasonable to use the odbc package instead, and if we do, if we instead use the generic `odbc::odbc()` backend, the database will appear in the Connections pane. 
+# The `RPostgres` package is DBI-compliant and is built specifically for PosgreSQL DB. Performance may be faster (particularly for writing data!) than using the generic odbc package. 
+
 con <- dbConnect(RPostgres::Postgres(), 
                  host = Sys.getenv("CONF23_DB_HOST"), 
                  port = "5432", 
@@ -103,14 +103,6 @@ con <- dbConnect(RPostgres::Postgres(),
                  user = Sys.getenv("CONF23_DB_USER"), 
                  password = Sys.getenv("CONF23_DB_PASSWORD"))
 
-# con_alternative <- dbConnect(odbc::odbc(),
-#                   Driver = "postgresql",
-#                   Server = Sys.getenv("CONF23_DB_HOST"),
-#                   Port = "5432",
-#                   Database = "conf23_r",
-#                   UID = Sys.getenv("CONF23_DB_USER"),
-#                   PWD = Sys.getenv("CONF23_DB_PASSWORD"),
-#                   timeout = 10)
 
 # write inspections raw data
 if(test_mode != TRUE){

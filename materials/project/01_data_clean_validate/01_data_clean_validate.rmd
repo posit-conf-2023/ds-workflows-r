@@ -22,7 +22,6 @@ editor_options:
 library(tidyverse)
 library(janitor)
 library(DBI)
-library(odbc)
 library(RPostgres)
 library(pins)
 library(pointblank)
