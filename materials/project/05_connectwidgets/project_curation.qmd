@@ -147,7 +147,7 @@ project_r %>%
 
 ```{r}
 project_r |> 
-  filter(str_detect(title, "usage")) |> 
+  filter(str_detect(tolower(title), "usage")) |> 
   rsc_card()
 ```
 
