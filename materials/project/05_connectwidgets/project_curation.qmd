@@ -101,7 +101,8 @@ Explore the deployed items below:
 
 ```{r}
 project_r %>% 
-  filter(str_detect(title, "00|01")) %>%
+  filter(str_detect(title, "00|01|Raw Data Scan & Write|Data Clean, Validate")) %>%
+  filter(content_category != "pin") |> 
   arrange(title) %>%
   rsc_card()
 ```
@@ -110,7 +111,8 @@ project_r %>%
 
 ```{r}
 project_r %>% 
-  filter(str_detect(tolower(title), "03")) %>%
+  filter(str_detect(tolower(title), "03|model")) %>%
+  filter(content_category != "pin") |> 
   arrange(title) %>%
   rsc_card()
 ```
@@ -121,7 +123,7 @@ project_r %>%
 
 ```{r}
 project_r %>%
-  filter(str_detect(tolower(title), "pinned")) %>%
+  filter(content_category != "pin") |> 
   rsc_table()
 ```
 
@@ -129,7 +131,7 @@ project_r %>%
 
 ```{r}
 project_r %>%
-  filter(str_detect(title, "API")) %>%
+  filter(app_mode == "api") %>%
   rsc_card()
 ```
 
@@ -137,7 +139,7 @@ project_r %>%
 
 ```{r}
 project_r %>%
-  filter(str_detect(title, "app")) %>%
+  filter(app_mode == "shiny") %>%
   rsc_card()
 ```
 
