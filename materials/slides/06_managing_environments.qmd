@@ -23,13 +23,13 @@ execute:
 
 ![](https://rstudio.github.io/renv/logo.svg){.absolute top="200" left="50" width="260"} ![](slide_resources/devtestprod.png){.absolute top="300" left="310" width="260"}
 
-## Session Outline
+<!-- ## Session Outline -->
 
--   Environments management (renv, and use PPM as a repository)
--   Dev, test, prod workflows with git backed and CICD
--   hot swap urls
--   deploying content that uses a private package
--   interoperability (maybe just note in the recap)
+<!-- -   Environments management (renv, and use PPM as a repository) -->
+<!-- -   Dev, test, prod workflows with git backed and CICD -->
+<!-- -   hot swap urls -->
+<!-- -   deploying content that uses a private package -->
+<!-- -   interoperability (maybe just note in the recap) -->
 
 ## Where we are
 
@@ -171,15 +171,80 @@ Follow along with me - Getting started with `renv`
 
 ## Dev-Test-Prod
 
-Ensure your data products behave as expected and there are no surprises.
+Ensure your data products behave as expected and there are no surprises
 
 
-![](slide_resources/code-promotion.png){fig-align="center" height="620"}
+![](slide_resources/devtestprod2.png){fig-align="center" height="620"}
 
-## Dev-Test-Prod Methods
+## Dev-Test-Prod Methods // Git-backed Deployment
 
-![](slide_resources/promotion.png)
+:::{.columns}
 
-## Making code promotion easier with URL swapping
 
-![](slide_resources/content-url.png)
+:::{.column width=40%}
+![](slide_resources/gitbacked.png){height=800}
+:::
+
+:::{.column width=60% .smaller}
+
+:::{.fragment}
+1. Create manifest describing the project environment and dependencies 
+  ```{.r code-line-numbers=false}
+  # from within project directory
+  rsconnect::writeManifest() 
+  ```
+:::
+:::{.fragment}
+2. Commit `manifest.json` to git repo
+:::
+:::{.fragment}
+3. Import from Git 
+
+![](slide_resources/import-from-git.png){height=380 style="padding-left: 50px;"}
+
+Ref: <https://docs.posit.co/connect/user/git-backed/>
+:::
+
+:::
+
+:::
+
+
+## Dev-Test-Prod Methods // CI/CD Deployment
+
+:::{.columns}
+
+
+:::{.column width=40%}
+![](slide_resources/cicd){height=800}
+:::
+
+:::{.column width=60% .smaller}
+
+:::{.fragment}
+- A CI/CD pipeline can utilize:
+  - the API directly
+  - a Posit-created GitHub Action
+  - a Python (`rsconnect-python`) or R (`connectapi`) package 
+:::
+:::{.fragment}
+- See <https://solutions.posit.co/operations/deploy-methods/ci-cd/> for example CI/CD deployment scripts for:
+  - GitHub Actions
+  - GitLab CI/CD
+  - Azure Pipelines
+  - Bitbucket Pipelines
+  - Jenkins
+:::
+
+
+:::
+
+:::
+
+## More Resources
+
+- Dev/Test/Prod with Posit Team:
+<https://solutions.posit.co/operations/code-promotion/>
+- Publishing Workflows for Connect: <https://solutions.posit.co/operations/publishing-wkflow/>
+
+
