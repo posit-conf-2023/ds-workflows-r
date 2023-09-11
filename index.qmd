@@ -5,7 +5,7 @@ format:
 
 ## Welcome
 
-These are the materials for a one-day workshop on <b>Building data science workflows in R using Posit tools</b> on Sunday, 17 Sept 2023 at [posit::conf 2023](http://pos.it/conf)!
+These are the materials for a one-day workshop on <b>Building Data Science Workflows in R Using Posit Tools</b> on Sunday, 17 Sept 2023 at [posit::conf 2023](http://pos.it/conf)!
 
 In this R-focused workshop, we will discuss ways to improve your data science workflows. During the course, we will review packages for data validation, alerting, modeling, and more. We’ll use Posit’s open source and professional tools to string all the pieces together for an efficient workflow. We’ll discuss environments, managing deployed content, working with databases, and interoperability across data products.
 
