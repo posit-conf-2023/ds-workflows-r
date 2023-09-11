@@ -9,8 +9,8 @@ by Ryan Johnson and Katie Masiello
 
 :spiral_calendar: September 17, 2023\
 :alarm_clock: 09:00 - 17:00\
-:hotel: ROOM TBD\
-:writing_hand: [pos.it/conf](http://pos.it/conf)
+:hotel: Plaza A\
+:writing_hand: [https://posit-conf-2023.github.io/ds-workflows-r/](https://posit-conf-2023.github.io/ds-workflows-r/)
 
 ------------------------------------------------------------------------
 
@@ -28,7 +28,32 @@ In this R-focused workshop, we will discuss ways to improve your data science wo
 
 ## Prework
 
-ADD INFORMATION YOU WANT LEARNERS TO HAVE / STEPS THEY WANT THEM TO COMPLETE PRIOR TO THE WORKSHOP. THIS COULD BE A LINK TO A THREAD ON RSTUDIO COMMUNITY, PACKAGE INSTALL INSTRUCTIONS, HOW TO GET AN RSTUDIO.CLOUD ACCOUNT, ETC.
+This workshop requires that you bring your own laptop. 
+
+So we can hit the ground running, please view the video below before the Workshop:
+
+  👉 <https://rstudio.wistia.com/medias/uaettrtu1j>
+
+
+Written instructions for registering with Posit Connect are also below:
+
+1. Visit <https://connect.conf23workflows.training.posit.co>.
+1. Click the “Sign Up” button at the top right.
+1. Sign up with your personal email.
+1. Make your username the prefix of your personal email. 
+1. Check your email to confirm your account. The email will be from “conf23workflows@training.rstudio.com” (check your junk folder)
+
+
+We will be using Discord as our main communication method! To make the process go smoothly:
+
+- Please [sign up for an account](https://discord.com/) if you don’t already have one.
+- Make sure your [display name](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names#h_01GXPQABMYGEHGPRJJXJMPHF5C) is the one you used to register for the conference.
+- In your “About Me,” put the name of your workshop: “Data Science Workflows with Posit Tools — R Focus”
+
+
+Closer to the start of the conference, we will invite you to the posit::conf Discord server. Once you’ve accepted the invite, we will add you to the channel(s) for your conf workshop(s).
+
+If you have questions in advance of the workshop, please reach out to either Ryan (ryan@posit.co) and/or Katie (katie.masiello@posit.co).
 
 ## Schedule
 
