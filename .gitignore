@@ -10,3 +10,5 @@ materials/slides/*_files
 materials/slides/*_cache
 
 /.luarc.json
+
+/.quarto/
