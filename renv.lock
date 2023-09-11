@@ -5,6 +5,10 @@
       {
         "Name": "RSPM",
         "URL": "https://packagemanager.posit.co/cran/latest"
+      },
+      {
+        "Name": "INTERNAL",
+        "URL": "https://package-manager.conf23workflows.training.posit.co/git/latest"
       }
     ]
   },
