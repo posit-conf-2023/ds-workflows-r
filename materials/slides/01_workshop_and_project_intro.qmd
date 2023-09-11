@@ -1,7 +1,7 @@
 ---
 title: "Data Science Workflows<br> with Posit Tools"
 subtitle: "R Focus"
-author: "<b>Instructors:</b> <br> Ryan Johnson <br>Katie Masiello <br> <br><b>TAs:</b> <br>Rich Iannone<br>Julia Silge"
+author: "<b>Instructors:</b> <br> Ryan Johnson <br>Katie Masiello <br> <br><b>TAs:</b> <br>Sam Edwardes<br>Rich Iannone"
 title-slide-attributes: 
   data-background-color: white
   data-background-image: _extensions/positconfslides/assets/backgrounds/toc-light.svg
@@ -71,11 +71,11 @@ conf\@posit.co 844-448-1212
 :::
 
 ::: {.column width="25%"}
-![](https://avatars.githubusercontent.com/u/12505835?v=4){.hello-image}
+![](https://avatars.githubusercontent.com/u/18248949?v=4){.hello-image}
 
-[**Julia Silge**]{.fuchsia}
+[**Sam Edwardes**]{.fuchsia}
 
-[Software Engineer \@ Posit]{.smaller}
+[Solutions Engineer \@ Posit]{.smaller}
 :::
 
 ::: {.column width="25%"}
@@ -165,30 +165,31 @@ We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate work
 
 ## Asking Questions
 
+<!-- TODO: Add Discord info  -->
 **Discord** - 🔴 add channel here
 
 ::: columns
-::: {.column width="50%"}
-<br>
-
-👉 **Submit questions and respond to polls here**
-
-::: {.absolute style="background: #cca2b2; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="400" left="100"}
-<h3>You are always welcome to raise your hand! 🙋</h3>
-:::
-
-::: fragment
-::: {.absolute style="background: #A6CFD5; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="420" left="120"}
-<h3>Go to Discord now and tell us what you're excited about!</h3>
-:::
-:::
-:::
-
 ::: {.column width="50%"}
 <br> <br> <br>
 
 ![](slide_resources/discord-logo-blue.png){width="100%" fig-align="center"}
 :::
+::: {.column width="50%"}
+<br>
+
+👉 **Submit questions and respond to polls here**
+
+::: {.absolute style="background: #cca2b2; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="400" left="800"}
+<h3>You are always welcome to raise your hand! 🙋</h3>
+:::
+
+::: fragment
+::: {.absolute style="background: #A6CFD5; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="420" left="820"}
+<h3>Go to Discord now and tell us what you're excited about!</h3>
+:::
+:::
+:::
+
 :::
 
 ## Getting help (R Functions) {.content-light}
