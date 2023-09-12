@@ -47,6 +47,7 @@ will need to fill in!
 
 library(tidyverse)
 library(pointblank)
+library(ggforce)
 library(tidyverse)
 
 ```
@@ -59,15 +60,14 @@ us with some examples of how to use SODA:
 <https://dev.socrata.com/foundry/data.cityofchicago.org/4ijn-s7e5>.
 
 We will query the SODA API directly and download the full dataset as a
-`.csv` using `readr::read_csv()`.[^1]
+`.csv` using `readr::read_csv()`.
 
-[^1]: There is a R package called `RSocrata` to interact with SODA,
-    however, in our initial testing, the column schemas were
-    better-preserved using `readr` as opposed to using the `RSocrata`
-    package
+There is a R package called `RSocrata` to interact with SODA, however,
+in our initial testing, the column schemas were better-preserved using
+`readr` as opposed to using the `RSocrata` package.
 
-Note we are using an environment variable called SOCRATA_APP_TOKEN. This
-has been preconfigured for you for the purposes of this workshop.
+Note we are using an environment variable called **SOCRATA_APP_TOKEN**.
+This has been preconfigured for you for the purposes of this workshop.
 
 ```{r}
 #| label: Download raw inspections data from City of Chicago
