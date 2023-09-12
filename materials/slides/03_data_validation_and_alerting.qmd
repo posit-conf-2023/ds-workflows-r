@@ -25,13 +25,12 @@ execute:
 
 
 
-## Essential Questions {.brackets-light}
+## Section Agenda {.brackets-light}
 
-::: incremental
+
 -   How can I ensure this is quality data? 🤔
 -   How will I know when it's not?
 
-:::
 
 
 ## How can I ensure this is quality data?
@@ -149,7 +148,7 @@ execute:
 
 
 
-## Your Turn
+## 
 
 :::{.center}
 <h2> <br>**Activity Time!**</h2>
@@ -230,26 +229,34 @@ Activity objective: Use `pointblank` to validate data, remove non-compliant reco
 
 ## How will I know if my data has issues?
 
-:::{.columns}
+:::::{.columns}
+
 
 :::{.column width=25%}
+::::{.fragment}
 ![](slide_resources/email_option.png){height=700 style="padding-left: 25px;"}
+::::
 :::
 
-:::{.column width=18%}
+
+:::{.column width=18% .fragment}
+
+
 [{{< bi arrow-right >}}]{.largest .middle}
 :::
 
 :::{.column width=50%}
 
+::::{.fragment}
 
 ![](slide_resources/html_email.png){style="padding-top: 50px;"}
 
+::::
 
 :::
 
 
-:::
+:::::
 
 
 ::: {.fragment .absolute style="background: #F5EF94; width: 600px; height: 400px; padding: 30px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="350" right="220"}
@@ -368,7 +375,7 @@ Activity objective: Use `pointblank` to validate data, remove non-compliant reco
 - If you'd like to include a rendering of a widget (e.g., a dial or info box), use the `webshot2` package to take a capture of the widget and embed it as an image
 - If your email recipient wants more information or interactivity, direct them to a report or dashboard deployed to Connect
 
-## Your Turn 
+##  
 
 :::{.center}
 <h2> <br>**Activity Time!**</h2>

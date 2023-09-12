@@ -23,7 +23,7 @@ execute:
 <h2>Working with Databases</h2>
 ![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){.absolute top="200" left="50" width="260"} ![](slide_resources/db.png){.absolute top="200" left="310" width="260"}
 
-## Section Outline {.brackets-light}
+## Section Agenda {.brackets-light}
 
 
 -   Ad-hoc data exploration
