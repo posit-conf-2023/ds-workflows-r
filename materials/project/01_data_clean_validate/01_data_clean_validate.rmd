@@ -29,6 +29,8 @@ library(blastula)
 library(glue)
 library(gt)
 library(arrow) # we might drop this if we decide not to write the pin in arrow format
+library(orderup)
+
 
 # set TEST_MODE=TRUE to preview the alert email. Logic is written such that if TEST_MODE is any value other than TRUE (including not set), it behaves as if it is FALSE.
 test_mode <- Sys.getenv("TEST_MODE")
@@ -340,17 +342,17 @@ new_inspections |> gt() |>
   opt_interactive()
 }
 
-# TODO: Add this to a package
-food_emoji <- function(n=1) {
-  emojis <- c("🥪", "🍕", "🍲", "🥘", "🥡", "🫘", "🧆", "🍛", "🍤",
-              "🍜", "🫒", "🥓", "🥚", "🥑", "🥐", "🥔", "🥗", "🍽",
-              "🥠", "🍱", "🍳", "🥞", "🧇", "🥯", "🍩", "🍗", "🌯",
-              "☕","🧋", "🥤", "🍮", "🥧", "🧁", "🍪", "🍨", "🥟",
-              "🍣", "🍝", "🍚", "🫕", "🥙", "🫔", "🌮", "🌭", "🍟",
-              "🍔", "🥨", "🥖", "🥜") 
-  sample(emojis, n)
-  
-}
+# replaced this with `orderup` package
+# food_emoji <- function(n=1) {
+#   emojis <- c("🥪", "🍕", "🍲", "🥘", "🥡", "🫘", "🧆", "🍛", "🍤",
+#               "🍜", "🫒", "🥓", "🥚", "🥑", "🥐", "🥔", "🥗", "🍽",
+#               "🥠", "🍱", "🍳", "🥞", "🧇", "🥯", "🍩", "🍗", "🌯",
+#               "☕","🧋", "🥤", "🍮", "🥧", "🧁", "🍪", "🍨", "🥟",
+#               "🍣", "🍝", "🍚", "🫕", "🥙", "🫔", "🌮", "🌭", "🍟",
+#               "🍔", "🥨", "🥖", "🥜") 
+#   sample(emojis, n)
+#   
+# }
 
 send_summary <- if(nrow(new_inspections) > 0){TRUE}else{FALSE}
  
@@ -359,7 +361,7 @@ if(send_summary){
 summary_email <- render_connect_email(input = "email-01_data_summary.Rmd") 
 
 attach_connect_email(summary_email, subject = glue("ℹ️️Inspections Project: 
-                       {food_emoji()} {nrow(new_inspections)} records added to dataset"))
+                       {now_serving()} {nrow(new_inspections)} records added to dataset"))
 
 }else{suppress_scheduled_email()}
 

@@ -3,7 +3,7 @@ title: Email summary of new inspections added to dataset
 output: blastula::blastula_email
 ---
 
-## `r glue("{food_emoji()} {nrow(new_inspections)} records added to dataset. {food_emoji()}")`
+## `r glue("{now_serving()} {nrow(new_inspections)} records added to dataset. {now_serving()}")`
 
 A sample of the data added:
 
