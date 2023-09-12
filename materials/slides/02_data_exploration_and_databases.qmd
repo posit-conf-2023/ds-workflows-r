@@ -3,7 +3,7 @@ format:
   positconfslides-revealjs: 
     chalkboard: true
     slide-number: c/t
-    footer: "[https://conf23workflows.training.posit.co/](https://conf23workflows.training.posit.co/)"
+    footer: "[https://posit-conf-2023.github.io/ds-workflows-r/](https://posit-conf-2023.github.io/ds-workflows-r/)"
     code-copy: true
     center-title-slide: false
     code-link: true
@@ -23,14 +23,7 @@ execute:
 <h2>Working with Databases</h2>
 ![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){.absolute top="200" left="50" width="260"} ![](slide_resources/db.png){.absolute top="200" left="310" width="260"}
 
-
-## Project overview
-
-
-![](slide_resources/workflow_diagram.jpg){fig-align="center"}
-
-
-## Getting Started {.brackets-light}
+## Section Outline {.brackets-light}
 
 
 -   Ad-hoc data exploration
@@ -39,11 +32,22 @@ execute:
 
 
 
+## Project overview
 
-## What is this Data? {.content2-light}
+
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}
+
+
+
+
+## What is this Data?
 
 
 Our first introduction to `pointblank`
+
+
+
+:::{.fragment}
 
 ::: columns
 ::: {.column width="15%"}
@@ -55,8 +59,11 @@ Our first introduction to `pointblank`
 :::
 :::
 
+:::
 
+:::{.fragment}
 🧰 The `pointblank::scan_data()` function provides a HTML report of the input data to help you understand your data. 
+:::
 
 ## Sample data scan
 
@@ -101,10 +108,10 @@ countdown::countdown(minutes=7,seconds=0, font_size = "4em")
 
 :::{.incremental .smaller}
 - Database connections have 2 parts: 
-  <br>[A driver (typically installed on your system and not R-specific)]{.teal}
+  <br>[An ODBC^[📣 use ODBC drivers whenever possible. Avoid JDBC unless you like managing Java installations] driver (typically installed on your system and not R-specific)]{.teal}
   <br>[A means to interact with the driver (e.g., R package)]{.teal}
-- `odbc` is an R package that provides a generic `DBI`-compliant interface to the ODBC driver installed on your system. *This is your Swiss Army Knife for database connections* and integrates with the "Connections" Pane in the RStudio IDE
-- `RPostgres`, `RMariaDB`, `RSQLite`, and `bigrquery` are database-specific R packages that implement the drivers themselves. *They combine the two parts of a connection into one.* In many cases, they are more performant (especially in writing data) and may have more translations available for query types
+- `odbc` is an R package that provides a generic interface to the ODBC driver installed on your system. *This is your Swiss Army Knife for database connections* and integrates with the "Connections" Pane in the RStudio IDE
+- 🧰 `RPostgres`, `RMariaDB`, `RSQLite`, and `bigrquery` are database-specific R packages that implement the drivers themselves. *They combine the two parts of a connection into one.* In many cases, they are more performant (especially in writing data) and may have more translations available for query types.
 - 💡These will make the same connection
   ```r
   con <- DBI::dbConnect(RPostgres::postgres(), ...)
@@ -114,28 +121,24 @@ countdown::countdown(minutes=7,seconds=0, font_size = "4em")
 
 ## Interacting with Databases^[the single slide edition]
 
+:::{.incremental}
 
 - What tables are in a database? `DBI::dbListTables(con)`
 - Write to database with `DBI::dbWriteTable(con, "name", df)`
 - Use `dplyr` to interact with the database table in the same manner you would a local data frame
   ```{.r code-line-numbers=false}
   df <- dplyr::tbl(con, "table-name")
+  df |> filter(...) |> mutate(...) |> group_by(...) |> summarise(...)
   
   ```
-- 📣 Do as much work as possible in the database
-  ```{.r code-line-numbers=false}
-  df  |> filter(...) |> mutate(...) |> group_by(...) |> summarise(...)
-  
-  ```
-
-- Use `collect()` to bring the table into memory. Do this as late as possible to save time and resources
+- 📣 Do as much work as possible in the database. Use `dplyr::collect()` to bring the table into memory. Do this as late as possible to save time and resources
 
   ```{.r code-line-numbers=false}
   df |> ... |> collect()
   
   ```
 
-
+:::
 
 ## More on databases {.content-light}
 
@@ -196,21 +199,26 @@ Activity objective: Write production data to database, then deploy and schedule 
 
 ```{r}
 #| echo: false
-countdown::countdown(minutes=7,seconds=0)
+countdown::countdown(minutes=10,seconds=0)
 ```
 
 
 
 ## Deployment Methods to Posit Connect
 
+:::{.fragment}
+
 1. Push-button ![](slide_resources/publishIcon_2x.png){height="50" style="vertical-align:middle"} 
 2. Git-backed {{< fa brands git-alt >}}
 3. Programmatic {{< fa gears >}}
 
+:::
+:::{.fragment}
+
 📣 Push-button is good for rapid prototyping. Beyond that, you really should be using [**git-backed or programmatic deployment via CI/CD pipeline**]{.fuchsia} to keep your code in sync with your deployment. 
 
 <!-- TODO: find a place to have a git back deploy activity -->
-
+:::
 
 
 
