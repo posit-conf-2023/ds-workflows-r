@@ -301,7 +301,6 @@ readRDS("slide_resources/bus_data_preview.Rds") |> gt::gt()
 
 ## Project Overview
 
-<!-- TODO: Consider draw.io for diagram -->
 
 ![](slide_resources/ds-workflows-r.png){fig-align="center"}
 
@@ -375,6 +374,8 @@ Visit: <https://workbench.conf23workflows.training.posit.co>
 ![](slide_resources/workbench_login.png){width="100%"}
 :::
 :::
+
+<!-- TODO: Add in a slide with everyone's usernames -->
 
 ## Workbench Setup // Step 2
 
