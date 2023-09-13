@@ -34,22 +34,32 @@ Introduction
 
 <!-- TODO: Confirm locations -->
 
+🛜 WiFi credentials:
+
+-   Network: `Posit Conf 2023`
+
+-   Password: `conf2023`
+
 -   Important locations:
-    -   Bathrooms \<\>
-    -   Meditation/prayer room \<\>
-    -   Lactation room \<\>
--   Please respect buttons
--   Red lanyards
+
+    -   **Bathrooms**: There are gender-neutral bathrooms located are among the Grand Suite Bathrooms.
+    -   **Meditation/prayer room**: Grand Suite 2A and Grand Suite 2B. Open Sunday - Tuesday 7:30 a.m. - 7:00 p.m., Wednesday 8:00 a.m. - 6:00 p.m.
+    -   **Lactation room**: located in Grand Suite 1. Open Sunday - Tuesday 7:30 a.m. - 7:00 p.m., Wednesday 8:00 a.m. - 6:00 p.m.
+
+## Logistics {.content2-light}
+
+-   Participants who do not wish to be photographed have [red lanyards]{style="color:red;"}; please note everyone's lanyard colors before taking a photo and respect their choices.
+-   The Code of Conduct and COVID policies can be found at https://posit.co/code-of-conduct/. Please review them carefully. You can report Code of Conduct violations in person, by email, or by phone. Please see the policy linked above for contact information.
 
 ## Code of Conduct {.content-light}
 
-<!-- TODO: CONFIRM THIS -->
+-   Everyone who comes to learn and enjoy the experience should feel welcome at posit::conf. Posit is committed to providing a professional, friendly and safe environment for all participants at its events, regardless of gender, sexual orientation, disability, race, ethnicity, religion, national origin or other protected class.
 
--   Everyone who comes to learn and enjoy the experience should feel welcome at rstudio::conf. RStudio is committed to providing a professional, friendly and safe environment for all participants at its events, regardless of gender, sexual orientation, disability, race, ethnicity, religion, national origin or other protected class.
+-   This code of conduct outlines the expectations for all participants, including attendees, sponsors, speakers, vendors, media, exhibitors, and volunteers. Posit will actively enforce this code of conduct throughout posit::conf.
 
--   This code of conduct outlines the expectations for all participants, including attendees, sponsors, speakers, vendors, media, exhibitors, and volunteers. RStudio will actively enforce this code of conduct throughout rstudio::conf.
-
-conf\@posit.co 844-448-1212
+::: {style="text-align: center; font-size: 200%; color: #EE6331"}
+https://posit.co/code-of-conduct/
+:::
 
 ## Meet the Team!
 
@@ -116,7 +126,7 @@ conf\@posit.co 844-448-1212
 ## Agenda
 
 | Time          | Activity                                                                                            |
-|:------------------------|:-----------------------------------------------|
+|:------------------------|:----------------------------------------------|
 | 9:00 - 10:30  | Workshop Introduction (20 minutes) <br> Reading, Cleaning, Writing and Validating Data (70 minutes) |
 | 10:30 - 11:00 | *Coffee break* ☕                                                                                   |
 | 11:00 - 12:30 | Creating, Delivering, and Monitoring a model using Vetiver                                          |
@@ -166,6 +176,7 @@ We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate work
 ## Asking Questions
 
 <!-- TODO: Add Discord info  -->
+
 **Discord** - 🔴 add channel here
 
 ::: columns
@@ -174,6 +185,7 @@ We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate work
 
 ![](slide_resources/discord-logo-blue.png){width="100%" fig-align="center"}
 :::
+
 ::: {.column width="50%"}
 <br>
 
@@ -189,7 +201,6 @@ We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate work
 :::
 :::
 :::
-
 :::
 
 ## Getting help (R Functions) {.content-light}
@@ -301,7 +312,6 @@ readRDS("slide_resources/bus_data_preview.Rds") |> gt::gt()
 
 ## Project Overview
 
-
 ![](slide_resources/ds-workflows-r.png){fig-align="center"}
 
 ##  {.brackets-dark}
@@ -315,13 +325,6 @@ Get Your Environment Set Up
 ![](slide_resources/PST-overview.jpg){fig-align="center"}
 
 ## Access Your Tools
-
-<!-- TODO: update this -->
-
-🛜 WiFi credentials:
-
--   Network: TBD
--   Password: TBD
 
 [Visit the workshop tools landing page <https://conf23workflows.training.posit.co> to access:]{.large}
 
@@ -367,7 +370,7 @@ Visit: <https://workbench.conf23workflows.training.posit.co>
 -   Log in with the prefix of the email that you used to sign up for this workshop. <br><br>For example:
     -   email: `edwardes.s@gmail.com`
     -   username: `edwardes.s`
--   We will provide you with your password.
+-   Password = `password`
 :::
 
 ::: {.column width="50%"}
@@ -393,6 +396,26 @@ Visit: <https://workbench.conf23workflows.training.posit.co>
 ![](slide_resources/workbench_newsession.png){fig-align="center"}
 :::
 :::
+
+## Project Navigation
+
+📁 `materials` : Everything you need for this workshop is in here!
+
+<br>
+
+-   📁 `materials/activities` : Contains interactive exercises that we/you will complete during the workshop.
+
+-   📁 `materials/slides` : Quarto slides for the workshop, broken up by section.
+
+-   📁 `materials/project` : Source material for the Food Inspections Project.
+
+## Saving your work 💾 {.content-light}
+
+-   All source material can be found on the GitHub page: `https://github.com/posit-conf-2023/ds-workflows-r`
+-   The environment we're working on will stay on for a few days after conf...but that's it!
+-   If you would like to save your work, we recommend:
+    -   Exporting any source code to your local machine.
+    -   Linking the project to a personal GitHub Repo. Information for how to do this can be found [here](https://github.com/posit-conf-2023/ds-workflows-r).
 
 ##  {.brackets-dark}
 
