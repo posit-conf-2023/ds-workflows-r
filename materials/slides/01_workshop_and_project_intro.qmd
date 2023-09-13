@@ -49,7 +49,7 @@ Introduction
 ## Logistics {.content2-light}
 
 -   Participants who do not wish to be photographed have [red lanyards]{style="color:red;"}; please note everyone's lanyard colors before taking a photo and respect their choices.
--   The Code of Conduct and COVID policies can be found at https://posit.co/code-of-conduct/. Please review them carefully. You can report Code of Conduct violations in person, by email, or by phone. Please see the policy linked above for contact information.
+-   The Code of Conduct and COVID policies can be found at <https://posit.co/code-of-conduct/>. Please review them carefully. You can report Code of Conduct violations in person, by email, or by phone. Please see the policy linked above for contact information.
 
 ## Code of Conduct {.content-light}
 
@@ -212,14 +212,15 @@ Functions are the 🍞 and 🧈 of R programming!
 ::: fragment
 If you want to access any function's help page:
 
-```{r}
-#| eval: false
-
+```{.r code-line-numbers=false}
 # Method 1
 help(function_name_here)
 
 # Method 2
 ?function_name_here
+
+# Method 3
+# Highlight the function and press F1 🤯
 ```
 :::
 
