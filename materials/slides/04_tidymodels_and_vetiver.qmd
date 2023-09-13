@@ -189,13 +189,13 @@ model_fit <- parsnip::fit(model_wflow, your-data)
 ::: {.callout-note icon="false"}
 ## Activity
 
-👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
+👉 Open the file `materials/activities/activity-05_TidymodelsVetiver.qmd`
 
-**Complete Activity 1 only!**
+**Complete Task 1 only!**
 :::
 
-::: callout-tip
-{{< bi sign-turn-right-fill color=orange >}} Want to learn more about Tidymodels? Check out the Tidymodels [Get Started](https://www.tidymodels.org/start/) page!
+::: callout-important
+We will be using the `diamonds` dataset for this activity!
 :::
 
 ## We have a model...now what 🤷 ?
@@ -242,9 +242,9 @@ We have two questions:
 ::: {.callout-note icon="false"}
 ## Activity
 
-👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
+👉 Open the file `materials/activities/activity-05_TidymodelsVetiver.qmd`
 
-**Complete Activity 2 only!**
+**Complete Task 2 only!**
 :::
 
 ## 🧰 Plumber
@@ -264,9 +264,9 @@ We have two questions:
 ::: {.callout-note icon="false"}
 ## Activity
 
-👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
+👉 Open the file `materials/activities/activity-05_TidymodelsVetiver.qmd`
 
-**Complete Activity 3-4 only!**
+**Complete Tasks 3 & 4 only!**
 :::
 
 ## Version and Monitor your models
@@ -283,9 +283,9 @@ We have two questions:
 ::: {.callout-note icon="false"}
 ## Activity
 
-👉 Open the file `materials/activities/activity-04_TidymodelsVetiver.qmd`
+👉 Open the file `materials/activities/activity-05_TidymodelsVetiver.qmd`
 
-**Complete Activities 5**
+**Complete Task 5**
 :::
 :::
 
@@ -299,7 +299,7 @@ Prior to this workshop:
 
     -   {{< bi sign-turn-right-fill color=orange >}} How to run background/workbench jobs for long running analyses!
 
-        -   `materials/activities/activity-05_jobs.qmd`
+        -   `materials/activities/activity-06_jobs.qmd`
 
 <br>
 

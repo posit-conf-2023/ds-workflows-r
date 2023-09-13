@@ -20,7 +20,7 @@ library(tidyverse)
 library(vetiver)
 ```
 
-## Activity 1 - Review Food Inspections API
+## Task 1 - Review Food Inspections API
 
 In a moment, we will open up a Shiny application that will make interactive calls to the [Food Inspections API](https://connect.conf23workflows.training.posit.co/food-inspections-api/). Before we do that, let's review how to call the food inspections API by defining an endpoint, creating "new" data, and submitting a query to the API.
 
@@ -64,7 +64,7 @@ Simulate a food establishment. Here is some example information regarding the va
 -   `days_since_last_inspection`: number (example: 200)
 
 ```{r}
-# Create mock data as a tibble. Fill in the blanks.
+# Create mock data as a tibble. Fill in the blanks using the example values above as guidance.
 mock_establishment <- tibble(facility_type = "___",
                              risk = ___,
                              latitude = ___,
@@ -81,9 +81,9 @@ Query the API using mock data:
 predict(endpoint, mock_establishment)$.pred_FAIL
 ```
 
-## Activity 2 - Create the Shiny App
+## Task 2 - Create the Shiny App
 
-Navigate to the `ds-workflows-r/materials/activities/activity-06_shiny/` directory, and open the file called `app.R`.
+Navigate to the `ds-workflows-r/materials/activities/activity-07_shiny/` directory, and open the file called `app.R`.
 
 This application does two things:
 
@@ -131,7 +131,7 @@ With the `app.R` file open, you should see a `Run App` button at the top of your
 
 This is a pretty basic app, and if you are familiar with Shiny, feel free to make some cosmetic enhancements!
 
-## Activity 3 - Publish the Shiny app to Posit Connect
+## Task 3 - Publish the Shiny app to Posit Connect
 
 🔄 **Tasks**
 

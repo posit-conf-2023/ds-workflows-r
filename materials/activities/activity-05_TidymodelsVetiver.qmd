@@ -19,6 +19,8 @@ editor: visual
 
 ## Setup
 
+Run the code cell below (click the green play button in the top right corner) to ensure all of the packages are loaded in our environment.
+
 ```{r}
 #| label: load-packages
 
@@ -34,7 +36,7 @@ tidymodels::tidymodels_prefer()
 
 ## Goals
 
-In this notebook, you will use get practice:
+In this notebook, you will get practice:
 
 -   Creating a simple machine learning model using [tidymodels](https://www.tidymodels.org/).
 
@@ -44,7 +46,7 @@ In this notebook, you will use get practice:
 
 ✏️ There will be placeholders (e.g., `____`) in the code cells below that you will need to fill in!
 
-## Activity 1 - Create a tidymodel
+## Task 1 - Create a tidymodel
 
 [Tidymodels](https://www.tidymodels.org/) is a collection of R packages for modeling and machine learning using [tidyverse](https://www.tidyverse.org/) principles. While this workshop is **not** a modeling workshop, to demonstrate the utility of the Vetiver, we need to create a model. Let's use the `diamonds` dataset to create a linear regression model.
 
@@ -60,6 +62,8 @@ For this activity, we will train and fit the model on most of the diamonds datas
 
 ```{r}
 # Use the space below to explore the diamonds dataset
+# Try functions like glimpse() and str()
+
 
 ```
 
@@ -109,7 +113,7 @@ model_fit
 
 🛑 Stop here and place the "I'm good" sticky note on your laptop!
 
-## Activity 2 - Create and Deploy a Vetiver model
+## Task 2 - Create and Deploy a Vetiver model
 
 Creating a model is an exciting step in many data science workflows. However, sharing the model with others, or integrating it with other steps in your workflow can be challenging. Thankfully, Vetiver makes this super easy. In the following activity, you will create a Vetiver model and then deploy it to Posit Connect.
 
@@ -134,7 +138,7 @@ In the code chunk below, we will take the Vetiver model we just created (`v`) an
 In the cell below, we'll register Posit Connect as our board. Do not edit this cell, just click the green play button to run it!
 
 ```{r}
-# Register Posit Connect (do not edit)
+# Register Posit Connect. Do not edit; just run!
 connect_board <- pins::board_connect()
 ```
 
@@ -151,7 +155,7 @@ Go to Posit Connect ([connect.conf23workflows.training.posit.co](https://connect
 
 🛑 Stop here and place the "I'm good" sticky note on your laptop!
 
-## Assignment 3 - Serve model as a Plumber API
+## Task 3 - Serve model as a Plumber API
 
 APIs are a great way for users, applications, or other systems to interact with your model. Vetiver leverages [Plumber](https://www.rplumber.io/) which is used to create API with only R code! Let's create an API here within Posit Workbench, and then deploy it to Posit Connect.
 
@@ -190,7 +194,7 @@ Navigate to your API now running on Posit Connect and give it a test run! It's a
 
 👇 Continue on to assignment 4!
 
-## Assignment 4 - Interact with your Model
+## Task 4 - Interact with your Model
 
 Now that the model is being served as a Plumber API and hosted on Posit Connect, we can use the Vetiver package to easily interact with the API using R code!
 
@@ -241,7 +245,7 @@ If you'd like to learn more about creating API keys on Posit Connect, check out 
 
 🛑 Stop here and place the "I'm good" sticky note on your laptop!
 
-## Activity 5 - Version and monitor you models
+## Task 5 - Version and monitor you models
 
 Creating a model is an iterative process, and chances are you'll create multiple versions of your model along the way. You may even create a completely different model to address the same question. How then can you keep track of all these versions, and ensure that you're always using the best model for the job? Vetiver to the rescue 🦸!
 
