@@ -176,6 +176,25 @@ Ensure your data products behave as expected and there are no surprises
 
 ![](slide_resources/devtestprod2.png){fig-align="center" height="620"}
 
+
+## Deployment Methods to Posit Connect
+
+:::{.fragment}
+
+1. Push-button ![](slide_resources/publishIcon_2x.png){height="50" style="vertical-align:middle"} 
+2. Git-backed {{< fa brands git-alt >}}
+3. Programmatic {{< fa gears >}}
+
+:::
+:::{.fragment}
+
+📣 Push-button is good for rapid prototyping. Beyond that, you really should be using [**git-backed or programmatic deployment via CI/CD pipeline**]{.fuchsia} to keep your code in sync with your deployment. 
+
+<!-- TODO: find a place to have a git back deploy activity -->
+:::
+
+
+
 ## Dev-Test-Prod Methods // Git-backed Deployment
 
 :::{.columns}
