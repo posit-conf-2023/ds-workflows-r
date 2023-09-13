@@ -26,9 +26,13 @@ execute:
 <!-- ## Session Outline -->
 
 <!-- -   Environments management (renv, and use PPM as a repository) -->
+
 <!-- -   Dev, test, prod workflows with git backed and CICD -->
+
 <!-- -   hot swap urls -->
+
 <!-- -   deploying content that uses a private package -->
+
 <!-- -   interoperability (maybe just note in the recap) -->
 
 ## Where we are
@@ -173,78 +177,70 @@ Follow along with me - Getting started with `renv`
 
 Ensure your data products behave as expected and there are no surprises
 
-
 ![](slide_resources/devtestprod2.png){fig-align="center" height="620"}
 
 ## Dev-Test-Prod Methods // Git-backed Deployment
 
-:::{.columns}
-
-
-:::{.column width=40%}
-![](slide_resources/gitbacked.png){height=800}
+::: columns
+::: {.column width="40%"}
+![](slide_resources/gitbacked.png){height="800"}
 :::
 
-:::{.column width=60% .smaller}
+::: {.column .smaller width="60%"}
+::: fragment
+1.  Create manifest describing the project environment and dependencies
 
-:::{.fragment}
-1. Create manifest describing the project environment and dependencies 
-  ```{.r code-line-numbers=false}
-  # from within project directory
-  rsconnect::writeManifest() 
-  ```
+``` {.r code-line-numbers="false"}
+# from within project directory
+rsconnect::writeManifest() 
+```
 :::
-:::{.fragment}
-2. Commit `manifest.json` to git repo
-:::
-:::{.fragment}
-3. Import from Git 
 
-![](slide_resources/import-from-git.png){height=380 style="padding-left: 50px;"}
+::: fragment
+2.  Commit `manifest.json` to git repo
+:::
+
+::: fragment
+3.  Import from Git
+
+![](slide_resources/import-from-git.png){height="380" style="padding-left: 50px;"}
 
 Ref: <https://docs.posit.co/connect/user/git-backed/>
 :::
-
 :::
-
 :::
-
 
 ## Dev-Test-Prod Methods // CI/CD Deployment
 
-:::{.columns}
-
-
-:::{.column width=40%}
-![](slide_resources/cicd){height=800}
+::: columns
+::: {.column width="40%"}
+![](slide_resources/cicd){height="800"}
 :::
 
-:::{.column width=60% .smaller}
-
-:::{.fragment}
-- A CI/CD pipeline can utilize:
-  - the API directly
-  - a Posit-created GitHub Action
-  - a Python (`rsconnect-python`) or R (`connectapi`) package 
-:::
-:::{.fragment}
-- See <https://solutions.posit.co/operations/deploy-methods/ci-cd/> for example CI/CD deployment scripts for:
-  - GitHub Actions
-  - GitLab CI/CD
-  - Azure Pipelines
-  - Bitbucket Pipelines
-  - Jenkins
+::: {.column .smaller width="60%"}
+::: fragment
+-   A CI/CD pipeline can utilize:
+    -   the API directly
+    -   a Posit-created GitHub Action
+    -   a Python (`rsconnect-python`) or R (`connectapi`) package
 :::
 
-
+::: fragment
+-   See <https://solutions.posit.co/operations/deploy-methods/ci-cd/> for example CI/CD deployment scripts for:
+    -   GitHub Actions
+    -   GitLab CI/CD
+    -   Azure Pipelines
+    -   Bitbucket Pipelines
+    -   Jenkins
 :::
-
+:::
 :::
 
 ## More Resources
 
-- Dev/Test/Prod with Posit Team:
-<https://solutions.posit.co/operations/code-promotion/>
-- Publishing Workflows for Connect: <https://solutions.posit.co/operations/publishing-wkflow/>
+-   Dev/Test/Prod with Posit Team: <https://solutions.posit.co/operations/code-promotion/>
+-   Publishing Workflows for Connect: <https://solutions.posit.co/operations/publishing-wkflow/>
 
+## Workshop Feedback {.content2-light}
 
+Please go to [pos.it/conf-workshop-survey](pos.it/conf-workshop-survey). Your feedback is crucial! Data from the survey informs curriculum and format decisions for future conf workshops, and we really appreciate you taking the time to provide it.
