@@ -33,23 +33,31 @@ Introduction
 ## Logistics {.content2-light}
 
 <!-- TODO: Confirm locations -->
+🛜 WiFi credentials:
+
+-   Network: `Posit Conf 2023`
+-   Password: `conf2023`
 
 -   Important locations:
-    -   Bathrooms \<\>
-    -   Meditation/prayer room \<\>
-    -   Lactation room \<\>
--   Please respect buttons
--   Red lanyards
+    -   **Bathrooms**: There are gender-neutral bathrooms located are among the Grand Suite Bathrooms.
+    -   **Meditation/prayer room**: Grand Suite 2A and Grand Suite 2B. Open Sunday - Tuesday 7:30 a.m. - 7:00 p.m., Wednesday 8:00 a.m. - 6:00 p.m.
+    -   **Lactation room**: located in Grand Suite 1. Open Sunday - Tuesday 7:30 a.m. - 7:00 p.m., Wednesday 8:00 a.m. - 6:00 p.m.
+    
+## Logistics {.content2-light}
+- Participants who do not wish to be photographed have <span style="color:red;">red lanyards</span>; please note everyone's lanyard colors before taking a photo and respect their choices.
+- The Code of Conduct and COVID policies can be found at https://posit.co/code-of-conduct/. Please review them carefully. You can report Code of Conduct violations in person, by email, or by phone. Please see the policy linked above for contact information.
+
 
 ## Code of Conduct {.content-light}
 
-<!-- TODO: CONFIRM THIS -->
+-   Everyone who comes to learn and enjoy the experience should feel welcome at posit::conf. Posit is committed to providing a professional, friendly and safe environment for all participants at its events, regardless of gender, sexual orientation, disability, race, ethnicity, religion, national origin or other protected class.
 
--   Everyone who comes to learn and enjoy the experience should feel welcome at rstudio::conf. RStudio is committed to providing a professional, friendly and safe environment for all participants at its events, regardless of gender, sexual orientation, disability, race, ethnicity, religion, national origin or other protected class.
+-   This code of conduct outlines the expectations for all participants, including attendees, sponsors, speakers, vendors, media, exhibitors, and volunteers. Posit will actively enforce this code of conduct throughout posit::conf.
 
--   This code of conduct outlines the expectations for all participants, including attendees, sponsors, speakers, vendors, media, exhibitors, and volunteers. RStudio will actively enforce this code of conduct throughout rstudio::conf.
+::: {style="text-align: center; font-size: 200%; color: #EE6331"}
+https://posit.co/code-of-conduct/
+:::
 
-conf\@posit.co 844-448-1212
 
 ## Meet the Team!
 
@@ -315,13 +323,6 @@ Get Your Environment Set Up
 ![](slide_resources/PST-overview.jpg){fig-align="center"}
 
 ## Access Your Tools
-
-<!-- TODO: update this -->
-
-🛜 WiFi credentials:
-
--   Network: TBD
--   Password: TBD
 
 [Visit the workshop tools landing page <https://conf23workflows.training.posit.co> to access:]{.large}
 
