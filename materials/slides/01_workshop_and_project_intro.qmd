@@ -397,7 +397,19 @@ Visit: <https://workbench.conf23workflows.training.posit.co>
 :::
 :::
 
-## Saving your work {.content-light}
+## Project Navigation
+
+📁 `materials` : Everything you need for this workshop is in here!
+
+<br>
+
+-   📁 `materials/activities` : Contains interactive exercises that we/you will complete during the workshop.
+
+-   📁 `materials/slides` : Quarto slides for the workshop, broken up by section.
+
+-   📁 `materials/project` : Source material for the Food Inspections Project.
+
+## Saving your work 💾 {.content-light}
 
 -   All source material can be found on the GitHub page: `https://github.com/posit-conf-2023/ds-workflows-r`
 -   The environment we're working on will stay on for a few days after conf...but that's it!
