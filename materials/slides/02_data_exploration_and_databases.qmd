@@ -89,14 +89,6 @@ Activity objective: explore our Chicago Food Inspections data to get familiar wi
 :::
 
 
-
-```{r}
-#| echo: false
-countdown::countdown(minutes=7,seconds=0, font_size = "4em")
-```
-
-
-
  
 ## Where should I put the data?
 
@@ -104,34 +96,34 @@ countdown::countdown(minutes=7,seconds=0, font_size = "4em")
 📣 Production data belongs in a database.
 :::
 
-## Database Connection Essentials^[the single slide edition]
+## Database Connection Essentials
 
-:::{.incremental .smaller}
-- Database connections have 2 parts: 
-  <br>[An ODBC^[📣 use ODBC drivers whenever possible. Avoid JDBC unless you like managing Java installations] driver (typically installed on your system and not R-specific)]{.teal}
-  <br>[A means to interact with the driver (e.g., R package)]{.teal}
-- `odbc` is an R package that provides a generic interface to the ODBC driver installed on your system. *This is your Swiss Army Knife for database connections* and integrates with the "Connections" Pane in the RStudio IDE
-- 🧰 `RPostgres`, `RMariaDB`, `RSQLite`, and `bigrquery` are database-specific R packages that implement the drivers themselves. *They combine the two parts of a connection into one.* In many cases, they are more performant (especially in writing data) and may have more translations available for query types.
-- 💡These will make the same connection
-  ```r
-  con <- DBI::dbConnect(RPostgres::postgres(), ...)
-  con <- DBI::dbConnect(odbc::odbc(), driver = “Postgres”, ...)
-  ```
+:::{.smaller .incremental}
+- Use `DBI` to make a connection with `DBI::dbConnect()`
+- The first argument to `DBI` is your DBI-compliant R package
+  a. Best case: one of the DBI-compliant db-specific packages 
+  b. Alternative: `odbc::odbc()` + an ODBC driver installed on your system
+- 📣 When possible, use a database-specific R package (e.g., `RPostgres`, `RMariaDB`, `RSQLite`, `bigrquery`, etc.) instead of `odbc` + a driver. In many cases, they are more performant (especially in writing data) and may have more translations available for query types.
 :::
 
-## Interacting with Databases^[the single slide edition]
+
+![](slide_resources/con_sans_odbc.png){.absolute bottom="25" left="30" width="47%" .fragment}
+![](slide_resources/con_w_odbc.png){.absolute bottom="25" right="30" width="47%" .fragment}
+
+
+## Interacting with Databases
 
 :::{.incremental}
 
 - What tables are in a database? `DBI::dbListTables(con)`
-- Write to database with `DBI::dbWriteTable(con, "name", df)`
 - Use `dplyr` to interact with the database table in the same manner you would a local data frame
   ```{.r code-line-numbers=false}
-  df <- dplyr::tbl(con, "table-name")
+  df <- dplyr::tbl(con, "my_table")
   df |> filter(...) |> mutate(...) |> group_by(...) |> summarise(...)
   
   ```
-- 📣 Do as much work as possible in the database. Use `dplyr::collect()` to bring the table into memory. Do this as late as possible to save time and resources
+- 📣 Do as much work as possible in the database to save time and resources before bringing the table into local memory. 
+- Use `dplyr::collect()` to bring the table into memory. Try to use `collect` as late as possible in your queries / transformations
 
   ```{.r code-line-numbers=false}
   df |> ... |> collect()
@@ -195,34 +187,12 @@ Activity objective: Write production data to database, then deploy and schedule 
 
 :::
 
+##  {.brackets-dark}
+
+::: section-title-dark
 
 
-```{r}
-#| echo: false
-countdown::countdown(minutes=10,seconds=0)
-```
-
-
-
-## Deployment Methods to Posit Connect
-
-:::{.fragment}
-
-1. Push-button ![](slide_resources/publishIcon_2x.png){height="50" style="vertical-align:middle"} 
-2. Git-backed {{< fa brands git-alt >}}
-3. Programmatic {{< fa gears >}}
-
-:::
-:::{.fragment}
-
-📣 Push-button is good for rapid prototyping. Beyond that, you really should be using [**git-backed or programmatic deployment via CI/CD pipeline**]{.fuchsia} to keep your code in sync with your deployment. 
-
-<!-- TODO: find a place to have a git back deploy activity -->
 :::
 
 
-
-## Review
-
-![](slide_resources/workflow_diagram.jpg){fig-align="center"}
 

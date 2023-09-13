@@ -164,7 +164,7 @@ for this data.
 ```{r}
 #| label: Data scan on inspections_raw
 
-scan <- pointblank::scan_data(____, sections = "____")
+scan <- pointblank::scan_data(inspections_raw, sections = "OVMS")
 scan
 
 ```
