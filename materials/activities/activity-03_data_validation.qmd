@@ -8,6 +8,7 @@ editor_options:
   markdown:
     wrap: 72
     canonical: true
+  chunk_output_type: console
 execute: 
   eval: false
 ---
@@ -19,8 +20,6 @@ The goals of this activity are to:
 -   Use the `pointblank` package to perform data validations
 
 -   Define thresholds in data validation to be used for alerting
-
--   Create an informant data dictionary
 
 ✏️ There will be placeholders (`____`) in the code cells below that you
 will need to fill in!
@@ -34,6 +33,7 @@ will need to fill in!
 
 library(tidyverse)
 library(pointblank)
+library(pins)
 
 ```
 
@@ -43,7 +43,7 @@ We are going to start with a data set called `inspections_filtered`.
 This data is an extract from the original `inspections_raw` data set,
 which has been filtered to only include records of interest.
 Specifically, it only includes inspection records that were marked as
-"Pass", "Fail", or "Pass w/ Conditions" from the following Facility
+"Pass," "Fail," or "Pass w/ Conditions" from the following Facility
 Types:
 
 \- Restaurants
@@ -58,31 +58,13 @@ Types:
 
 This data has been saved for you as a pin.
 
-::: callout-note
-## [pins](https://pins.rstudio.com/) is a package for R and Python that makes it easy to share objects (e.g., data frames, models) across projects and team members.
-:::
-
-![](https://pins.rstudio.com/logo.png){fig-align="center" width="212"}
-
-📌 Objects in R and Python can be "pinned" to a "board" so that they are
-easily shared
-
-📌 The board is like a virtual corkboard, your object is pinned with a
-virtual thumbtack
-
-📣 Pin intermediate data and objects, not your source of truth. Pins are
-not a substitute for a database
-
-📌 When the board is Posit Connect, the same access controls for content
-can be applied
-
 📌 We will talk more about pins during the Modeling section of this
 workshop!
 
 ```{r}
 #| label: read data from pin
 
-# Define the virtual corkboard. Do not add any arguments to this code; run as-is.
+# Define the board (i.e., virtual corkboard). Do not add any arguments to this code; run as-is.
 board <- pins::board_connect()
 
 # Read the existing pin with the data we'll use for this exercise.
@@ -104,8 +86,6 @@ dataset
 -   define validations
 -   interrogate the table
 
-✅ Solution
-
 The first step in the `pointblank` workflow is to create an **agent.**
 
 ```{r}
@@ -119,25 +99,33 @@ On its own, the agent is not very informative. It's waiting for
 validations to be defined and an interrogation action to be performed.
 
 Now we define our **data validation functions**. A few have been started
-for you as examples. Create your own and explore! Refer to the package
-documentation for the validation function reference:
+for you as examples. It's up to you to fill in the suggested
+validations. Refer to the package documentation for the validation
+function reference:
 <https://rstudio.github.io/pointblank/reference/index.html#validation-expectation-and-test-functions>
 
 ```{r}
 #| label: define validations for inspections_filtered
 
-agent <- agent |> 
-  # verify inspection ID is between two arbitrary numbers so we can see some failed records
-  col_vals_between(columns = inspection_id, 50000, 1000000, 
-                   label = "Is the Inspection ID a valid entry?") |> 
-  # verify license number is greater than 1000
-  col_vals_gt(columns = license_number, 1000) |> 
+agent <- create_agent(inspections_filtered) |> 
+  # verify license number is not NULL or NA
+  col_vals_not_null(columns = license_number) |> 
+  # verify license number is greater than 2000
+  col_vals_gt(columns = license_number, 2000) |> 
   # verify inspection date is valid
   col_vals_lte(columns = inspection_date, today(),
                label = "Is inspection date in the past?") |> 
-  # Now add your own!
+  # Now add the following:
+  # verify that address, latitude, and/or longitude are not null/NA
+  # (hint: use `vars(x,y,z)` to apply the validation to multiple columns)
   ____ |> 
-  ____
+  # verify that the values in inspection ID are distinct 
+  ____ |> 
+  # verify the latitude is within the bounds of 41.5001 and 42.3772
+  # and the longitude is within the bounds of -88.2959 and -87.316
+  ____ |> 
+  ____ |> 
+
 
 agent
 
@@ -159,20 +147,21 @@ Explore the validation report. Can you:
 2.  Identify how many rows failed each validation?
 3.  View the CSV extracts of failed data?
 
+Change the parameters of your validations to trigger more failures just
+to see the consequence.
+
 ## Task 2 - Add Action Levels
 
 🔄 Task
 
-Iterate on your agent created for `small_table` and add action levels.
-Action levels behave like tags. You can decide what threshold you want
-to put for `notify`, `warn`, and `stop`. At a minimum, the tag will
-provide a visual indicator of threshold exceedance in the validation
-table. You can also use these tags post-interrogation to take actions.
-
-✅ Solution
+Iterate on your agent created above to add action levels. Action levels
+behave like tags. You can decide what threshold you want to put for
+`notify`, `warn`, and `stop`. At a minimum, the tag will provide a
+visual indicator of threshold exceedance in the validation table. You
+can also use these tags post-interrogation to take actions.
 
 The action levels can be set as an **integer**, representing the
-threshold number of failing units , or a **fraction**, representing the
+threshold number of failing units, or a **fraction**, representing the
 fraction of failing units.
 
 Use
@@ -183,37 +172,41 @@ the interrogation to see the output. Some samples have been provided.
 ```{r}
 #| label: validation of inspections_filtered with action levels
 
-agent_with_actions <- create_agent(inspections_filtered) |> 
-  # verify inspection ID is between two arbitrary numbers so we can see some failed records
-  col_vals_between(columns = inspection_id, 50000, 1000000, 
-                   label = "Is the Inspection ID a valid entry?",
-                   actions = action_levels(warn_at = 0.1, stop_at = 0.3)) |> 
-  # verify license number is greater than 1000
-  col_vals_gt(columns = license_number, 1000,
-              actions = action_levels(warn_at = 0.015)) |> 
+agent <- create_agent(inspections_filtered) |> 
+  # verify license number is not NULL or NA
+  col_vals_not_null(columns = license_number,
+                    actions = action_levels(warn_at = 0.2, stop_at = 0.3)) |> 
+  # verify license number is greater than 2000
+  col_vals_gt(columns = license_number, 2000,
+              actions = action_levels(warn_at = 0.005)) |> 
   # verify inspection date is valid
   col_vals_lte(columns = inspection_date, today(),
                label = "Is inspection date in the past?",
                actions = action_levels(notify_at = 0.10)) |> 
-  # Now add your own using the validations you defined above!
+  # Paste in your added validations from above and some action levels
+  # verify that address, latitude, and/or longitude are not null/NA
+  # (hint: use `vars(x,y,z)` to apply the validation to multiple columns)
+  ____ |> 
+  # verify that the values in inspection ID are distinct 
+  ____ |> 
+  # verify the latitude is within the bounds of 41.5001 and 42.3772
+  # and the longitude is within the bounds of -88.2959 and -87.316
   ____ |> 
   ____ |> 
   
   interrogate()
 
-agent_with_actions
+agent
 
 ```
 
-## Task 3 - Remove failing data from the dataset
+## Task 3 - Remove failing data from the data set
 
 🔄 Task
 
 Pointblank has identified all of the rows of `inspections_filtered` that
 passed and failed validation. Now remove those that failed so the data
 that is passed downstream to our modeling step is squeaky clean.
-
-✅ Solution
 
 Pointblank provides a number of [post-interrogation functions](#0) to
 work with intel gathered from the validation. For this task, we will
@@ -226,79 +219,62 @@ work with intel gathered from the validation. For this task, we will
 
 # Passed data
 inspections_validated <- get_sundered_data(agent = ____,
-                                           type = ____)
+                                           type = "____")
 
 # Failed data
 inspections_failed_validation <- get_sundered_data(agent = ____,
-                                        type = ____)
+                                        type = "____")
 
 ```
 
-## Task 4 - Provide a data dictionary (aka Informant) to explain the data
+## Task 4 - Post-interrogation logicals
 
-🔄 Task
+Pointblank interrogation provides multiple layers of information about
+our data. We can take advantage of this with logical TRUE / FALSE
+statements that drive downstream tasks or effects.
 
-Data should never be used blindly. Proper documentation is essential.
-Pointblank can generate an `informant` table (OR or data dictionary)
-that can provide both static and dynamically-rendered details about your
-data.
+-   Use `pointblank::all_passed()` to determine if all validation steps
+    passed
 
-Create a data dictionary for `inspections_validated`.
-
-✅ Solution
-
-Table information can be synthesized in an information management
-workflow, giving us a snapshot of a data table we care to collect
-information on. The pointblank informant is fed a series of `info_*()`
-functions to define bits of information about a table. This info text
-can pertain to individual columns, the table as a whole, and whatever
-additional information makes sense for your organization. We can even
-glean little snippets of information (like column stats or sample
-values) from the target table with `info_snippet()` and the `snip_*()`
-functions and mix them into the data dictionary wherever they're needed.
-
-First let's see the bare bones informant table that `pointblank` can
-create.
+-   Use `pointblank::get_agent_x_list` to determine if any warnings were
+    set
 
 ```{r}
-#| label: basic informant for inspections_validated
+#| label: All validations passed?
 
-create_informant(
-  tbl = inspections_validated
-)
+# Did all validations pass?
+pointblank::____
+
 
 ```
 
-The bare table already gives a summary of the table size, shape, and
-column schema. But Now let's add to this with some `info_*()` functions
-to make it more useful. Reference the Informative Functions section of
-the `pointblank` documentation:
-<https://rstudio.github.io/pointblank/reference/index.html#information-functions>.
-A few sections have been provided as examples. Notice that markdown
-syntax is supported!
+A broad all passed / failed for the entire validation plan might not
+provide enough granularity for a downstream task. We can drill into more
+details about each step of the validation and the results using the
+agent "x_list".
+
+First we will see what the x_list contains.
 
 ```{r}
-#| label: create data dictionary 
+#| label: get agent x list
 
-create_informant(
-  tbl = inspections_validated) |> 
-  info_tabular(
-    description = "____"
-    ) |> 
-  info_section(
-    section_name = "further information",
-    `source` = "Data from City of Chicago, <https://www.cityofchicago.org>",
-    `🔄 updates` = 
-      "Original data source updated every *Friday*. This table last updated {Sys.Date()}.") |> 
-  info_columns(
-    columns = inspection_date,
-    `Info:` = "The date of the **inspection.**") |>
-  # Add your own information to make this table more meaningful.
-  ____ |>
-  # Using `incorporate` will run any calculations defined within the table
-  incorporate()
+xlist <- pointblank::get_agent_x_list(agent)
 
+xlist
 
 ```
 
-<!--# TODO: Question for Ryan- do you want them to pin_write the validated data for the experience here?   -->
+The output is like a gold mine! The resulting list includes the pass /
+fail statistics (`$n_passed`, `$n_failed`, `$f_passed`, `$f_failed`) and
+what we are after -- the validations with warnings. Let's take a look.
+
+```{r}
+#| label: Any warning flags set?
+
+xlist$____
+
+```
+
+Extracting these basic TRUE / FALSE values can be powerful for next
+steps. We'll see how we can send conditional emails in the next section
+of the workshop.
