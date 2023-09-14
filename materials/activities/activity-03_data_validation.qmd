@@ -119,8 +119,6 @@ agent <- create_agent(inspections_filtered) |>
   # verify that address, latitude, and/or longitude are not null/NA
   # (hint: use `vars(x,y,z)` to apply the validation to multiple columns)
   ____ |> 
-  # verify that the values in inspection ID are distinct 
-  ____ |> 
   # verify the latitude is within the bounds of 41.5001 and 42.3772
   # and the longitude is within the bounds of -88.2959 and -87.316
   ____ |> 
