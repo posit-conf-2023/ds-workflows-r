@@ -4,7 +4,7 @@
   "platform": "4.3.1",
   "metadata": {
     "appmode": "rmd-static",
-    "primary_rmd": "activity-04_case1_email.Rmd",
+    "primary_rmd": "activity-04_customized_emails.Rmd",
     "primary_html": null,
     "content_category": null,
     "has_parameters": false
@@ -3573,13 +3573,13 @@
   },
   "files": {
     "activity-04_case1_email.Rmd": {
-      "checksum": "16310a561ae1ae230182fbafabbb09e5"
+      "checksum": "ad2be78a7e39c86e2e1ecf31c36fe4b4"
     },
     "activity-04_case2_email.Rmd": {
-      "checksum": "d568551f89038ed52abbc2a8a2bc0ee5"
+      "checksum": "b0e4056efc5ecc34bc4df51dfa333a84"
     },
     "activity-04_case4_email.Rmd": {
-      "checksum": "2151f661699297ff5532086d2ff2aa0d"
+      "checksum": "9b4b97488bf47ad2b4492b843ea7cd0b"
     },
     "activity-04_customized_emails.Rmd": {
       "checksum": "e63fffd96a245da088b07e368253cd69"
