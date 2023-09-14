@@ -1,0 +1,305 @@
+---
+title: "activity-02_publish_and_schedule_data_pull"
+description: This document pulls our raw data and saves it to the database. Publish this to Connect and schedule it to run at an appropriate interval
+toc: true
+toc-depth: 4
+editor: visual
+editor_options: 
+  markdown:
+    wrap: 72
+    canonical: true
+  chunk_output_type: console
+execute: 
+  eval: false
+---
+
+## Activity Notes
+
+This Notebook will simulate a real-life asset that sources raw data and
+writes it to a database. We will publish this document to Connect and
+schedule it to run at a regular interval, simulating a production
+workflow. We'll add informational logs to our notebook that prove useful
+when we review our published output and historical renderings on
+Connect.
+
+## Goals
+
+The goals of this activity are to:
+
+-   Gain experience using `DBI` commands interact with a database
+
+-   Publish this notebook to Posit Connect and put it on a rendering
+    schedule so database updates happen automatically
+
+This will give you experience setting up a repeatable workflow for
+populating production data sources.
+
+✏️ There will be placeholders (`____`) in the code cells below that you
+will need to fill in!
+
+## Setup
+
+### Load required packages for importing and writing the data
+
+```{r}
+#| label: Load packages
+
+library(tidyverse)
+library(janitor)
+library(DBI)
+library(RPostgres)
+library(glue)
+
+```
+
+## Task 1 - Download raw data
+
+🔄 Task
+
+Just like the last activity, we will download the raw inspections data
+from the Chicago Data Portal, but because this will become an automated
+script, we will also include logging in our script that will provide
+useful information when we review our published and scheduled output.
+
+A useful informational log will be knowing how long the data took to
+download. One means for doing this is to surround our download step with
+time stamps, following this model:
+
+``` r
+start_time <- Sys.time()
+
+#operation that we want to time
+
+end_time <- Sys.time()
+duration <- end_time - start_time
+print(paste("Operation took", round(duration[[1]], 2),  units(duration)))
+```
+
+```{r}
+#| label: Download raw inspections data from City of Chicago
+
+## It's not necessary to run this chunk during the Activity time if you still have `inspections_raw` in memory from the last Activity. Save yourself some time 😉
+
+# Start time stamp
+start_time <- Sys.time()
+
+inspections_raw <- 
+  readr::read_csv(paste0(
+    "https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv?$$app_token=",
+    Sys.getenv("SOCRATA_APP_TOKEN")
+    ))
+
+# End time stamp
+end_time <- Sys.time()
+
+print(paste("ℹ️ Info: Downloading Inspection data took", round(duration[[1]], 2),  units(duration)))
+
+```
+
+-   Use the `janitor` package to clean the column names so that they
+    have no special characters or spaces, and they are the same case
+
+-   Convert the data to uppercase for uniformity
+
+Now we do a little cleaning of the data to make case consistent and
+remove spaces and special characters from the column names.
+
+It's a good idea to reformat the column names because databases are
+sometimes unhappy with special characters.
+
+```{r}
+#| label: reformat column names
+
+inspections_raw <- inspections_raw |> 
+  #clean column names 
+  janitor::____ |> 
+  #convert data to all uppercase or lowercase for uniformity
+  ____
+
+head(inspections_raw)
+```
+
+## Task 2 - Write raw data to database
+
+🔄 Task
+
+-   Create a database connection using the database connection details
+    defined for you by your IT Admin (Workshop Instructors)
+-   Use `dbWriteTable` to write a subset of the `inspections_raw` data
+    into the database (use a subset for sake of time) as
+    `inspections_raw_<your_name>`
+
+✅ Solution
+
+The `RPostgres` package is DBI-compliant and is built specifically for
+PosgreSQL databases. Performance may be faster (particularly for writing
+data!) than using the generic `odbc` package.
+
+```{r}
+#| label: make database connection
+
+# Using the `RPostgres` package  
+con <- dbConnect(RPostgres::Postgres(), 
+                 host = Sys.getenv("CONF23_DB_HOST"), 
+                 port = "5432", 
+                 dbname = "conf23_r", 
+                 user = Sys.getenv("CONF23_DB_USER"), 
+                 password = Sys.getenv("CONF23_DB_PASSWORD"))
+con
+
+
+```
+
+For the sake of time, we don't want to write all \~260k rows of the
+inspections data to the database, so first, we will take a small sample
+and append our names to the data frame to provide unique names.
+
+```{r}
+#| label: make raw data subset
+
+my_username <- ____
+
+my_df_name <- paste0("inspections_raw_subset_", my_username)
+
+# Take a subset of the data for the sake of reducing the time for processing. Reduce the row count under 5,000 to keep things snappy
+inspections_raw_subset <- inspections_raw |> ____
+
+inspections_raw_subset
+```
+
+Now we write the subset data to the database. We also use time stamps
+for monitoring the write time, which will be useful information for our
+scheduled reporting.
+
+```{r}
+#| label: database write
+
+
+# write `inspections_raw_subset` with informational time stamps
+
+# Insert your start time stamp
+____
+
+DBI::dbWriteTable(conn = ____, 
+                  name = ____, 
+                  value = ____,
+                  overwrite = TRUE)
+
+
+# Insert your end time stamp
+____
+
+
+print(paste("ℹ️ Info: Writing raw inspection data to database took", ____))
+```
+
+## Task 3 - Read from database
+
+🔄 Task
+
+Explore some typical database commands such as
+
+-   `DBI::dbListTables()` to get a list of the tables in the database
+
+-   `dplyr::tbl()` to interact with the database table you just wrote
+
+-   Count the number of rows you wrote to the database in the table
+    `inspections_raw_<your_name>`
+
+✅ Solution
+
+Use `DBI::dbListTables()` to get a list of the tables in the database,
+and define database table with `dplyr::tbl()` to interact with
+`inspections_raw_<your_name>`.
+
+```{r}
+#| label: list tables
+
+DBI::dbListTables(____)
+
+my_db_table <- dplyr::tbl(____, ____)
+my_db_table
+```
+
+There are many ways to count database rows. However, if you just view
+`my_db_table`, do you see this in the output:
+
+```         
+# Source:   table<inspections_raw_subset_katie.masiello> [?? x 17]
+```
+
+That's not very informative!
+
+If we pull the database into local memory using `collect()`, we could
+see (and count) all the rows, but we want to avoid this for performance
+and resource sake. Try a `dplyr` aggregation command, like `tally`,
+`count`, or `summarise` to give an answer without pulling the database
+into memory.
+
+```{r}
+#| label: count table rows
+# Be sure row_count is a numeric value, not a data frame (hint: use `dplyr::pull()` to extract a column as vector)
+written_row_count <- my_db_table |> ____
+
+#Close the database connection 
+dbDisconnect(con)
+
+```
+
+## Task 4 - Add logging information to make our scheduled report informative
+
+🔄 Task
+
+Make your scheduled reports work for you! Include information that
+you'll find useful to refer back to. Loggking can be as basic or
+elaborate as you need.
+
+Some suggestions include:
+
+-   `blastula::add_readable_time()` 👈 we will come back to `blastula`
+    in another activity, but this function is a nice one to add a
+    friendly time stamp.
+
+-   Summarize the main actions taken in the report, such as how many
+    rows of data were downloaded, how many rows of data were written to
+    the database
+
+Hint: The `glue` package is helpful for combining text and variables. Or
+just use `paste`.
+
+✅ Solution
+
+```{r}
+#| label: logging
+
+# Add some logging information here
+
+```
+
+🛑 Stop here for now. Put your "I'm good" sticky up to let us know
+you're done with this Task and we will proceed to the publication step
+momentarily.
+
+## Task 5 - Publish and schedule on Posit Connect
+
+🔄 Task
+
+-   Use push-button publishing to publish this document, with source
+    code, to Connect
+-   Schedule it to run on a timescale that seems appropriate for the
+    data update cycle
+
+Notes: - Recall we specified our database connection details with
+environment variables. Typically when you publish content to Connect,
+you will also need to supply the environment variables using the "Vars"
+pane in Connect. For this workshop, these environment variables have
+already been stored on the Connect server for you so you won't need to
+do this step for this activity.
+
+✅ Solution
+
+Let's do this task together as a group.
+
+For reference, the Connect User Guide provides instructions for
+publishing:
+<https://docs.posit.co/connect/user/publishing/#publishing-general>
