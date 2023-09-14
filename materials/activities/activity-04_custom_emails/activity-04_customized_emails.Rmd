@@ -56,6 +56,10 @@ case <- sample(1:4, 1)
 
 ```
 
+For this rendering, it's going to be:
+
+<h3>case `r case`!</h3>
+
 ## Render and attach the email (if appropriate)
 
 With `blastula`, we first render the email, which is a separate Rmd
