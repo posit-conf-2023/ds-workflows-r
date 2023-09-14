@@ -146,7 +146,7 @@ and append our names to the data frame to provide unique names.
 ```{r}
 #| label: make raw data subset
 
-my_username <- "____"
+my_username <- "katie.masiello"
 
 my_df_name <- paste0("inspections_raw_subset_", my_username)
 
@@ -198,19 +198,19 @@ con
 
 
 # Insert your start time stamp
-____
+start_time <- Sys.time()
 
-DBI::dbWriteTable(conn = ____, # the connection
+DBI::dbWriteTable(conn = con, # the connection
                   name = my_df_name, # the name of the table you will create in the DB
                   value = inspections_raw_subset,
                   overwrite = TRUE)
 
 
 # Insert your end time stamp
-____
+end_time <- Sys.time()
 
 
-print(paste("ℹ️ Info: Writing raw inspection data to database took", ____))
+print(paste("ℹ️ Info: Writing raw inspection data to database took", round(duration[[1]], 2),  units(duration)))
 ```
 
 ## Task 4 - Verify number of rows written to database
@@ -230,9 +230,9 @@ First let's find our table in the database.
 ```{r}
 #| label: DBI list tables
 #| 
-DBI::dbListTables(____)
+DBI::dbListTables(con)
 
-my_db_table <- dplyr::tbl(____, "____")
+my_db_table <- dplyr::tbl(con, "inspections_raw_subset_katie.masiello")
 my_db_table
 ```
 
