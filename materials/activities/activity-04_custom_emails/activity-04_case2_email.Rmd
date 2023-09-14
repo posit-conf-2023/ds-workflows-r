@@ -3,7 +3,7 @@ title: case2
 output: blastula::blastula_email
 ---
 
-# Happy `r wday(today(), label = TRUE, abbr = FALSE)`!
+# Happy `r lubridate::wday(lubridate::today(), label = TRUE, abbr = FALSE)`!
 
 Here's your dog of the day.
 
