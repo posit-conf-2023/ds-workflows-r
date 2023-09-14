@@ -8,7 +8,6 @@ editor_options:
   markdown:
     wrap: 72
     canonical: true
-  chunk_output_type: console
 execute: 
   eval: false
 ---
