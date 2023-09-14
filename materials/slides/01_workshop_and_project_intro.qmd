@@ -89,7 +89,7 @@ https://posit.co/code-of-conduct/
 :::
 
 ::: {.column width="25%"}
-![](https://avatars.githubusercontent.com/u/5612024?v=4){.hello-image}
+![](slide_resources/rich-pic.png){.hello-image}
 
 [**Rich Iannone**]{.fuchsia}
 
