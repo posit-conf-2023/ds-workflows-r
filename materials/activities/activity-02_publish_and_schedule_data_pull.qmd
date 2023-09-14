@@ -29,7 +29,8 @@ which you might find interesting to review on your own.
 
 The goals of this activity are to:
 
--   Gain experience using `DBI` commands interact with a database
+-   Gain experience using `DBI` and `dplyr` commands to interact with a
+    database
 
 -   Learn some general logging tips to make your scheduled reports more
     useful
