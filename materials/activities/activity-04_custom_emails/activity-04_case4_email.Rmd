@@ -1,0 +1,11 @@
+--- 
+title: case4
+output: blastula::blastula_email
+---
+
+# Uh-Oh! There was an issue!
+
+The `r wday(today(), label = TRUE, abbr = FALSE)` report didn't generate any furry friends.
+
+😢
+

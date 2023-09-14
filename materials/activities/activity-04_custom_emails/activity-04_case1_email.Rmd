@@ -1,0 +1,12 @@
+---
+title: case1
+output: blastula::blastula_email
+---
+
+# Happy `r wday(today(), label = TRUE, abbr = FALSE)`!
+
+Here's your cat of the day.
+
+![](https://source.unsplash.com/1920x1080/?cat)
+
+I hope you have a lovely day. `r praise::praise()` Go get 'em, tiger!
