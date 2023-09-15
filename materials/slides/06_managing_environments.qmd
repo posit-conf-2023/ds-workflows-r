@@ -182,54 +182,49 @@ Ensure your data products behave as expected and there are no surprises
 
 ## Deployment Methods to Posit Connect
 
-:::{.fragment}
+
 
 1. Push-button ![](slide_resources/publishIcon_2x.png){height="50" style="vertical-align:middle"} 
 2. Git-backed {{< fa brands git-alt >}}
 3. Programmatic {{< fa gears >}}
 
-:::
-:::{.fragment}
 
 📣 Push-button is good for rapid prototyping. Beyond that, you really should be using [**git-backed or programmatic deployment via CI/CD pipeline**]{.fuchsia} to keep your code in sync with your deployment. 
 
-<!-- TODO: find a place to have a git back deploy activity -->
-:::
 
 
+## Git Backed Deployment
 
-## Dev-Test-Prod Methods // Git-backed Deployment
+Connect will deploy directly from your git repository
+
+![](https://solutions.posit.co/operations/deploy-methods/git-backed.png){fig-align="center"}
+
+
+Ref: 
+
+- <https://docs.posit.co/connect/user/git-backed/>
+- <https://solutions.posit.co/operations/deploy-methods/#git-backed-publishing>
+
+## Dev-Test-Prod Methods [// Git-backed Deployment]{.teal}
 
 ::: columns
 ::: {.column width="40%"}
+
 ![](slide_resources/gitbacked.png){height="800"}
 :::
 
 ::: {.column .smaller width="60%"}
-::: fragment
-1.  Create manifest describing the project environment and dependencies
 
-``` {.r code-line-numbers="false"}
-# from within project directory
-rsconnect::writeManifest() 
-```
-:::
+- Deploy production and test branches
 
-::: fragment
-2.  Commit `manifest.json` to git repo
-:::
+- Automatically update production with a git merge
 
-::: fragment
-3.  Import from Git
+- Stakeholders keep the same stable URL throughout
 
-![](slide_resources/import-from-git.png){height="380" style="padding-left: 50px;"}
-
-Ref: <https://docs.posit.co/connect/user/git-backed/>
-:::
 :::
 :::
 
-## Dev-Test-Prod Methods // CI/CD Deployment
+## Dev-Test-Prod Methods [// CI/CD Deployment]{.fuchsia}
 
 ::: columns
 ::: {.column width="40%"}
@@ -237,26 +232,25 @@ Ref: <https://docs.posit.co/connect/user/git-backed/>
 :::
 
 ::: {.column .smaller width="60%"}
-::: fragment
 -   A CI/CD pipeline can utilize:
     -   the API directly
     -   a Posit-created GitHub Action
     -   a Python (`rsconnect-python`) or R (`connectapi`) package
-:::
 
-::: fragment
--   See <https://solutions.posit.co/operations/deploy-methods/ci-cd/> for example CI/CD deployment scripts for:
+-   See <https://solutions.posit.co/operations/deploy-methods/ci-cd/> for examples:
     -   GitHub Actions
     -   GitLab CI/CD
     -   Azure Pipelines
     -   Bitbucket Pipelines
     -   Jenkins
-:::
+
+
 :::
 :::
 
 ## More Resources
 
+-   Deployment methods for Connect: <https://solutions.posit.co/operations/deploy-methods>
 -   Dev/Test/Prod with Posit Team: <https://solutions.posit.co/operations/code-promotion/>
 -   Publishing Workflows for Connect: <https://solutions.posit.co/operations/publishing-wkflow/>
 
