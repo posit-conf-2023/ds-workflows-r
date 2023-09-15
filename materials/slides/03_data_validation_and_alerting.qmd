@@ -166,7 +166,6 @@ Activity objective: Use `pointblank` to validate data, remove non-compliant reco
 
 ## {{< bi sign-turn-right-fill color=orange >}} There's much more to `pointblank`
 
-<https://rstudio.github.io/pointblank/>
 
 
 :::::{.fragment .fade-in-then-out .absolute top=130}
@@ -192,13 +191,11 @@ Activity objective: Use `pointblank` to validate data, remove non-compliant reco
 ::::{.columns}
 
 :::{.column width=40%}
-- [Is your data quality changing over time? Create a `multiagent` to summarize repeated validations.]{.lightgray} 
-- Standardize validations across your organization. Agents and informants can be saved as YAML ✨
-
+- Create a dynamic Data Dictionary to fully describe the data 
 :::
 
-:::{.column width=0%}
-![](slide_resources/yaml.png){.absolute top=220 width=500}
+:::{.column width=50%}
+![](slide_resources/data-dictionary.png)
 
 :::
 
@@ -208,21 +205,8 @@ Activity objective: Use `pointblank` to validate data, remove non-compliant reco
 
 :::::{.fragment .fade-in-then-out .absolute top=130}
 
-::::{.columns}
 
-:::{.column width=40%}
-- [Is your data quality changing over time? Create a `multiagent` to summarize repeated validations.]{.lightgray} 
-- [Standardize validations across your organization. Agents and informants can be saved as YAML ✨]{.lightgray}
-
-:::
-
-:::{.column width=50%}
-
-:::
-
-<h3><br>**In-depth `pointblank` test drive on Posit Cloud: <https://posit.cloud/project/3411822>**</h3>
-
-::::
+<h3>Try the comprehensive `pointblank` test drive on Posit Cloud: <https://posit.cloud/project/3411822></h3>
 
 :::::
 
