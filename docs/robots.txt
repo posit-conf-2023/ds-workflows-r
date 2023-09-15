@@ -1,1 +1,0 @@
-Sitemap: https://posit-conf-2023.github.io/ds-workflows-python/sitemap.xml
