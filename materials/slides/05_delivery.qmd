@@ -333,9 +333,8 @@ key provided.
 <br>
 
 🧰 Posit Connect Server API
-:::
 
-:::{.fragment}
+
 - Interact remotely with the Connect Server API using HTTP requests directly via:
   - `curl` - Linux tool for making HTTP calls
   - `httr` - R HTTP library
@@ -377,8 +376,32 @@ the permissions of the key**]{.fuchsia}. <br>
 See full documentation at <https://docs.posit.co/connect/api/>
 
 ## Example Content Usage Report
+::::{.columns}
+
+:::{.column width=40%}
 
 ![](slide_resources/usage-report.png){height=800}
+
+:::
+
+
+:::{.column width=60%}
+
+```{.r .code-overflow-wrap}
+...
+con <- connectapi::connect()
+
+app_usage <- get_usage_shiny(
+  client,
+  from = report_from,
+  limit = Inf,
+  content_guid = guid
+)
+...
+```
+
+:::
+::::
 
 {{< bi sign-turn-right-fill color=orange >}} See more examples: 
 <https://solutions.posit.co/operations/connect-apis/>
