@@ -61,13 +61,13 @@ server <- function(input, output) {
   
   # Create mock data based on input
   mock_establishment <- reactive({
-    tibble(facility_type = input$___,
-           risk = input$___,
-           latitude = input$___,
-           longitude = input$___,
-           v_cumsum = input$___,
-           v_cumsum_cs = input$___,
-           days_since_last_inspection = input$___)
+    tibble(facility_type = input$facility_type,
+           risk = input$risk,
+           latitude = input$lat,
+           longitude = input$long,
+           v_cumsum = input$v_cumsum,
+           v_cumsum_cs = input$v_cumsum_cs,
+           days_since_last_inspection = input$days)
   })
   
   output$fail <- renderText({
