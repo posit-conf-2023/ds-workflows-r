@@ -1,0 +1,187 @@
+---
+title: "Raw Data Exploration"
+description: "Conduct ad hoc exploration of the data, first exposure to `pointblank`"
+toc: true
+toc-depth: 4
+editor: visual
+editor_options: 
+  markdown:
+    wrap: 72
+    canonical: true
+  chunk_output_type: console
+execute: 
+  eval: false
+---
+
+------------------------------------------------------------------------
+
+## General Workshop Activity Notes
+
+Welcome to the first Activity! A few points relevant to this, and all
+other Activities in the workshop:
+
+1.  The Activities are either R Markdown or Quarto documents, presented
+    by default in the Visual Editor for readability
+2.  The intention is to run through the document from top to bottom,
+    running each code chunk interactively rather than rendering/knitting
+    the document
+3.  Run the chunk by either clicking the green Play Button in the
+    chunk's top right corner, or use the cmd+enter keyboard shortcut to
+    run the current line or selected text
+4.  We'll work through these activities mostly as a group, code-along
+    style because our focus in this workshop is less about code
+    development and more about around processes, tools, and learning
+    concepts. We can best teach this if we do it together!
+5.  **Where's my output?** Are you a `Chunk Output Inline` kind of
+    person? Sorry. For this activity, it's set by default to go the
+    console because the HTML renderings from Pointblank get very
+    squished otherwise. It might be like this for other activities too,
+    so don't get surprised 😉
+
+------------------------------------------------------------------------
+
+## Goals
+
+The goals of this activity are to:
+
+-   get familiar with the Food Inspections data set, which is used
+    throughout this Workshop
+-   gain experience using `pointblank::scan_data` to summarize data
+
+This will give you the first clues for what data cleaning and
+validations will be relevant for this project.
+
+✏️ There will be placeholders (`____`) in the code cells below that you
+will need to fill in!
+
+## Setup
+
+This workshop will use data from the City of Chicago Open Data Portal:
+<https://data.cityofchicago.org>.
+
+For this activity, we will explore the Food Inspections data set:
+
+<https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5>
+
+### Load required packages for importing and exploring the data
+
+```{r}
+#| label: Load packages
+
+library(tidyverse)
+library(pointblank)
+library(ggforce) 
+library(tidyverse)
+
+```
+
+### Download raw data
+
+The City of Chicago data portal provides access to their data sets via
+the Socrata Open Data (SODA) API.
+
+We will query the SODA API directly and download the full data set as a
+`.csv` using `readr::read_csv()`.
+
+Note we are using an environment variable called **SOCRATA_APP_TOKEN**.
+This has been preconfigured for you for the purposes of this workshop.
+
+```{r}
+#| label: Download raw inspections data from City of Chicago
+
+# run this code as-is
+inspections_raw <- 
+  readr::read_csv(paste0(
+    "https://data.cityofchicago.org/api/views/4ijn-s7e5/rows.csv?$$app_token=",
+    Sys.getenv("SOCRATA_APP_TOKEN")
+    ))
+
+inspections_raw
+```
+
+Maybe you're already familiar with `str`, `summary` for preliminary data
+exploration. Do you know `skimr::skim()`?
+
+```{r}
+str(inspections_raw)
+```
+
+```{r}
+summary(inspections_raw)
+```
+
+```{r}
+skimr::skim(inspections_raw)
+```
+
+## Task 1 - Scan the data with \`pointblank::scan_data()\`
+
+🔄 Task
+
+Use the `pointblank` package to gather basic information about the Food
+Inspections data so we can
+
+-   Understand what the data is
+-   Get a sense for how much cleaning is required
+-   Plan our approach for data validation
+
+The `pointblank::scan_data()` function provides a HTML report of the
+input data to help you understand your data. It contains 6 sections:
+
+-   **Overview (O)**: Table dimensions, duplicate row counts, column
+    types, and reproducibility information
+-   **Variables (V)**: A summary for each table variable and further
+    statistics and summaries depending on the variable type
+-   **Interactions (I)**: A matrix plot that shows interactions between
+    variables
+-   **Correlations (C)**: A set of correlation matrix plots for
+    numerical variables
+-   **Missing Values (M)**: A summary figure that shows the degree of
+    missingness across variables
+-   **Sample (S)**: A table that provides the head and tail rows of the
+    data set
+
+The scan can take a little while to run on a large data set, but you can
+also omit sections that are not needed.
+
+First run this example on a small data frame, such as `penguins` from
+the `palmerpenguins` package 🐧:
+
+```{r}
+#| label: Data scan on penguins
+
+pointblank::scan_data(palmerpenguins::penguins) 
+
+```
+
+⚠️ The "Correlations" and "Interactions" sections take the longest to
+run, especially on a larger data set like our Food Inspection data.
+
+Run the `data_scan` on `inpsections_raw`, but omit "Correlations (C)"
+and "Interactions (I)" because they are time consuming and not relevant
+for this data.
+
+```{r}
+#| label: Data scan on inspections_raw
+
+scan <- pointblank::scan_data(inspections_raw, sections = "OVMS")
+scan
+
+```
+
+## Task 2 - Explore the data scan
+
+🔄 Task
+
+Let's explore the data scan 🔍
+
+1.  What is the most common value for `DBA NAME` and `AKA Name` (hint:
+    Toggle details)
+2.  What `License #` has the most inspections?
+3.  Explore the `Facility Type`. Does the number of distinct values
+    surprise you? (the description of the data on
+    <https://data.cityofchicago.org> says there are 23 categories!)
+4.  What can we the Missing Values diagram tell us about potential data
+    quality issues?
+
+How will this inform our data cleaning and validation?
