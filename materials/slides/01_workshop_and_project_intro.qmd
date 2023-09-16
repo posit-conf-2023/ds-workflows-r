@@ -10,7 +10,7 @@ format:
   positconfslides-revealjs: 
     chalkboard: true
     slide-number: c/t
-    footer: "[https://posit-conf-2023.github.io/ds-workflows-r/](https://posit-conf-2023.github.io/ds-workflows-r/)"
+    footer: "[Data Science Workflows with Posit Tools - R Focus](https://katie.quarto.pub/ds-workflows-r/)"
     code-copy: true
     center-title-slide: false
     code-link: true
@@ -31,8 +31,6 @@ Introduction
 :::
 
 ## Logistics {.content2-light}
-
-<!-- TODO: Confirm locations -->
 
 🛜 WiFi credentials:
 
@@ -212,7 +210,7 @@ Functions are the 🍞 and 🧈 of R programming!
 ::: fragment
 If you want to access any function's help page:
 
-```{.r code-line-numbers=false}
+``` {.r code-line-numbers="false"}
 # Method 1
 help(function_name_here)
 
@@ -349,7 +347,7 @@ Visit: <https://connect.conf23workflows.training.posit.co>
 
 ::: smaller
 -   Use any email you have access to (personal is preferred to avoid corporate spam filters)
--   Set your username as the prefix to your email
+-   Set your username as `firstname.lastname`
 -   Choose any password
 :::
 
@@ -379,7 +377,151 @@ Visit: <https://workbench.conf23workflows.training.posit.co>
 :::
 :::
 
-<!-- TODO: Add in a slide with everyone's usernames -->
+## Workbench Setup // Step 1
+
+Your account has already been created!
+
+::: {style="font-size: 60%;"}
+::: columns
+::: {.column width="25%"}
+`aaron.amos`
+
+`david.sluder`
+
+`jenny.vo`
+
+`katie.masiello`
+
+`madison.gipson`
+
+`nicholas.skaff`
+
+`rich`
+
+`sean.hackett`
+
+`thiago.moreira`
+
+`yuting.chen`
+
+`aaron.novotny`
+
+`emily.prezzato`
+
+`joanne.ang`
+
+`kelly.carscadden`
+
+`matthew.defrank`
+
+`nick.einterz`
+:::
+
+::: {.column width="25%"}
+`richard.carder`
+
+`shannon.coulter`
+
+`thiyanga.talagala`
+
+`yuzhi.lin`
+
+`amrita.sridhar`
+
+`ephraim.infante`
+
+`jordan.creed`
+
+`kwangshi.shu`
+
+`mccrea.cobb`
+
+`nicklas.smith`
+
+`robin.donatello`
+
+`stephen.howe`
+
+`thuy.scanlon`
+
+`angie.reed`
+
+`eric.prager`
+
+`joseph.orton`
+:::
+
+::: {.column width="25%"}
+`lia.bozzone`
+
+`miriam.skorupa`
+
+`patrick.vandenberg`
+
+`ryan`
+
+`steve.hummel`
+
+`ubuntu`
+
+`ashley.naimi`
+
+`erika.manning`
+
+`julia.silge`
+
+`lu.mao`
+
+`naomi.smorenburg`
+
+`payam.khodabakhshi`
+
+`sam.edwardes`
+
+`test_user`
+
+`user1`
+
+`carter.coughlin`
+:::
+
+::: {.column width="25%"}
+`gagan`
+
+`justin.lee`
+
+`luis.dominguez`
+
+`nathaniel.hawkins`
+
+`rahul.sangole`
+
+`sarah.gibson`
+
+`test_user1`
+
+`user2`
+
+`dale.hess`
+
+`george.tenney`
+
+`justin.mary`
+
+`luke.slipski`
+
+`nergis.zaim`
+
+`rebecca.butler`
+
+`scott.tucholka`
+
+`test_user2`
+
+`user3`
+:::
+:::
+:::
 
 ## Workbench Setup // Step 2
 
