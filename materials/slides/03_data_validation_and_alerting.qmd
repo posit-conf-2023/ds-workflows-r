@@ -23,17 +23,21 @@ execute:
 
 ![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){.absolute top="200" left="50" width="260"} ![](https://github.com/rstudio/blastula/raw/master/man/figures/logo.svg){.absolute top="200" left="310" width="260"}
 
+## Where are we
+
+
+![](slide_resources/workflow_diagram.jpg){fig-align="center"}
 
 
 ## Section Agenda {.brackets-light}
 
 
--   How can I ensure this is quality data? 🤔
--   How will I know when it's not?
+-   Ensure quality data is flowing through the pipeline
+-   Get alerts via automation
 
 
 
-## How can I ensure this is quality data?
+## How can I ensure the data in my pipeline is quality data?
 
 
 <br>
@@ -317,7 +321,9 @@ Activity objective: Use `pointblank` to validate data, remove non-compliant reco
 
 ![](slide_resources/blastula_process.png){.absolute top=130}
 
-:::{.absolute bottom=40 .smaller .fragment}
+
+:::{.absolute bottom=40 .smaller}
+
 **Key functions:**
 
 🧶 `blastula::render_connect_email`
@@ -328,7 +334,6 @@ Activity objective: Use `pointblank` to validate data, remove non-compliant reco
 :::
 
 
-::::{.fragment}
 
 :::{.absolute bottom="60" left="780" .larger}
 {{< bi arrow-left >}}
@@ -338,41 +343,40 @@ Activity objective: Use `pointblank` to validate data, remove non-compliant reco
 🧰 couple these with logic statements to send (or suppress) condition-based emails
 :::
 
-::::
+
 
 
 ## Project example
 
 ![](slide_resources/conditional_email_example.png)
 
-## Work within the limitations of email clients
+## Be aware...
 
-⚠️ Common Pitfalls
+
+⚠️ Common mistakes when creating emails
 
 - There is no interactive runtime for an email
 - Javascript-dependent content will generally not render when emailed -- not due to a limitation of blastula, but as result of how email clients process HTML
 
-🧰 Best practices for embedding objects:
+:::{.fragment}
+🧰 Best practices for embedding objects an email:
 
-- ggplot2 output can be included in the email output directly 
-- Create nicely formatted tables with the `gt` package. Just remember, no interactivity!
+- ggplot2 output can be included in the blastula email output directly 
+- Create nicely formatted tables with the `gt` package. (Just remember, no interactivity!)
 - If you'd like to include a rendering of a widget (e.g., a dial or info box), use the `webshot2` package to take a capture of the widget and embed it as an image
 - If your email recipient wants more information or interactivity, direct them to a report or dashboard deployed to Connect
 
-##  
+
+:::
+
+##
 
 :::{.center}
-<h2> <br>**Activity Time!**</h2>
+<h2> <br>**Demo Time**</h2>
 :::
 
-:::{.callout-note icon=false}
-## Activity
-👉 Open the file `materials/activities/activity-04_conditional_emails.Rmd`
-
-Activity objective: Use `blastula` to create custom emails for Connect to send on condition.
 
 
-:::
 
 ## Other Alerting Approaches {.content2-light}
 
