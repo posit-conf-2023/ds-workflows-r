@@ -11,12 +11,6 @@ execute:
 editor: visual
 ---
 
-::: callout-note
-## [Vetiver](https://vetiver.rstudio.com/) is an open source tool for versioning, deploying, and monitoring a trained model.
-:::
-
-![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){fig-align="center" width="422"}
-
 ## Setup
 
 Run the code cell below (click the green play button in the top right corner) to ensure all of the packages are loaded in our environment.
@@ -44,8 +38,6 @@ In this notebook, you will get practice:
 
 -   Serve the model as a [Plumber API](https://www.rplumber.io/) using Vetiver.
 
-✏️ There will be placeholders (e.g., `____`) in the code cells below that you will need to fill in!
-
 ## Task 1 - Create a tidymodel
 
 [Tidymodels](https://www.tidymodels.org/) is a collection of R packages for modeling and machine learning using [tidyverse](https://www.tidyverse.org/) principles. While this workshop is **not** a modeling workshop, to demonstrate the utility of the Vetiver, we need to create a model. Let's use the `diamonds` dataset to create a linear regression model.
@@ -54,7 +46,7 @@ For this activity, we will train and fit the model on most of the diamonds datas
 
 🔄 Tasks
 
--   Explore the `diamonds` dataset. Use any method you'd like to understand the data (even if you know the `diamonds` dataset back and forth 😉). Try functions like `glimpse()` and `str()`.
+-   Explore the `diamonds` dataset. Use any method you'd like to understand the data (even if you know the `diamonds` dataset back and forth 😉). Try functions like `glimpse()`, `str()`, and `View()`. You can use `pointblank::scan_data()` too, but know that correlations take a long time to run!
 
 -   Create a tidymodel that predicts `price` based on every other column in the dataset using linear regression. Refer to the slides for guidance.
 
@@ -62,7 +54,7 @@ For this activity, we will train and fit the model on most of the diamonds datas
 
 ```{r}
 # Use the space below to explore the diamonds dataset
-# Try functions like glimpse() and str()
+# Try functions like glimpse(), str(), and View()
 
 
 ```
@@ -84,7 +76,7 @@ diamonds_new <- diamonds |> slice_tail(n = 100)
 
 ```{r}
 # Create Recipe 
-model_recipe <- recipes::recipe(____, data = diamonds_train)
+model_recipe <- recipes::recipe(price ~ ., data = diamonds_train)
 model_recipe
 ```
 
@@ -92,7 +84,7 @@ model_recipe
 
 ```{r}
 # Define model using parsnip (ex. linear_reg())
-model_type <- parsnip::____
+model_type <- parsnip::linear_reg()
 model_type
 ```
 
@@ -100,18 +92,19 @@ model_type
 
 ```{r}
 # Combine recipe and model type into a workflow
-model_wflow <- workflows::workflow(____, ____)
+model_wflow <- workflows::workflow(model_recipe, model_type)
+model_wflow
 ```
 
 #### Fit model to training data
 
 ```{r}
 # Fit the model to data
-model_fit <- fit(____, diamonds_train)
+model_fit <- fit(model_wflow, diamonds_train)
 model_fit
 ```
 
-🛑 Stop here and place the "I'm good" sticky note on your laptop!
+🛑 Stop here!
 
 ## Task 2 - Create and Deploy a Vetiver model
 
@@ -125,10 +118,12 @@ Creating a model is an exciting step in many data science workflows. However, sh
 
 ### Create a Vetiver model
 
-Add in the name of your model (`model_fit`) and give your Vetiver model a name. You can name it anything you want, but you want to make it intuitive. `diamonds_price` is a good example.
+Add in the name of your model (`model_fit`) and give your Vetiver model a name. You can name it anything you want, but you want to make it intuitive. `diamonds_price` is a good example. Be sure to append the model name with your **username** (`firstname.lastname`).
 
 ```{r}
-v <- vetiver_model(model = ____, model_name = "____")
+# Replace firstname.lastname with your username
+v <- vetiver_model(model = model_fit, model_name = "firstname.lastname/diamonds_price")
+v
 ```
 
 ### Save Vetiver model to Posit Connect
@@ -146,14 +141,14 @@ Next, write the Vetiver model to Posit Connect by adding the name of the board (
 
 ```{r}
 # Deploy to Posit Connect
-vetiver_pin_write(board = ____, vetiver_model = ____)
+vetiver_pin_write(board = connect_board, vetiver_model = v)
 ```
 
 Now that the model is saved (or "pinned") to Posit Connect, you can easily read it into whatever piece of content your creating!
 
 Go to Posit Connect ([connect.conf23workflows.training.posit.co](https://connect.conf23workflows.training.posit.co/)) and view your pinned model!
 
-🛑 Stop here and place the "I'm good" sticky note on your laptop!
+🛑 Stop here!
 
 ## Task 3 - Serve model as a Plumber API
 
@@ -173,7 +168,7 @@ The below code is will take your Vetiver model, and turn it into an API using th
 
 ```{r}
 plumber::pr() |> 
-  vetiver_api(vetiver_model = ____) |> 
+  vetiver_api(vetiver_model = v) |> 
   pr_run()
 ```
 
@@ -181,13 +176,30 @@ Once the plumber API is running, you should see a RapiDoc which is a visual way 
 
 ![](images/vetiver_api_example.png){fig-align="center" width="498"}
 
-### Publish the API to Posit Connect
+You can also copy the code below and paste into the example. Modify as you please!
 
-Notice that when you pinned the model above (`vetiver_pin_write()`), your Posit Connect name was added to the pin name. For example, `ryan/name_of_pin`. If you are unsure of the full name of the pinned model, then navigate to Posit Connect and view the published pin.
+```         
+[
+  {
+    "carat": 0.5,
+    "cut": "Premium",
+    "color": "H",
+    "clarity": "SI1",
+    "depth": 60.1,
+    "table": 55,
+    "x": 4.21,
+    "y": 4.34,
+    "z": 2.44
+  }
+]
+```
+
+### Publish the API to Posit Connect
 
 ```{r}
 # Publish API to Posit Connect 
-vetiver_deploy_rsconnect(board = connect_board, name = "your-name/name_of_pin")
+# Replace firstname.lastname with your username
+vetiver_deploy_rsconnect(board = connect_board, name = "firstname.lastname/diamonds_price")
 ```
 
 Navigate to your API now running on Posit Connect and give it a test run! It's also possible to restrict access to your API by modifying the access setting on Connect. In this case, users of your API would need to supply an API key using the `httr` package. For more information on API access control, see the Posit docs [here](https://docs.posit.co/connect/user/vetiver/#predict-from-your-model-endpoint).
@@ -219,18 +231,18 @@ endpoint
 
 ### Make a prediction using R code
 
-Fill in the blanks in the cell below to create fake data for a "new" diamond. If you need some guidance, try running `diamonds` in the console.
+Below is a dataframe representing a *new* diamond! Feel free to modify.
 
 ```{r}
-new_diamond <- tibble(carat = ____,  
-                      cut = "____", 
-                      color = "____",
-                      clarity = "____",
-                      depth = ____,
-                      table = ____,
-                      x = ____,
-                      y = ____,
-                      z = ____)
+new_diamond <- tibble(carat = 0.6,  
+                      cut = "Ideal", 
+                      color = "J",
+                      clarity = 59.4,
+                      depth = 61.8,
+                      table = 60,
+                      x = 4.11,
+                      y = 3.98,
+                      z = 2.55)
 ```
 
 ⚠️ **When you run the `predict()` function, you might get an error!** ⚠️
@@ -243,7 +255,7 @@ predict(endpoint, new_diamond)
 
 If you'd like to learn more about creating API keys on Posit Connect, check out the link [here](https://docs.posit.co/connect/user/vetiver/#predict-from-your-model-endpoint). But for now, try setting the API access controls on Connect to `Anyone - no login required` and then re-run the code above.
 
-🛑 Stop here and place the "I'm good" sticky note on your laptop!
+🛑 Stop here!
 
 ## Task 5 - Version and monitor you models
 
@@ -255,59 +267,23 @@ Monitoring a model means you are assessing performance as new data comes in over
 
 🔄 Task
 
--   Create and save a second model using a decision tree.
+-   List the versions of our model.
 
--   Monitor models.
+-   Monitor our model.
 
-### Create and save a second model using a decision tree
+### List Model Versions
 
-Let's create another model that predicts the same thing as before (price of diamonds) but uses a decision tree instead.
-
-⚠️ This model will overwrite our previous linear regression model pinned to Posit Connect...and that's OK! Fill in the `____`'s below.
+We only have 1 version of our model, but let's list it anyway by using the `pin_versions()` function. Take note of the **version number (first column)!**
 
 ```{r}
-# Create another recipe (same recipe as before)
-model_recipe2 <- recipes::recipe(____, data = diamonds_train)
-model_recipe2
-```
-
-```{r}
-# Create another model type (decision_tree(mode = "regression"))
-model_type2 <- parsnip::____
-model_type2
-```
-
-```{r}
-# Combine the recipe and model type into a new workflow
-model_wflow2 <- workflow(recipe-goes-here, model-type-goes-here)
-model_wflow2
-```
-
-```{r}
-# Fit the model to data
-model_fit2 <- fit(workflow-goes-here, diamonds_train)
-model_fit2
-```
-
-```{r}
-# Create a vetiver model (use the same name as before, possibly `your-name/diamonds_price`)
-v2 <- vetiver_model(model = ____, model_name = "____")
-v2
-```
-
-```{r}
-# Pin the new model (v2)
-vetiver_pin_write(board = connect_board, vetiver_model = ____)
-```
-
-```{r}
-# View both versions of your model (name is pin name, possibly `your-name/diamonds_price`)
-pin_versions(board = connect_board, name = "____")
+# View versions of your model
+# Replace firstname.lastname with your username
+pin_versions(board = connect_board, name = "firstname.lastname/diamonds_price")
 ```
 
 ### Monitor models
 
-Here is where the `diamonds_new` data comes into play! Again, for monitoring, we need some sense of *time* for this new data, so we will add a fake date column to the `diamonds_new` dataset. Take a look at the code below, but all you need to do is run it (no `___`'s to fill in).
+Here is where the `diamonds_new` data comes into play! Again, for monitoring, we need some sense of *time* for this new data, so we will add a fake date column to the `diamonds_new` dataset. Take a look at the code below, but all you need to do is run it.
 
 ```{r}
 # Add a "fake" date column to our new data (do not edit this code cell, just run)
@@ -328,9 +304,11 @@ Now that we have a date associated with each row of *new* diamonds data, let's c
 
 ```{r}
 # Collect metrics (rmse and mae) on diamonds test data
+# Replace firstname.lastname with your username
+# Add in version number of your model
 augment(vetiver_pin_read(connect_board,
-                         "your-name/pin-name",
-                         version = "____"), # add in the version number for decision tree
+                         "firstname.lastname/diamonds_price",
+                         version = "____"), # add in the version number
         new_data = diamonds_new) |> 
   vetiver_compute_metrics(date_var = date_obs, 
                         period = "month", 
@@ -340,17 +318,4 @@ augment(vetiver_pin_read(connect_board,
   vetiver_plot_metrics()
 ```
 
-```{r}
-# Calculate metrics on linear regression model
-augment(vetiver_pin_read(connect_board,
-                         "your-name/pin-name",
-                         version = "____"), # add in the version number for linear regression
-        new_data = diamonds_new) |> 
-  vetiver_compute_metrics(date_var = date_obs, 
-                        period = "month", 
-                        truth = price,  
-                        estimate = .pred,
-                        metric_set = metric_set(rmse, mae)) |> 
-  vetiver_plot_metrics()
-
-```
+🛑 Stop here!
