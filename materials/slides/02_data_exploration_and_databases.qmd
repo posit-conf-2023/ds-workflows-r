@@ -28,7 +28,7 @@ execute:
 
 -   Ad-hoc data exploration
 -   Writing production data to a database 
--   Automating the process 
+-   Automating the pipeline 
 
 
 
@@ -98,7 +98,9 @@ Activity objective: explore our Chicago Food Inspections data to get familiar wi
 
 ## Database Connection Essentials
 
-:::{.smaller .incremental}
+:::{.fragment}
+
+:::{.smaller }
 - Use `DBI` to make a connection with `DBI::dbConnect()`
 - The first argument to `DBI` is your DBI-compliant R package
   a. Best case: one of the DBI-compliant db-specific packages 
@@ -107,9 +109,9 @@ Activity objective: explore our Chicago Food Inspections data to get familiar wi
 :::
 
 
-![](slide_resources/con_sans_odbc.png){.absolute bottom="25" left="30" width="47%" .fragment}
-![](slide_resources/con_w_odbc.png){.absolute bottom="25" right="30" width="47%" .fragment}
-
+![](slide_resources/con_sans_odbc.png){.absolute bottom="25" left="30" width="47%" }
+![](slide_resources/con_w_odbc.png){.absolute bottom="25" right="30" width="47%" }
+:::
 
 ## Interacting with Databases
 
@@ -162,7 +164,7 @@ Specific resources:
 ## How do I automate this process?
 
 :::{.fragment}
-🧰 Deploy and schedule your notebook on Posit Connect
+🧰 Deploy and schedule your ETL and reports on Posit Connect
 
 ![](slide_resources/scheduling.png){height="700" fig-align="center"}
 
