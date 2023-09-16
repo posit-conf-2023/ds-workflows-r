@@ -179,7 +179,6 @@ Two sides to this coin:
 
 👉 Open the file `materials/activities/activity-07_shiny.qmd`
 
-**Complete Task 1 only!**
 :::
 
 ## Shiny on Connect
