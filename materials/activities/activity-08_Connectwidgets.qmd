@@ -11,12 +11,6 @@ execute:
 editor: visual
 ---
 
-::: callout-note
-## [connectwidgets](https://rstudio.github.io/connectwidgets/) is an R package that can be used to query a Posit Connect server for a subset of your existing content items, then organize them within htmlwidget components in an R Markdown document or Shiny application.
-:::
-
-![](https://github.com/rstudio/connectwidgets/blob/main/man/figures/logo.png?raw=true){fig-align="center" width="212"}
-
 ## Setup
 
 ```{r}
@@ -27,7 +21,7 @@ library(tidyverse)
 library(usethis)
 ```
 
-## Activity 1 - Create Environment Variables
+## Task 1 - Create Environment Variables
 
 Before we can connect to the Posit Connect instance, you first need to tell `connectwidgets` two things:
 
@@ -58,8 +52,8 @@ Sys.getenv("CONNECT_SERVER")
 To create your own environment variables, you'll want to place them inside your `.Renviron` file that lives in your project's home directory and will be run as soon as you start a new R session. The `usethis` package has some built-in functions to help us out! Below, use the `edit_r_environ()` function to add a `.Renviron` for the current project. You'll need set the `scope` to "project" to ensure the `.Renviron` is created within the home directory of the project, and not your user home directory.
 
 ```{r}
-# Create a .Renviron file in your project's home directory. Scope should be set to "project"
-usethis::edit_r_environ(scope = "____")
+# Create a .Renviron file in your project's home directory.
+usethis::edit_r_environ(scope = "project")
 ```
 
 By running the command above, it should open the `.Renviron` file automatically.
@@ -80,10 +74,10 @@ Verify that you've correctly assigned the `CONNECT_API_KEY` environment variable
 
 ```{r}
 # View CONNECT_API_KEY environment variable
-Sys.getenv("____")
+Sys.getenv("CONNECT_API_KEY")
 ```
 
-## Activity 2 - Connect and View Content on Posit Connect
+## Task 2 - Connect and View Content on Posit Connect
 
 Now that we've assigned our two environment variables, let's try using the `connect()` function from within `connectwidgets` to connect to our Posit Connect instance. Once connected, we can start viewing content!
 
@@ -100,8 +94,8 @@ Establish a connection to Posit Connect using `connectwidgets::connect()`
 ```{r}
 # Establish a connection to the Connect Server
 client <- connect(
-  server  = Sys.getenv("____"),
-  api_key = Sys.getenv("____")
+  server  = Sys.getenv("CONNECT_SERVER"),
+  api_key = Sys.getenv("CONNECT_API_KEY")
   )
 ```
 
@@ -120,34 +114,35 @@ Now that we've established connection, let's return a dataframe of content that 
 # Return a dataframe of content currently published to Posit Connect 
 connect_content <- client |> 
   content()
+
+connect_content
 ```
 
 Sometimes it's easier to filter the content based on certain criteria. Try adding your Connect username to the `by_owner()` function to view content owned by **you**!
 
 ```{r}
 # Filter for your content
+# Replace firstname.lastname with your username
 my_content <- connect_content |> 
-  by_owner(usernames = "____")
+  by_owner(usernames = "firstname.lastname")
 
 my_content
 ```
 
-## Activity 3 - Explore `connectwidgets` layout options
+## Task 3 - Explore `connectwidgets` layout options
 
 After filtering for content on Posit Connect, we can use `connectwidgets` to organize the content into cards grid, and table widgets. These widgets can be embedded into R Markdown, Quarto, or a Shiny application!
 
-🔄 Tasks
-
--   Use the `rsc_card()` and `rsc_table()` function to create widgets of **your** Posit Connect published content.
+###  `rsc_card()` and `rsc_table()`
 
 ```{r}
 # card
 my_content |> 
-  ____
+  rsc_card()
 ```
 
 ```{r}
-### table
+# table
 my_content %>%
-  ____
+  rsc_table()
 ```

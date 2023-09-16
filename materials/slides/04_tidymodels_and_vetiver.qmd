@@ -3,7 +3,7 @@ format:
   positconfslides-revealjs: 
     chalkboard: true
     slide-number: c/t
-    footer: "[https://posit-conf-2023.github.io/ds-workflows-r/](https://posit-conf-2023.github.io/ds-workflows-r/)"
+    footer: "[Data Science Workflows with Posit Tools - R Focus](https://katie.quarto.pub/ds-workflows-r/)"
     code-copy: true
     center-title-slide: false
     code-link: true
@@ -213,7 +213,11 @@ We have two questions:
 
 ## Vetiver
 
-![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){fig-align="center" width="722"}
+![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){.absolute width="1000" top="70" right=300}
+
+![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){.absolute top="310" right="400" width="100"}
+
+<br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br>
 
 -   Open source R (and Python) package.
 -   Deploy and maintain machine learning models --\> **MLOps**
