@@ -227,13 +227,21 @@ Ref:
 
 ##  {.brackets-dark}
 
-::: section-title-dark
-::: larger
-🤪 🥴 🫨 😵
-:::
+:::{.section-title-dark }
+
+<h2> That's a wrap!<br>
+🤪 🥴 🫨 😵</h2>
+
 :::
 
-## And that's a wrap! Now what?
+## Recap of Resources
+
+<https://katie.quarto.pub/ds-workflows-r/resources.html>
+
+<iframe src="https://katie.quarto.pub/ds-workflows-r/resources.html" width=900 height =650></iframe>
+
+
+## Now what?
 
 ### Posit Team
 
@@ -241,6 +249,6 @@ Ref:
 -   Join us for our [Monthly Posit Team Workflows](https://www.youtube.com/playlist?list=PL9HYL-VRX0oRsUB5AgNMQuKuHPpNDLBVt)
     -   Last Wednesday of every month -- 11 am EST
 
-### Workshop Feedback {.content2-light}
+### Workshop Feedback 
 
 Please go to [pos.it/conf-workshop-survey](pos.it/conf-workshop-survey). Your feedback is crucial! Data from the survey informs curriculum and format decisions for future conf workshops, and we really appreciate you taking the time to provide it.
