@@ -225,6 +225,14 @@ Ref:
 -   Dev/Test/Prod with Posit Team: <https://solutions.posit.co/operations/code-promotion/>
 -   Publishing Workflows for Connect: <https://solutions.posit.co/operations/publishing-wkflow/>
 
+##  {.brackets-dark}
+
+::: section-title-dark
+::: larger
+🤪 🥴 🫨 😵
+:::
+:::
+
 ## And that's a wrap! Now what?
 
 ### Posit Team
