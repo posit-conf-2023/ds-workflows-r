@@ -159,7 +159,7 @@ run, especially on a larger data set like our Food Inspection data.
 
 Run the `data_scan` on `inpsections_raw`, but omit "Correlations (C)"
 and "Interactions (I)" because they are time consuming and not relevant
-for this data.
+for this data, i.e., only do sections "OVMS".
 
 ```{r}
 #| label: Data scan on inspections_raw
