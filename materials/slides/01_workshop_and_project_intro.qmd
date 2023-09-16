@@ -103,35 +103,17 @@ https://posit.co/code-of-conduct/
 :::
 :::
 
-## What you will learn
-
-<!-- TODO: note the strings and glue. -->
-
-::: smaller
--   An opinionated end-to-end data science workflow
-    -   Data storage locations
-    -   Data validation
-    -   Automation
-    -   Alerting
-    -   Model development & deployment
-    -   Environment management
-    -   Interoperability
--   We will use a combination of:
-    -   Open source tools (developed by Posit and others)
-    -   Posit's professional products (Workbench, Connect, and Package Manager)
-:::
-
 ## Agenda
 
 | Time          | Activity                                                                                            |
 |:------------------------|:----------------------------------------------|
-| 9:00 - 10:30  | Workshop Introduction (20 minutes) <br> Reading, Cleaning, Writing and Validating Data (70 minutes) |
+| ~9:00 - 10:30  | Workshop Introduction <br> Reading, Cleaning, Writing and Validating Data  |
 | 10:30 - 11:00 | *Coffee break* ☕                                                                                   |
-| 11:00 - 12:30 | Creating, Delivering, and Monitoring a model using Vetiver                                          |
+| ~11:00 - 12:30 | Creating, Delivering, and Monitoring a model using Vetiver                                          |
 | 12:30 - 1:30  | *Lunch break* 🥪                                                                                    |
-| 1:30 - 3:00   | Delivery                                                                                            |
+| ~1:30 - 3:00   | Delivery                                                                                            |
 | 3:00 - 3:30   | *Coffee break* ☕                                                                                   |
-| 3:30 - 5:00   | Advancing your Workflow                                                                             |
+| ~3:30 - 5:00   | Advancing your Workflow                                                                             |
 
 ## The Sticky Situation
 
@@ -173,13 +155,14 @@ We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate work
 
 ## Asking Questions
 
-<!-- TODO: Add Discord info  -->
 
-**Discord** - 🔴 add channel here
+**Discord** - `#data-science-workflows-with-posit-tools-r-focus`
 
 ::: columns
 ::: {.column width="50%"}
 <br> <br> <br>
+
+👉 **Submit questions and respond to polls here**
 
 ![](slide_resources/discord-logo-blue.png){width="100%" fig-align="center"}
 :::
@@ -187,14 +170,12 @@ We will use an [**end-to-end real-world project**]{.fuchsia} to demonstrate work
 ::: {.column width="50%"}
 <br>
 
-👉 **Submit questions and respond to polls here**
-
-::: {.absolute style="background: #cca2b2; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="400" left="800"}
+::: {.absolute style="background: #cca2b2; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="300" left="800"}
 <h3>You are always welcome to raise your hand! 🙋</h3>
 :::
 
 ::: fragment
-::: {.absolute style="background: #A6CFD5; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="420" left="820"}
+::: {.absolute style="background: #A6CFD5; width: 400px; height: 300px; padding: 40px; box-shadow: 0 18px 18px -9px lightgray; margin-left: auto; margin-right: auto;" top="320" left="820"}
 <h3>Go to Discord now and tell us what you're excited about!</h3>
 :::
 :::
@@ -300,7 +281,7 @@ readRDS("slide_resources/bus_data_preview.Rds") |> gt::gt()
 
 ## Project Objective
 
--   Provide users with a self-service tool that predicts the likelihood of a food establishment failing their next inspection
+-   Provide ~~users~~ **food inspectors** with a self-service tool that predicts the likelihood of a food establishment failing their next inspection.
 
 <h2><br>Project Requirements</h2>
 
@@ -356,7 +337,7 @@ Visit: <https://connect.conf23workflows.training.posit.co>
 ![](slide_resources/connect_sign_up_email.png)
 
 -   Check your email for a confirmation email.
--   👉 It will likely be in your [**spam folder**.]{.fuchsia}
+-   It will likely be in your [**spam folder**.]{.fuchsia}
 -   The email will be from [**conf23workflows\@training.rstudio.com**]{.fuchsia}
 
 ## Workbench Setup // Step 1
@@ -366,9 +347,9 @@ Visit: <https://workbench.conf23workflows.training.posit.co>
 ::: columns
 ::: {.column width="50%"}
 -   Your account has already been created!
--   Log in with the prefix of the email that you used to sign up for this workshop. <br><br>For example:
-    -   email: `edwardes.s@gmail.com`
-    -   username: `edwardes.s`
+-   Log in with username as `firstname.lastname`. <br><br>For example:
+    -   Name: `Ryan Johnson`
+    -   Username: `ryan.johnson`
 -   Password = `password`
 :::
 
