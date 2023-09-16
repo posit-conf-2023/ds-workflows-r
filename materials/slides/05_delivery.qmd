@@ -327,25 +327,13 @@ key provided.
 
 ## How will I know if people are consuming my content?
 
-
-:::{.fragment}
-
+::: fragment
 <br>
 
 🧰 Posit Connect Server API
-
-
-- Interact remotely with the Connect Server API using HTTP requests directly via:
-  - `curl` - Linux tool for making HTTP calls
-  - `httr` - R HTTP library
-  - `requests` - Python HTTP library
-- Or use [`connectapi`](https://pkgs.rstudio.com/connectapi/) R package, which provides a wrapper around HTTP requests
-
-![](https://pkgs.rstudio.com/connectapi/reference/figures/logo.svg){.absolute top="590" left="260" width="220"}
-
 :::
 
-## Connect Server API endpoints
+## Posit Connect Server API endpoints
 
 *Most endpoints require an API Key*, and [**results will be scoped to
 the permissions of the key**]{.fuchsia}. <br>
@@ -376,18 +364,14 @@ the permissions of the key**]{.fuchsia}. <br>
 See full documentation at <https://docs.posit.co/connect/api/>
 
 ## Example Content Usage Report
-::::{.columns}
 
-:::{.column width=40%}
-
-![](slide_resources/usage-report.png){height=800}
-
+::: columns
+::: {.column width="40%"}
+[![](slide_resources/usage-report.png){height="800"}](https://connect.conf23workflows.training.posit.co/chicago-food-r/content-usage/)
 :::
 
-
-:::{.column width=60%}
-
-```{.r .code-overflow-wrap}
+::: {.column width="60%"}
+``` {.r .code-overflow-wrap}
 ...
 con <- connectapi::connect()
 
@@ -399,21 +383,30 @@ app_usage <- get_usage_shiny(
 )
 ...
 ```
-
 :::
-::::
+:::
 
-{{< bi sign-turn-right-fill color=orange >}} See more examples: 
+{{< bi sign-turn-right-fill color=orange >}} See more examples:
 <https://solutions.posit.co/operations/connect-apis/>
 
+## Accessing the Connect Server API
+
+-   Interact remotely with the Connect Server API using HTTP requests
+    directly via:
+    -   `curl` - Linux tool for making HTTP calls
+    -   `httr` - R HTTP library
+    -   `requests` - Python HTTP library
+-   Or use [`connectapi`](https://pkgs.rstudio.com/connectapi/) R
+    package, which provides a wrapper around HTTP requests
+
+![](https://pkgs.rstudio.com/connectapi/reference/figures/logo.svg){.absolute
+top="590" left="260" width="220"}
 
 ## Connect Server API Resources
 
-
-  -   Reference <https://docs.posit.co/connect/api/>
-  -   Cookbook <https://docs.posit.co/connect/cookbook/>
-  -   Example reports and apps
-      <https://solutions.posit.co/operations/connect-apis/>
-  -   R package `connectapi` that is a wrapper around the API
-      <https://pkgs.rstudio.com/connectapi/>
-      
+-   Reference <https://docs.posit.co/connect/api/>
+-   Cookbook <https://docs.posit.co/connect/cookbook/>
+-   Example reports and apps
+    <https://solutions.posit.co/operations/connect-apis/>
+-   R package `connectapi` that is a wrapper around the API
+    <https://pkgs.rstudio.com/connectapi/>
