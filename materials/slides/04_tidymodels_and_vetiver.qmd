@@ -213,7 +213,7 @@ We have two questions:
 
 ## Vetiver
 
-![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){.absolute width="1000" top="70" right=300}
+![](https://vetiver.rstudio.com/images/ml_ops_cycle.png){.absolute width="1000" top="70" right="300"}
 
 ![](https://github.com/rstudio/pointblank/raw/main/man/figures/logo.svg){.absolute top="310" right="400" width="100"}
 
@@ -304,6 +304,10 @@ Prior to this workshop:
     -   {{< bi sign-turn-right-fill color=orange >}} How to run background/workbench jobs for long running analyses!
 
         -   `materials/activities/activity-06_jobs.qmd`
+
+-   If you create a model, you should create a **model card!**
+
+    -   Check out the [model card created by our Python friends](https://connect.conf23workflows.training.posit.co/food_inspections_model_card/)!
 
 <br>
 
