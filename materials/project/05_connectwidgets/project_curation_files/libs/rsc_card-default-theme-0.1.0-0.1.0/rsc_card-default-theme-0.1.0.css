@@ -1,0 +1,40 @@
+/**
+ * Calculate the luminance for a color.
+ * See https://www.w3.org/TR/WCAG20-TECHS/G17.html#G17-tests
+ */
+/**
+ * Calculate the contrast ratio between two colors.
+ * See https://www.w3.org/TR/WCAG20-TECHS/G17.html#G17-tests
+ */
+.rsccard__card {
+  border: 1px solid #F2F2F2;
+}
+
+.rsccard__meta-author {
+  color: #B0B0B0;
+}
+
+.rsccard__meta-link {
+  background: #346899;
+  border: none;
+  transition: all 0.2s ease;
+  color: #FFFFFF;
+}
+
+.rsccard__meta-link:hover {
+  background: #858585;
+}
+
+@media (max-width: 575.98px) {
+  .rsccard__card .card-body {
+    flex-direction: column;
+  }
+  .rsccard__img {
+    flex: auto;
+    margin: 3%;
+    width: 94%;
+  }
+  .rsccard__meta {
+    margin: 3%;
+  }
+}
