@@ -13,7 +13,7 @@ editor_options:
     canonical: true
 ---
 
-## Goals
+## Goals 
 
 The goal of this document is to demonstrate different conditional
 outcomes in rendering reports on Posit Connect:
