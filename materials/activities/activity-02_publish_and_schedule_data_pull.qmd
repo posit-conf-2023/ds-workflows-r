@@ -98,6 +98,7 @@ inspections_raw <-
 
 # End time stamp
 end_time <- Sys.time()
+duration <- end_time - start_time
 
 print(paste("ℹ️ Info: Downloading Inspection data took", round(duration[[1]], 2),  units(duration)))
 
