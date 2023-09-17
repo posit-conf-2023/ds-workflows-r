@@ -109,14 +109,14 @@ if(send_email == TRUE){
 
 ## Create the escape hatch
 
-If it's case 3, we want to stop this report *right now*
+If it's case 4, we want to stop this report *right now*
 
 ```{r escape-hatch}
 
-if(case == 3){knitr::knit_exit("👋")}
+if(case == 4){knitr::knit_exit("👋")}
 ```
 
-Are you still there? Phew, that means it wasn't case 3 and we're still
+Are you still there? Phew, that means it wasn't case 4 and we're still
 going strong.
 
 ## Log what we did
@@ -137,6 +137,13 @@ Here's how it's done:
 ```{r add-logging, results='asis'}
 
 # give a nice timestamp
+if(case == 3){glue(
+    "### Report run {blastula::add_readable_time()}
+
+     ### This report was processed for **Case** {case}
+     
+     ### No email was sent.")}else
+       {
 glue("### Report run {blastula::add_readable_time()}
 
      ### This report was processed for **Case** {case}
@@ -144,11 +151,14 @@ glue("### Report run {blastula::add_readable_time()}
      ### Here is a preview of the email rendered with this report: 
      
      ---")
+     }
 
 ```
 
 ```{r add-email-render, results="asis" }
+
+if(case %in% c(1,2)){
 glue("**Subject: {subject}**")
-email$html_html
+email$html_html}
 
 ```
