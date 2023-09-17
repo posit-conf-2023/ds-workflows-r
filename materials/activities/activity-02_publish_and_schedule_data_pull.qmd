@@ -199,72 +199,24 @@ con
 
 
 # Insert your start time stamp
-____
+start_time <- Sys.time()
 
-DBI::dbWriteTable(conn = ____, # the connection
+DBI::dbWriteTable(conn = con, # the connection
                   name = my_df_name, # the name of the table you will create in the DB
                   value = inspections_raw_subset,
                   overwrite = TRUE)
 
 
 # Insert your end time stamp
-____
+end_time <- Sys.time()
+duration <- end_time - start_time
 
 
-print(paste("ℹ️ Info: Writing raw inspection data to database took", ____))
+
+print(paste("ℹ️ Info: Writing raw inspection data to database took",  round(duration[[1]], 2),  units(duration)))
 ```
 
-## Task 4 - Verify number of rows written to database
-
-🔄 Task
-
-As a check, and for more practice with interacting with databases, let's
-determine the number of rows written to the database.
-
--   Define your table with `dplyr::tbl()`
-
--   Use `dplyr` verbs to determine the row count *without bringing the
-    table back into local memory*
-
-First let's find our table in the database.
-
-```{r}
-#| label: DBI list tables
-#| 
-DBI::dbListTables(____)
-
-my_db_table <- dplyr::tbl(____, "____")
-my_db_table
-```
-
-There are many ways to count database rows. However, if you just view
-`my_db_table`, do you see this in the output:
-
-```         
-# Source:   table<inspections_raw_subset_katie.masiello> [?? x 17]
-```
-
-That's not very informative!
-
-If we pull the database into local memory using `collect()`, we could
-see (and count) all the rows, but we want to avoid this for performance
-and resource sake. Use a `dplyr` aggregation command, like `tally`,
-`count`, or `summarise` to give an answer without pulling the database
-into memory.
-
-```{r}
-#| label: count tbl rows
-
-# Be sure row_count is a numeric value, not a data frame (hint: use `dplyr::pull()` to extract a column as vector)
-tbl_row_count <- my_db_table |> tally() |> pull(n)
-tbl_row_count
-
-#Close the database connection 
-dbDisconnect(con)
-
-```
-
-## Task 5 - Add logging information to make our scheduled report informative
+## Task 4 - Add logging information to make our scheduled report informative
 
 🔄 Task
 
@@ -291,13 +243,12 @@ It's less work than stringing things together with `paste`. With
 #| label: logging
 glue("Report run {blastula::add_readable_time()}")
 
-glue("{nrow(inspections_raw)} rows of inspection data downloaded. 
-     {tbl_row_count} rows of inspection data written to database.")
+glue("{nrow(inspections_raw)} rows of inspection data downloaded and written to the database.")
 
 
 ```
 
-## Task 6 - Publish and schedule on Posit Connect
+## Task 5 - Publish and schedule on Posit Connect
 
 🔄 Task
 
