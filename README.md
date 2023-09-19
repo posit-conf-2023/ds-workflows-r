@@ -27,7 +27,7 @@ In this R-focused workshop, we will discuss ways to improve your data science wo
 
 ## Slides and Resources from the Workshop
 
-Presentation materials and a summary of resources covered in the workshop are available at <katie.quarto.pub/ds-workflows-r/>
+Presentation materials and a summary of resources covered in the workshop are available at <https://katie.quarto.pub/ds-workflows-r/>
 
 ## Prework
 
