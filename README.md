@@ -25,6 +25,9 @@ In this R-focused workshop, we will discuss ways to improve your data science wo
 -   Want to improve interoperability between data products in your work or on your team
 -   Have experience developing in R. An analogous course with a Python focus is also offered
 
+## Slides and Resources from the Workshop
+
+Presentation materials and a summary of resources covered in the workshop are available at <katie.quarto.pub/ds-workflows-r/>
 
 ## Prework
 
