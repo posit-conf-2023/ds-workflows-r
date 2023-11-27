@@ -5,7 +5,7 @@ output:
   html_document:
     toc: yes
     toc_float: yes
-    code_folding: hide
+    code_folding: show
 editor: visual
 editor_options: 
   markdown:
